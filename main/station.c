@@ -261,7 +261,7 @@ static void i2c_co2_task(void *arg)
 void app_main()
 {
     printf("ESP32 project @zongomil \n");
-
+    printf("JOJOJOJO");
     print_mux = xSemaphoreCreateMutex();
     ESP_ERROR_CHECK(i2c_master_init());
 
