@@ -3,22 +3,31 @@
 #include "esp_log.h"
 #include "driver/i2c.h"
 #include "sdkconfig.h"
+#include "/home/milan/Desktop/BP/station/libraries/u8g2_esp32_hal.h"
+#include "/home/milan/esp/esp-idf/components/u8g2/csrc/u8g2.h"
 
-#define RDY_GPIO 39
+
 #define I2C_MASTER_SCL_IO 26               /*!< gpio number for I2C master clock */
 #define I2C_MASTER_SDA_IO 25               /*!< gpio number for I2C master data  */
 #define I2C_MASTER_NUM 1 /*!< I2C port number for master dev */
 #define I2C_MASTER_FREQ_HZ 10000        /*!< I2C master clock frequency */
-#define SENSOR_CO2_ADDR 0x61   /*!< slave address for chipchap sensor */
-#define SENSOR_HUM_TEMP_ADDR 0x28   /*!< slave address for chipchap sensor */
-
 #define I2C_MASTER_TX_BUF_DISABLE 0                           /*!< I2C master doesn't need buffer */
 #define I2C_MASTER_RX_BUF_DISABLE 0                           /*!< I2C master doesn't need buffer */
+#define SENSOR_CO2_ADDR 0x61   /*!< slave address for chipchap sensor */
+#define SENSOR_HUM_TEMP_ADDR 0x28   /*!< slave address for chipchap sensor */
 
 #define ACK_CHECK_EN 0x1                        /*!< I2C master will check ack from slave*/
 #define ACK_CHECK_DIS 0x0                       /*!< I2C master will not check ack from slave */
 #define ACK_VAL 0x0                             /*!< I2C ack value */
 #define NACK_VAL 0x1                            /*!< I2C nack value */
+
+#define RDY_GPIO 39
+
+#define PIN_CLK 18
+#define PIN_MOSI 23
+#define PIN_RESET -1
+#define PIN_DC 21
+#define PIN_CS 5
 
 static const char *TAG = "i2c-example";
 SemaphoreHandle_t print_mux = NULL;
@@ -258,10 +267,52 @@ static void i2c_co2_task(void *arg)
 }
 
 
+static void display_task(void *arg)
+{
+    int cnt = 0;
+    uint32_t task_idx = (uint32_t)arg;
+
+    u8g2_esp32_hal_t u8g2_esp32_hal = U8G2_ESP32_HAL_DEFAULT;
+    u8g2_esp32_hal.clk   = PIN_CLK;
+    u8g2_esp32_hal.mosi  = PIN_MOSI;
+    u8g2_esp32_hal.cs    = PIN_CS;
+    u8g2_esp32_hal.dc    = PIN_DC;
+    u8g2_esp32_hal.reset = PIN_RESET;
+    u8g2_esp32_hal_init(u8g2_esp32_hal);
+
+
+    u8g2_t u8g2; // a structure which will contain all the data for one display
+    u8g2_Setup_uc1608_240x128_f(
+            &u8g2,
+            U8G2_R0,
+            u8g2_esp32_spi_byte_cb,
+            u8g2_esp32_gpio_and_delay_cb);  // init u8g2 structure
+    u8g2_InitDisplay(&u8g2); // send init sequence to the display, display is in sleep mode after this,
+    u8g2_SetPowerSave(&u8g2, 0); // wake up display
+
+    while (1) {
+        ESP_LOGI(TAG, "TASK[%d] test cnt: %d", task_idx, cnt++);
+        xSemaphoreTake(print_mux, portMAX_DELAY);
+
+        u8g2_ClearBuffer(&u8g2);
+        u8g2_DrawBox(&u8g2, 10,20, 20, 30);
+        u8g2_SetFont(&u8g2, u8g2_font_ncenB14_tr);
+        u8g2_DrawStr(&u8g2, 0,15,"Hello World!");
+        u8g2_SendBuffer(&u8g2);
+
+        xSemaphoreGive(print_mux);
+        printf("\n");
+        vTaskDelay(1000 / portTICK_RATE_MS);
+    }
+    vSemaphoreDelete(print_mux);
+    vTaskDelete(NULL);
+}
+
+
+
 void app_main()
 {
     printf("ESP32 project @zongomil \n");
-    printf("JOJOJOJO");
     print_mux = xSemaphoreCreateMutex();
     ESP_ERROR_CHECK(i2c_master_init());
 
@@ -276,6 +327,13 @@ void app_main()
                 "i2c_co2_task" /* Name of task */,
                 1024 * 2 /* Stack depth in bytes */,
                 (void *)1, /* Pointer as parameter for the task */
+                10, /* Priority of task */
+                NULL /* Handle of created task */);
+
+    xTaskCreate(display_task /* Pointer to task */,
+                "display_task" /* Name of task */,
+                1024 * 10 /* Stack depth in bytes */,
+                (void *)2, /* Pointer as parameter for the task */
                 10, /* Priority of task */
                 NULL /* Handle of created task */);
 

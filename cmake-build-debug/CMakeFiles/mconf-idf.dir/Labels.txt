@@ -1,0 +1,13 @@
+# Target labels
+ mconf-idf
+# Source files and their labels
+/home/milan/Desktop/BP/station/cmake-build-debug/CMakeFiles/mconf-idf
+/home/milan/Desktop/BP/station/cmake-build-debug/CMakeFiles/mconf-idf.rule
+/home/milan/Desktop/BP/station/cmake-build-debug/CMakeFiles/mconf-idf-complete.rule
+/home/milan/Desktop/BP/station/cmake-build-debug/mconf-idf-prefix/src/mconf-idf-stamp/mconf-idf-install.rule
+/home/milan/Desktop/BP/station/cmake-build-debug/mconf-idf-prefix/src/mconf-idf-stamp/mconf-idf-mkdir.rule
+/home/milan/Desktop/BP/station/cmake-build-debug/mconf-idf-prefix/src/mconf-idf-stamp/mconf-idf-download.rule
+/home/milan/Desktop/BP/station/cmake-build-debug/mconf-idf-prefix/src/mconf-idf-stamp/mconf-idf-update.rule
+/home/milan/Desktop/BP/station/cmake-build-debug/mconf-idf-prefix/src/mconf-idf-stamp/mconf-idf-patch.rule
+/home/milan/Desktop/BP/station/cmake-build-debug/mconf-idf-prefix/src/mconf-idf-stamp/mconf-idf-configure.rule
+/home/milan/Desktop/BP/station/cmake-build-debug/mconf-idf-prefix/src/mconf-idf-stamp/mconf-idf-build.rule

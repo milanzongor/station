@@ -1,0 +1,35 @@
+/home/milan/.app/clion-2018.2.6/bin/cmake/linux/bin/cmake -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - Unix Makefiles" /home/milan/Desktop/BP/station
+-- Found Git: /usr/bin/git (found version "2.7.4") 
+-- Checking Python dependencies...
+Python requirements from /home/milan/esp/esp-idf/requirements.txt are satisfied.
+-- IDF_TARGET not set, using default target: esp32
+-- Building for target esp32
+-- Building empty aws_iot component due to configuration
+-- Component names: soc log heap xtensa-debug-module app_trace freertos vfs newlib esp_ringbuf driver esp_event ethernet lwip tcpip_adapter partition_table app_update spi_flash mbedtls micro-ecc bootloader_support nvs_flash pthread smartconfig_ack wpa_supplicant esp32 cxx asio jsmn aws_iot bootloader bt coap console nghttp esp-tls esp_adc_cal tcp_transport esp_http_client esp_http_server esp_https_ota esptool_py expat wear_levelling sdmmc fatfs freemodbus idf_test json libsodium mdns mqtt openssl protobuf-c protocomm spiffs u8g2 ulp unity wifi_provisioning main
+-- Component paths: /home/milan/esp/esp-idf/components/soc;/home/milan/esp/esp-idf/components/log;/home/milan/esp/esp-idf/components/heap;/home/milan/esp/esp-idf/components/xtensa-debug-module;/home/milan/esp/esp-idf/components/app_trace;/home/milan/esp/esp-idf/components/freertos;/home/milan/esp/esp-idf/components/vfs;/home/milan/esp/esp-idf/components/newlib;/home/milan/esp/esp-idf/components/esp_ringbuf;/home/milan/esp/esp-idf/components/driver;/home/milan/esp/esp-idf/components/esp_event;/home/milan/esp/esp-idf/components/ethernet;/home/milan/esp/esp-idf/components/lwip;/home/milan/esp/esp-idf/components/tcpip_adapter;/home/milan/esp/esp-idf/components/partition_table;/home/milan/esp/esp-idf/components/app_update;/home/milan/esp/esp-idf/components/spi_flash;/home/milan/esp/esp-idf/components/mbedtls;/home/milan/esp/esp-idf/components/micro-ecc;/home/milan/esp/esp-idf/components/bootloader_support;/home/milan/esp/esp-idf/components/nvs_flash;/home/milan/esp/esp-idf/components/pthread;/home/milan/esp/esp-idf/components/smartconfig_ack;/home/milan/esp/esp-idf/components/wpa_supplicant;/home/milan/esp/esp-idf/components/esp32;/home/milan/esp/esp-idf/components/cxx;/home/milan/esp/esp-idf/components/asio;/home/milan/esp/esp-idf/components/jsmn;/home/milan/esp/esp-idf/components/aws_iot;/home/milan/esp/esp-idf/components/bootloader;/home/milan/esp/esp-idf/components/bt;/home/milan/esp/esp-idf/components/coap;/home/milan/esp/esp-idf/components/console;/home/milan/esp/esp-idf/components/nghttp;/home/milan/esp/esp-idf/components/esp-tls;/home/milan/esp/esp-idf/components/esp_adc_cal;/home/milan/esp/esp-idf/components/tcp_transport;/home/milan/esp/esp-idf/components/esp_http_client;/home/milan/esp/esp-idf/components/esp_http_server;/home/milan/esp/esp-idf/components/esp_https_ota;/home/milan/esp/esp-idf/components/esptool_py;/home/milan/esp/esp-idf/components/expat;/home/milan/esp/esp-idf/components/wear_levelling;/home/milan/esp/esp-idf/components/sdmmc;/home/milan/esp/esp-idf/components/fatfs;/home/milan/esp/esp-idf/components/freemodbus;/home/milan/esp/esp-idf/components/idf_test;/home/milan/esp/esp-idf/components/json;/home/milan/esp/esp-idf/components/libsodium;/home/milan/esp/esp-idf/components/mdns;/home/milan/esp/esp-idf/components/mqtt;/home/milan/esp/esp-idf/components/openssl;/home/milan/esp/esp-idf/components/protobuf-c;/home/milan/esp/esp-idf/components/protocomm;/home/milan/esp/esp-idf/components/spiffs;/home/milan/esp/esp-idf/components/u8g2;/home/milan/esp/esp-idf/components/ulp;/home/milan/esp/esp-idf/components/unity;/home/milan/esp/esp-idf/components/wifi_provisioning;/home/milan/Desktop/BP/station/main
+-- The ASM compiler identification is GNU
+-- Found assembler: /home/milan/esp/xtensa-esp32-elf/bin/xtensa-esp32-elf-gcc
+-- The C compiler identification is GNU 5.2.0
+-- The CXX compiler identification is GNU 5.2.0
+-- Check for working C compiler: /home/milan/esp/xtensa-esp32-elf/bin/xtensa-esp32-elf-gcc
+-- Check for working C compiler: /home/milan/esp/xtensa-esp32-elf/bin/xtensa-esp32-elf-gcc -- works
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Check for working CXX compiler: /home/milan/esp/xtensa-esp32-elf/bin/xtensa-esp32-elf-g++
+-- Check for working CXX compiler: /home/milan/esp/xtensa-esp32-elf/bin/xtensa-esp32-elf-g++ -- works
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Adding linker script /home/milan/Desktop/BP/station/cmake-build-debug/esp32/esp32_out.ld
+-- Adding linker script /home/milan/esp/esp-idf/components/esp32/ld/esp32.rom.ld
+-- Adding linker script /home/milan/esp/esp-idf/components/esp32/ld/esp32.peripherals.ld
+-- Adding linker script /home/milan/esp/esp-idf/components/esp32/ld/esp32.rom.libgcc.ld
+-- Adding linker script /home/milan/esp/esp-idf/components/esp32/ld/esp32.rom.spiram_incompatible_fns.ld
+-- Building empty aws_iot component due to configuration
+-- Component libraries: soc;log;heap;xtensa-debug-module;app_trace;freertos;vfs;newlib;esp_ringbuf;driver;esp_event;ethernet;lwip;tcpip_adapter;app_update;spi_flash;mbedtls;micro-ecc;bootloader_support;nvs_flash;pthread;smartconfig_ack;wpa_supplicant;esp32;cxx;asio;jsmn;aws_iot;bt;coap;console;nghttp;esp-tls;esp_adc_cal;tcp_transport;esp_http_client;esp_http_server;esp_https_ota;expat;wear_levelling;sdmmc;fatfs;freemodbus;idf_test;json;libsodium;mdns;mqtt;openssl;protobuf-c;protocomm;spiffs;ulp;unity;wifi_provisioning;main
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /home/milan/Desktop/BP/station/cmake-build-debug

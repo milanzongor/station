@@ -1,0 +1,117 @@
+# The set of languages for which implicit dependencies are needed:
+set(CMAKE_DEPENDS_LANGUAGES
+  "C"
+  )
+# The set of files for implicit dependencies of each language:
+set(CMAKE_DEPENDS_CHECK_C
+  "/home/milan/esp/esp-idf/components/u8g2/csrc/u8g2_bitmap.c" "/home/milan/Desktop/BP/station/cmake-build-debug/u8g2/CMakeFiles/..dir/csrc/u8g2_bitmap.c.obj"
+  "/home/milan/esp/esp-idf/components/u8g2/csrc/u8g2_box.c" "/home/milan/Desktop/BP/station/cmake-build-debug/u8g2/CMakeFiles/..dir/csrc/u8g2_box.c.obj"
+  "/home/milan/esp/esp-idf/components/u8g2/csrc/u8g2_buffer.c" "/home/milan/Desktop/BP/station/cmake-build-debug/u8g2/CMakeFiles/..dir/csrc/u8g2_buffer.c.obj"
+  "/home/milan/esp/esp-idf/components/u8g2/csrc/u8g2_circle.c" "/home/milan/Desktop/BP/station/cmake-build-debug/u8g2/CMakeFiles/..dir/csrc/u8g2_circle.c.obj"
+  "/home/milan/esp/esp-idf/components/u8g2/csrc/u8g2_cleardisplay.c" "/home/milan/Desktop/BP/station/cmake-build-debug/u8g2/CMakeFiles/..dir/csrc/u8g2_cleardisplay.c.obj"
+  "/home/milan/esp/esp-idf/components/u8g2/csrc/u8g2_d_memory.c" "/home/milan/Desktop/BP/station/cmake-build-debug/u8g2/CMakeFiles/..dir/csrc/u8g2_d_memory.c.obj"
+  "/home/milan/esp/esp-idf/components/u8g2/csrc/u8g2_d_setup.c" "/home/milan/Desktop/BP/station/cmake-build-debug/u8g2/CMakeFiles/..dir/csrc/u8g2_d_setup.c.obj"
+  "/home/milan/esp/esp-idf/components/u8g2/csrc/u8g2_font.c" "/home/milan/Desktop/BP/station/cmake-build-debug/u8g2/CMakeFiles/..dir/csrc/u8g2_font.c.obj"
+  "/home/milan/esp/esp-idf/components/u8g2/csrc/u8g2_fonts.c" "/home/milan/Desktop/BP/station/cmake-build-debug/u8g2/CMakeFiles/..dir/csrc/u8g2_fonts.c.obj"
+  "/home/milan/esp/esp-idf/components/u8g2/csrc/u8g2_hvline.c" "/home/milan/Desktop/BP/station/cmake-build-debug/u8g2/CMakeFiles/..dir/csrc/u8g2_hvline.c.obj"
+  "/home/milan/esp/esp-idf/components/u8g2/csrc/u8g2_input_value.c" "/home/milan/Desktop/BP/station/cmake-build-debug/u8g2/CMakeFiles/..dir/csrc/u8g2_input_value.c.obj"
+  "/home/milan/esp/esp-idf/components/u8g2/csrc/u8g2_intersection.c" "/home/milan/Desktop/BP/station/cmake-build-debug/u8g2/CMakeFiles/..dir/csrc/u8g2_intersection.c.obj"
+  "/home/milan/esp/esp-idf/components/u8g2/csrc/u8g2_kerning.c" "/home/milan/Desktop/BP/station/cmake-build-debug/u8g2/CMakeFiles/..dir/csrc/u8g2_kerning.c.obj"
+  "/home/milan/esp/esp-idf/components/u8g2/csrc/u8g2_line.c" "/home/milan/Desktop/BP/station/cmake-build-debug/u8g2/CMakeFiles/..dir/csrc/u8g2_line.c.obj"
+  "/home/milan/esp/esp-idf/components/u8g2/csrc/u8g2_ll_hvline.c" "/home/milan/Desktop/BP/station/cmake-build-debug/u8g2/CMakeFiles/..dir/csrc/u8g2_ll_hvline.c.obj"
+  "/home/milan/esp/esp-idf/components/u8g2/csrc/u8g2_message.c" "/home/milan/Desktop/BP/station/cmake-build-debug/u8g2/CMakeFiles/..dir/csrc/u8g2_message.c.obj"
+  "/home/milan/esp/esp-idf/components/u8g2/csrc/u8g2_polygon.c" "/home/milan/Desktop/BP/station/cmake-build-debug/u8g2/CMakeFiles/..dir/csrc/u8g2_polygon.c.obj"
+  "/home/milan/esp/esp-idf/components/u8g2/csrc/u8g2_selection_list.c" "/home/milan/Desktop/BP/station/cmake-build-debug/u8g2/CMakeFiles/..dir/csrc/u8g2_selection_list.c.obj"
+  "/home/milan/esp/esp-idf/components/u8g2/csrc/u8g2_setup.c" "/home/milan/Desktop/BP/station/cmake-build-debug/u8g2/CMakeFiles/..dir/csrc/u8g2_setup.c.obj"
+  "/home/milan/esp/esp-idf/components/u8g2/csrc/u8log.c" "/home/milan/Desktop/BP/station/cmake-build-debug/u8g2/CMakeFiles/..dir/csrc/u8log.c.obj"
+  "/home/milan/esp/esp-idf/components/u8g2/csrc/u8log_u8g2.c" "/home/milan/Desktop/BP/station/cmake-build-debug/u8g2/CMakeFiles/..dir/csrc/u8log_u8g2.c.obj"
+  "/home/milan/esp/esp-idf/components/u8g2/csrc/u8log_u8x8.c" "/home/milan/Desktop/BP/station/cmake-build-debug/u8g2/CMakeFiles/..dir/csrc/u8log_u8x8.c.obj"
+  "/home/milan/esp/esp-idf/components/u8g2/csrc/u8x8_8x8.c" "/home/milan/Desktop/BP/station/cmake-build-debug/u8g2/CMakeFiles/..dir/csrc/u8x8_8x8.c.obj"
+  "/home/milan/esp/esp-idf/components/u8g2/csrc/u8x8_byte.c" "/home/milan/Desktop/BP/station/cmake-build-debug/u8g2/CMakeFiles/..dir/csrc/u8x8_byte.c.obj"
+  "/home/milan/esp/esp-idf/components/u8g2/csrc/u8x8_cad.c" "/home/milan/Desktop/BP/station/cmake-build-debug/u8g2/CMakeFiles/..dir/csrc/u8x8_cad.c.obj"
+  "/home/milan/esp/esp-idf/components/u8g2/csrc/u8x8_d_a2printer.c" "/home/milan/Desktop/BP/station/cmake-build-debug/u8g2/CMakeFiles/..dir/csrc/u8x8_d_a2printer.c.obj"
+  "/home/milan/esp/esp-idf/components/u8g2/csrc/u8x8_d_il3820_296x128.c" "/home/milan/Desktop/BP/station/cmake-build-debug/u8g2/CMakeFiles/..dir/csrc/u8x8_d_il3820_296x128.c.obj"
+  "/home/milan/esp/esp-idf/components/u8g2/csrc/u8x8_d_ist3020.c" "/home/milan/Desktop/BP/station/cmake-build-debug/u8g2/CMakeFiles/..dir/csrc/u8x8_d_ist3020.c.obj"
+  "/home/milan/esp/esp-idf/components/u8g2/csrc/u8x8_d_ks0108.c" "/home/milan/Desktop/BP/station/cmake-build-debug/u8g2/CMakeFiles/..dir/csrc/u8x8_d_ks0108.c.obj"
+  "/home/milan/esp/esp-idf/components/u8g2/csrc/u8x8_d_lc7981.c" "/home/milan/Desktop/BP/station/cmake-build-debug/u8g2/CMakeFiles/..dir/csrc/u8x8_d_lc7981.c.obj"
+  "/home/milan/esp/esp-idf/components/u8g2/csrc/u8x8_d_ld7032_60x32.c" "/home/milan/Desktop/BP/station/cmake-build-debug/u8g2/CMakeFiles/..dir/csrc/u8x8_d_ld7032_60x32.c.obj"
+  "/home/milan/esp/esp-idf/components/u8g2/csrc/u8x8_d_ls013b7dh03.c" "/home/milan/Desktop/BP/station/cmake-build-debug/u8g2/CMakeFiles/..dir/csrc/u8x8_d_ls013b7dh03.c.obj"
+  "/home/milan/esp/esp-idf/components/u8g2/csrc/u8x8_d_max7219.c" "/home/milan/Desktop/BP/station/cmake-build-debug/u8g2/CMakeFiles/..dir/csrc/u8x8_d_max7219.c.obj"
+  "/home/milan/esp/esp-idf/components/u8g2/csrc/u8x8_d_pcd8544_84x48.c" "/home/milan/Desktop/BP/station/cmake-build-debug/u8g2/CMakeFiles/..dir/csrc/u8x8_d_pcd8544_84x48.c.obj"
+  "/home/milan/esp/esp-idf/components/u8g2/csrc/u8x8_d_pcf8812.c" "/home/milan/Desktop/BP/station/cmake-build-debug/u8g2/CMakeFiles/..dir/csrc/u8x8_d_pcf8812.c.obj"
+  "/home/milan/esp/esp-idf/components/u8g2/csrc/u8x8_d_pcf8814_hx1230.c" "/home/milan/Desktop/BP/station/cmake-build-debug/u8g2/CMakeFiles/..dir/csrc/u8x8_d_pcf8814_hx1230.c.obj"
+  "/home/milan/esp/esp-idf/components/u8g2/csrc/u8x8_d_sbn1661.c" "/home/milan/Desktop/BP/station/cmake-build-debug/u8g2/CMakeFiles/..dir/csrc/u8x8_d_sbn1661.c.obj"
+  "/home/milan/esp/esp-idf/components/u8g2/csrc/u8x8_d_sed1330.c" "/home/milan/Desktop/BP/station/cmake-build-debug/u8g2/CMakeFiles/..dir/csrc/u8x8_d_sed1330.c.obj"
+  "/home/milan/esp/esp-idf/components/u8g2/csrc/u8x8_d_sh1106_64x32.c" "/home/milan/Desktop/BP/station/cmake-build-debug/u8g2/CMakeFiles/..dir/csrc/u8x8_d_sh1106_64x32.c.obj"
+  "/home/milan/esp/esp-idf/components/u8g2/csrc/u8x8_d_sh1106_72x40.c" "/home/milan/Desktop/BP/station/cmake-build-debug/u8g2/CMakeFiles/..dir/csrc/u8x8_d_sh1106_72x40.c.obj"
+  "/home/milan/esp/esp-idf/components/u8g2/csrc/u8x8_d_sh1107.c" "/home/milan/Desktop/BP/station/cmake-build-debug/u8g2/CMakeFiles/..dir/csrc/u8x8_d_sh1107.c.obj"
+  "/home/milan/esp/esp-idf/components/u8g2/csrc/u8x8_d_sh1108.c" "/home/milan/Desktop/BP/station/cmake-build-debug/u8g2/CMakeFiles/..dir/csrc/u8x8_d_sh1108.c.obj"
+  "/home/milan/esp/esp-idf/components/u8g2/csrc/u8x8_d_sh1122.c" "/home/milan/Desktop/BP/station/cmake-build-debug/u8g2/CMakeFiles/..dir/csrc/u8x8_d_sh1122.c.obj"
+  "/home/milan/esp/esp-idf/components/u8g2/csrc/u8x8_d_ssd1305.c" "/home/milan/Desktop/BP/station/cmake-build-debug/u8g2/CMakeFiles/..dir/csrc/u8x8_d_ssd1305.c.obj"
+  "/home/milan/esp/esp-idf/components/u8g2/csrc/u8x8_d_ssd1306_128x32.c" "/home/milan/Desktop/BP/station/cmake-build-debug/u8g2/CMakeFiles/..dir/csrc/u8x8_d_ssd1306_128x32.c.obj"
+  "/home/milan/esp/esp-idf/components/u8g2/csrc/u8x8_d_ssd1306_128x64_noname.c" "/home/milan/Desktop/BP/station/cmake-build-debug/u8g2/CMakeFiles/..dir/csrc/u8x8_d_ssd1306_128x64_noname.c.obj"
+  "/home/milan/esp/esp-idf/components/u8g2/csrc/u8x8_d_ssd1306_48x64.c" "/home/milan/Desktop/BP/station/cmake-build-debug/u8g2/CMakeFiles/..dir/csrc/u8x8_d_ssd1306_48x64.c.obj"
+  "/home/milan/esp/esp-idf/components/u8g2/csrc/u8x8_d_ssd1306_64x32.c" "/home/milan/Desktop/BP/station/cmake-build-debug/u8g2/CMakeFiles/..dir/csrc/u8x8_d_ssd1306_64x32.c.obj"
+  "/home/milan/esp/esp-idf/components/u8g2/csrc/u8x8_d_ssd1306_64x48.c" "/home/milan/Desktop/BP/station/cmake-build-debug/u8g2/CMakeFiles/..dir/csrc/u8x8_d_ssd1306_64x48.c.obj"
+  "/home/milan/esp/esp-idf/components/u8g2/csrc/u8x8_d_ssd1306_96x16.c" "/home/milan/Desktop/BP/station/cmake-build-debug/u8g2/CMakeFiles/..dir/csrc/u8x8_d_ssd1306_96x16.c.obj"
+  "/home/milan/esp/esp-idf/components/u8g2/csrc/u8x8_d_ssd1309.c" "/home/milan/Desktop/BP/station/cmake-build-debug/u8g2/CMakeFiles/..dir/csrc/u8x8_d_ssd1309.c.obj"
+  "/home/milan/esp/esp-idf/components/u8g2/csrc/u8x8_d_ssd1317.c" "/home/milan/Desktop/BP/station/cmake-build-debug/u8g2/CMakeFiles/..dir/csrc/u8x8_d_ssd1317.c.obj"
+  "/home/milan/esp/esp-idf/components/u8g2/csrc/u8x8_d_ssd1322.c" "/home/milan/Desktop/BP/station/cmake-build-debug/u8g2/CMakeFiles/..dir/csrc/u8x8_d_ssd1322.c.obj"
+  "/home/milan/esp/esp-idf/components/u8g2/csrc/u8x8_d_ssd1325.c" "/home/milan/Desktop/BP/station/cmake-build-debug/u8g2/CMakeFiles/..dir/csrc/u8x8_d_ssd1325.c.obj"
+  "/home/milan/esp/esp-idf/components/u8g2/csrc/u8x8_d_ssd1326.c" "/home/milan/Desktop/BP/station/cmake-build-debug/u8g2/CMakeFiles/..dir/csrc/u8x8_d_ssd1326.c.obj"
+  "/home/milan/esp/esp-idf/components/u8g2/csrc/u8x8_d_ssd1327.c" "/home/milan/Desktop/BP/station/cmake-build-debug/u8g2/CMakeFiles/..dir/csrc/u8x8_d_ssd1327.c.obj"
+  "/home/milan/esp/esp-idf/components/u8g2/csrc/u8x8_d_ssd1329.c" "/home/milan/Desktop/BP/station/cmake-build-debug/u8g2/CMakeFiles/..dir/csrc/u8x8_d_ssd1329.c.obj"
+  "/home/milan/esp/esp-idf/components/u8g2/csrc/u8x8_d_ssd1606_172x72.c" "/home/milan/Desktop/BP/station/cmake-build-debug/u8g2/CMakeFiles/..dir/csrc/u8x8_d_ssd1606_172x72.c.obj"
+  "/home/milan/esp/esp-idf/components/u8g2/csrc/u8x8_d_ssd1607_200x200.c" "/home/milan/Desktop/BP/station/cmake-build-debug/u8g2/CMakeFiles/..dir/csrc/u8x8_d_ssd1607_200x200.c.obj"
+  "/home/milan/esp/esp-idf/components/u8g2/csrc/u8x8_d_st75256.c" "/home/milan/Desktop/BP/station/cmake-build-debug/u8g2/CMakeFiles/..dir/csrc/u8x8_d_st75256.c.obj"
+  "/home/milan/esp/esp-idf/components/u8g2/csrc/u8x8_d_st7565.c" "/home/milan/Desktop/BP/station/cmake-build-debug/u8g2/CMakeFiles/..dir/csrc/u8x8_d_st7565.c.obj"
+  "/home/milan/esp/esp-idf/components/u8g2/csrc/u8x8_d_st7567.c" "/home/milan/Desktop/BP/station/cmake-build-debug/u8g2/CMakeFiles/..dir/csrc/u8x8_d_st7567.c.obj"
+  "/home/milan/esp/esp-idf/components/u8g2/csrc/u8x8_d_st7586s_erc240160.c" "/home/milan/Desktop/BP/station/cmake-build-debug/u8g2/CMakeFiles/..dir/csrc/u8x8_d_st7586s_erc240160.c.obj"
+  "/home/milan/esp/esp-idf/components/u8g2/csrc/u8x8_d_st7586s_s028hn118a.c" "/home/milan/Desktop/BP/station/cmake-build-debug/u8g2/CMakeFiles/..dir/csrc/u8x8_d_st7586s_s028hn118a.c.obj"
+  "/home/milan/esp/esp-idf/components/u8g2/csrc/u8x8_d_st7588.c" "/home/milan/Desktop/BP/station/cmake-build-debug/u8g2/CMakeFiles/..dir/csrc/u8x8_d_st7588.c.obj"
+  "/home/milan/esp/esp-idf/components/u8g2/csrc/u8x8_d_st7920.c" "/home/milan/Desktop/BP/station/cmake-build-debug/u8g2/CMakeFiles/..dir/csrc/u8x8_d_st7920.c.obj"
+  "/home/milan/esp/esp-idf/components/u8g2/csrc/u8x8_d_stdio.c" "/home/milan/Desktop/BP/station/cmake-build-debug/u8g2/CMakeFiles/..dir/csrc/u8x8_d_stdio.c.obj"
+  "/home/milan/esp/esp-idf/components/u8g2/csrc/u8x8_d_t6963.c" "/home/milan/Desktop/BP/station/cmake-build-debug/u8g2/CMakeFiles/..dir/csrc/u8x8_d_t6963.c.obj"
+  "/home/milan/esp/esp-idf/components/u8g2/csrc/u8x8_d_uc1601.c" "/home/milan/Desktop/BP/station/cmake-build-debug/u8g2/CMakeFiles/..dir/csrc/u8x8_d_uc1601.c.obj"
+  "/home/milan/esp/esp-idf/components/u8g2/csrc/u8x8_d_uc1604.c" "/home/milan/Desktop/BP/station/cmake-build-debug/u8g2/CMakeFiles/..dir/csrc/u8x8_d_uc1604.c.obj"
+  "/home/milan/esp/esp-idf/components/u8g2/csrc/u8x8_d_uc1608.c" "/home/milan/Desktop/BP/station/cmake-build-debug/u8g2/CMakeFiles/..dir/csrc/u8x8_d_uc1608.c.obj"
+  "/home/milan/esp/esp-idf/components/u8g2/csrc/u8x8_d_uc1610.c" "/home/milan/Desktop/BP/station/cmake-build-debug/u8g2/CMakeFiles/..dir/csrc/u8x8_d_uc1610.c.obj"
+  "/home/milan/esp/esp-idf/components/u8g2/csrc/u8x8_d_uc1611.c" "/home/milan/Desktop/BP/station/cmake-build-debug/u8g2/CMakeFiles/..dir/csrc/u8x8_d_uc1611.c.obj"
+  "/home/milan/esp/esp-idf/components/u8g2/csrc/u8x8_d_uc1617.c" "/home/milan/Desktop/BP/station/cmake-build-debug/u8g2/CMakeFiles/..dir/csrc/u8x8_d_uc1617.c.obj"
+  "/home/milan/esp/esp-idf/components/u8g2/csrc/u8x8_d_uc1638.c" "/home/milan/Desktop/BP/station/cmake-build-debug/u8g2/CMakeFiles/..dir/csrc/u8x8_d_uc1638.c.obj"
+  "/home/milan/esp/esp-idf/components/u8g2/csrc/u8x8_d_uc1701_dogs102.c" "/home/milan/Desktop/BP/station/cmake-build-debug/u8g2/CMakeFiles/..dir/csrc/u8x8_d_uc1701_dogs102.c.obj"
+  "/home/milan/esp/esp-idf/components/u8g2/csrc/u8x8_d_uc1701_mini12864.c" "/home/milan/Desktop/BP/station/cmake-build-debug/u8g2/CMakeFiles/..dir/csrc/u8x8_d_uc1701_mini12864.c.obj"
+  "/home/milan/esp/esp-idf/components/u8g2/csrc/u8x8_debounce.c" "/home/milan/Desktop/BP/station/cmake-build-debug/u8g2/CMakeFiles/..dir/csrc/u8x8_debounce.c.obj"
+  "/home/milan/esp/esp-idf/components/u8g2/csrc/u8x8_display.c" "/home/milan/Desktop/BP/station/cmake-build-debug/u8g2/CMakeFiles/..dir/csrc/u8x8_display.c.obj"
+  "/home/milan/esp/esp-idf/components/u8g2/csrc/u8x8_fonts.c" "/home/milan/Desktop/BP/station/cmake-build-debug/u8g2/CMakeFiles/..dir/csrc/u8x8_fonts.c.obj"
+  "/home/milan/esp/esp-idf/components/u8g2/csrc/u8x8_gpio.c" "/home/milan/Desktop/BP/station/cmake-build-debug/u8g2/CMakeFiles/..dir/csrc/u8x8_gpio.c.obj"
+  "/home/milan/esp/esp-idf/components/u8g2/csrc/u8x8_input_value.c" "/home/milan/Desktop/BP/station/cmake-build-debug/u8g2/CMakeFiles/..dir/csrc/u8x8_input_value.c.obj"
+  "/home/milan/esp/esp-idf/components/u8g2/csrc/u8x8_message.c" "/home/milan/Desktop/BP/station/cmake-build-debug/u8g2/CMakeFiles/..dir/csrc/u8x8_message.c.obj"
+  "/home/milan/esp/esp-idf/components/u8g2/csrc/u8x8_selection_list.c" "/home/milan/Desktop/BP/station/cmake-build-debug/u8g2/CMakeFiles/..dir/csrc/u8x8_selection_list.c.obj"
+  "/home/milan/esp/esp-idf/components/u8g2/csrc/u8x8_setup.c" "/home/milan/Desktop/BP/station/cmake-build-debug/u8g2/CMakeFiles/..dir/csrc/u8x8_setup.c.obj"
+  "/home/milan/esp/esp-idf/components/u8g2/csrc/u8x8_string.c" "/home/milan/Desktop/BP/station/cmake-build-debug/u8g2/CMakeFiles/..dir/csrc/u8x8_string.c.obj"
+  "/home/milan/esp/esp-idf/components/u8g2/csrc/u8x8_u16toa.c" "/home/milan/Desktop/BP/station/cmake-build-debug/u8g2/CMakeFiles/..dir/csrc/u8x8_u16toa.c.obj"
+  "/home/milan/esp/esp-idf/components/u8g2/csrc/u8x8_u8toa.c" "/home/milan/Desktop/BP/station/cmake-build-debug/u8g2/CMakeFiles/..dir/csrc/u8x8_u8toa.c.obj"
+  )
+set(CMAKE_C_COMPILER_ID "GNU")
+
+# Preprocessor definitions for this target.
+set(CMAKE_TARGET_DEFINITIONS_C
+  "ESP_PLATFORM"
+  "GCC_NOT_5_2_0=1"
+  "HAVE_CONFIG_H"
+  "IDF_VER=\"v3.2-beta1-182-g4c88170\""
+  )
+
+# The include file search paths:
+set(CMAKE_C_TARGET_INCLUDE_PATH
+  "config"
+  "/home/milan/esp/esp-idf/components/u8g2/csrc"
+  )
+
+# Targets to which this target links.
+set(CMAKE_TARGET_LINKED_INFO_FILES
+  )
+
+# Fortran module output directory.
+set(CMAKE_Fortran_TARGET_MODULE_DIR "")
