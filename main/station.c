@@ -29,8 +29,7 @@
 #define PIN_DC 21
 #define PIN_CS 5
 
-static const char *TAG = "i2c-example";
-SemaphoreHandle_t print_mux = NULL;
+static const char *TAG = "Station_tag";
 
 
 /**
@@ -165,13 +164,13 @@ double count_humidity(uint8_t byte_1, uint8_t byte_2){
     return (((byte_1 & 0x3F)*256 + byte_2) / pow(2,14)) * 100;
 }
 
-float count_co2(uint8_t *data_rd) {
+int count_co2(uint8_t *data_rd) {
     unsigned int co2;
     co2 = (unsigned int)((((unsigned int)data_rd[0]) << 24) |
                              (((unsigned int)data_rd[1]) << 16) |
                              (((unsigned int)data_rd[3]) << 8) |
                              ((unsigned int)data_rd[4]));
-    return *(float*)&co2;
+    return (int)(*(float*)&co2);
 }
 
 /**
@@ -193,9 +192,6 @@ static void i2c_temp_hum_task(void *arg)
 {
     int ret;
     uint32_t task_idx = (uint32_t)arg;
-//    uint8_t *data = (uint8_t *)malloc(DATA_LENGTH);
-//    uint8_t *data_wr = (uint8_t *)malloc(DATA_LENGTH);
-//    uint8_t *data_rd = (uint8_t *)malloc(DATA_LENGTH);
     uint8_t humidity_1, humidity_2, temperature_1, temperature_2;
     double temperature, humidity;
 
@@ -204,7 +200,6 @@ static void i2c_temp_hum_task(void *arg)
     while (1) {
         ESP_LOGI(TAG, "TASK[%d] test cnt: %d", task_idx, cnt++);
         ret = i2c_temp_hum_sensor(I2C_MASTER_NUM, &humidity_1, &humidity_2, &temperature_1, &temperature_2);
-        xSemaphoreTake(print_mux, portMAX_DELAY);
 
         if (ret == ESP_ERR_TIMEOUT) {
             ESP_LOGE(TAG, "I2C Timeout");
@@ -218,10 +213,8 @@ static void i2c_temp_hum_task(void *arg)
         } else {
             ESP_LOGW(TAG, "%s: No ack, sensor not connected...skip...", esp_err_to_name(ret));
         }
-        xSemaphoreGive(print_mux);
         vTaskDelay(1000 / portTICK_RATE_MS);
     }
-    vSemaphoreDelete(print_mux);
     vTaskDelete(NULL);
 }
 
@@ -231,9 +224,9 @@ static void i2c_co2_task(void *arg)
     int ret;
     int cnt = 0;
     size_t co2_data_length = 6;
-    float co2;
     uint8_t *co2_data_arr = (uint8_t *)malloc(co2_data_length);
     uint32_t task_idx = (uint32_t)arg;
+    int co2;
 
     ESP_ERROR_CHECK(SCD30_set_measurement_interval(I2C_MASTER_NUM)); // set measurement interval to 2s
     vTaskDelay(1000 / portTICK_RATE_MS); // wait 1000ms after init
@@ -245,7 +238,6 @@ static void i2c_co2_task(void *arg)
         ESP_LOGI(TAG, "TASK[%d] test cnt: %d", task_idx, cnt++);
         vTaskDelay(3000 / portTICK_RATE_MS);
         ret = SCD30_read_measurement_buffer(I2C_MASTER_NUM, co2_data_arr, co2_data_length);
-        xSemaphoreTake(print_mux, portMAX_DELAY);
 
         if (ret == ESP_ERR_TIMEOUT) {
             ESP_LOGE(TAG, "I2C Timeout");
@@ -254,15 +246,14 @@ static void i2c_co2_task(void *arg)
             printf("TASK[%d]  MASTER READ CO2 SENSOR\n", task_idx);
             printf("*******************\n");
             co2 = count_co2(co2_data_arr);
-            printf("CO2 value is: %d \n", (int)co2);
+            printf("CO2 value is: %d \n", co2);
         } else {
             ESP_LOGW(TAG, "%s: No ack, sensor not connected...skip...", esp_err_to_name(ret));
         }
-        xSemaphoreGive(print_mux);
+
         printf("\n");
         vTaskDelay(1000 / portTICK_RATE_MS);
     }
-    vSemaphoreDelete(print_mux);
     vTaskDelete(NULL);
 }
 
@@ -292,7 +283,6 @@ static void display_task(void *arg)
 
     while (1) {
         ESP_LOGI(TAG, "TASK[%d] test cnt: %d", task_idx, cnt++);
-        xSemaphoreTake(print_mux, portMAX_DELAY);
 
         u8g2_ClearBuffer(&u8g2);
         u8g2_DrawBox(&u8g2, 10,20, 20, 30);
@@ -300,11 +290,9 @@ static void display_task(void *arg)
         u8g2_DrawStr(&u8g2, 0,15,"Hello World!");
         u8g2_SendBuffer(&u8g2);
 
-        xSemaphoreGive(print_mux);
         printf("\n");
         vTaskDelay(1000 / portTICK_RATE_MS);
     }
-    vSemaphoreDelete(print_mux);
     vTaskDelete(NULL);
 }
 
@@ -313,7 +301,6 @@ static void display_task(void *arg)
 void app_main()
 {
     printf("ESP32 project @zongomil \n");
-    print_mux = xSemaphoreCreateMutex();
     ESP_ERROR_CHECK(i2c_master_init());
 
     xTaskCreate(i2c_temp_hum_task /* Pointer to task */,
@@ -344,3 +331,80 @@ void app_main()
 
 
 
+
+
+///* Copyright (c) 2017 pcbreflux. All Rights Reserved.
+// *
+// * This program is free software: you can redistribute it and/or modify
+// * it under the terms of the GNU General Public License as published by
+// * the Free Software Foundation, version 3.
+// *
+// * This program is distributed in the hope that it will be useful, but
+// * WITHOUT ANY WARRANTY; without even the implied warranty of
+// * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+// * General Public License for more details.
+// *
+// * You should have received a copy of the GNU General Public License
+// * along with this program. If not, see <http://www.gnu.org/licenses/>. *
+// */
+//#include <stdio.h>
+//#include <string.h>
+//#include <stdlib.h>
+//
+//#include "sdkconfig.h"
+//
+//#include "esp_system.h"
+//#include "esp_heap_alloc_caps.h"
+//
+//#include "freertos/FreeRTOS.h"
+//#include "freertos/task.h"
+//#include "freertos/queue.h"
+//#include "freertos/semphr.h"
+//
+//SemaphoreHandle_t demo_semaphore1;
+//int jojo = 888;
+//
+//// let the rx_task1 wait for us
+//void tx_task1(void *arg) {
+//    uint32_t txpos=100;
+//
+//    demo_semaphore1 = xSemaphoreCreateBinary();
+//
+//    while (1) {
+//        vTaskDelay(10000 / portTICK_RATE_MS); // delay 10s
+//        printf("tx_task1 notify %d \n",txpos);
+//        xSemaphoreGive(demo_semaphore1);
+//        jojo = jojo + 10;
+//        txpos++;
+//    }
+//
+//}
+//
+//// wait for tx_task1 to give semaphore
+//void rx_task1(void *arg) {
+//    uint32_t rxpos=0;
+//
+//    while (1) {
+//        if (demo_semaphore1!=NULL) {
+//            printf("rx_task1 semaphore yield \n");
+//            if(xSemaphoreTake(demo_semaphore1,60000/portTICK_RATE_MS)!=pdTRUE) {  // max wait 60s
+//                printf("rx_task1 fail to receive semaphore\n");
+//            } else {
+//                printf("rx_task1 get semaphore %d \n",rxpos);
+//                printf("jojo %d \n", jojo);
+//            }
+//        } else {
+//            vTaskDelay(100 / portTICK_RATE_MS); // delay 100ms
+//        }
+//        rxpos++;
+//    }
+//}
+//
+//
+//
+//void app_main() {
+//
+//    xTaskCreate(tx_task1, "tx_task1", CONFIG_SYSTEM_EVENT_TASK_STACK_SIZE, NULL, 5, NULL);
+//    xTaskCreate(rx_task1, "rx_task1", CONFIG_SYSTEM_EVENT_TASK_STACK_SIZE, NULL, 5, NULL);
+//
+//}
