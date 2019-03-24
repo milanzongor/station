@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <math.h>
+#include <coap/str.h>
 #include "esp_log.h"
 #include "driver/i2c.h"
 #include "sdkconfig.h"
@@ -29,8 +30,10 @@
 #define PIN_DC 21
 #define PIN_CS 5
 
-static const char *TAG = "Station_tag";
+#define MEASUREMENT_DELAY 10000 /* 10s delay */
 
+static const char *TAG = "Station_tag";
+xQueueHandle demo_queue;
 
 /**
  * @brief i2c master initialization
@@ -194,7 +197,6 @@ static void i2c_temp_hum_task(void *arg)
     uint32_t task_idx = (uint32_t)arg;
     uint8_t humidity_1, humidity_2, temperature_1, temperature_2;
     double temperature, humidity;
-
     int cnt = 0;
 
     while (1) {
@@ -202,18 +204,15 @@ static void i2c_temp_hum_task(void *arg)
         ret = i2c_temp_hum_sensor(I2C_MASTER_NUM, &humidity_1, &humidity_2, &temperature_1, &temperature_2);
 
         if (ret == ESP_ERR_TIMEOUT) {
-            ESP_LOGE(TAG, "I2C Timeout");
+            ESP_LOGE(TAG, "I2C Timeout \n");
         } else if (ret == ESP_OK) {
-            printf("*******************\n");
-            printf("TASK[%d]  MASTER READ HUM&TEMP SENSOR\n", task_idx);
-            printf("*******************\n");
             temperature = count_temperature(temperature_1, temperature_2);
             humidity = count_humidity(humidity_1, humidity_2);
-            printf("Humidity: %2.2f, Temperature:  %2.2f \n \n", humidity, temperature);
+            printf("INFO[%d]  Humidity: %2.2f, Temperature:  %2.2f \n",task_idx, humidity, temperature);
         } else {
             ESP_LOGW(TAG, "%s: No ack, sensor not connected...skip...", esp_err_to_name(ret));
         }
-        vTaskDelay(1000 / portTICK_RATE_MS);
+        vTaskDelay(MEASUREMENT_DELAY / portTICK_RATE_MS);
     }
     vTaskDelete(NULL);
 }
@@ -236,23 +235,22 @@ static void i2c_co2_task(void *arg)
 
     while (1) {
         ESP_LOGI(TAG, "TASK[%d] test cnt: %d", task_idx, cnt++);
-        vTaskDelay(3000 / portTICK_RATE_MS);
         ret = SCD30_read_measurement_buffer(I2C_MASTER_NUM, co2_data_arr, co2_data_length);
 
         if (ret == ESP_ERR_TIMEOUT) {
             ESP_LOGE(TAG, "I2C Timeout");
         } else if (ret == ESP_OK) {
-            printf("*******************\n");
-            printf("TASK[%d]  MASTER READ CO2 SENSOR\n", task_idx);
-            printf("*******************\n");
             co2 = count_co2(co2_data_arr);
-            printf("CO2 value is: %d \n", co2);
+            printf("INFO[%d]  CO2 value is: %d \n", task_idx, co2);
+
+            if(xQueueSendToBack(demo_queue,&co2,1000/portTICK_RATE_MS)!=pdTRUE) {
+                printf("tx_task1 fail to queue value %d", co2);
+            }
+
         } else {
             ESP_LOGW(TAG, "%s: No ack, sensor not connected...skip...", esp_err_to_name(ret));
         }
-
-        printf("\n");
-        vTaskDelay(1000 / portTICK_RATE_MS);
+        vTaskDelay(MEASUREMENT_DELAY / portTICK_RATE_MS);
     }
     vTaskDelete(NULL);
 }
@@ -262,6 +260,7 @@ static void display_task(void *arg)
 {
     int cnt = 0;
     uint32_t task_idx = (uint32_t)arg;
+    int co2;
 
     u8g2_esp32_hal_t u8g2_esp32_hal = U8G2_ESP32_HAL_DEFAULT;
     u8g2_esp32_hal.clk   = PIN_CLK;
@@ -284,10 +283,29 @@ static void display_task(void *arg)
     while (1) {
         ESP_LOGI(TAG, "TASK[%d] test cnt: %d", task_idx, cnt++);
 
+        if(xQueueReceive(demo_queue,&co2,60000/portTICK_RATE_MS)!=pdTRUE) {  // max wait 60s
+            printf("Fail to receive queued CO2 value \n");
+        } else {
+            printf("INFO  Received CO2 value %d \n",co2);
+        }
+//        if (uxQueueMessagesWaiting(demo_queue)==0) { // no message? take a break
+//            vTaskDelay(1000 / portTICK_RATE_MS); // delay 15s
+//        }
+
         u8g2_ClearBuffer(&u8g2);
-        u8g2_DrawBox(&u8g2, 10,20, 20, 30);
         u8g2_SetFont(&u8g2, u8g2_font_ncenB14_tr);
         u8g2_DrawStr(&u8g2, 0,15,"Hello World!");
+
+        enum {BufSize=9}; // If a is short use a smaller number, eg 5 or 6
+        char buf[BufSize];
+        snprintf (buf, BufSize, "%d", co2);
+        u8g2_DrawStr(&u8g2, 50, 30, buf);
+
+        float tst = 14.55;
+        char buf1[BufSize];
+        snprintf (buf, BufSize, "%f", tst);
+        u8g2_DrawStr(&u8g2, 50, 60, buf1);
+
         u8g2_SendBuffer(&u8g2);
 
         printf("\n");
@@ -302,6 +320,7 @@ void app_main()
 {
     printf("ESP32 project @zongomil \n");
     ESP_ERROR_CHECK(i2c_master_init());
+    demo_queue = xQueueCreate(10, sizeof(int));
 
     xTaskCreate(i2c_temp_hum_task /* Pointer to task */,
                 "i2c_temp_hum_task" /* Name of task */,
