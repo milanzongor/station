@@ -35,6 +35,7 @@
 static const char *TAG = "Station_tag";
 xQueueHandle demo_queue;
 
+
 /**
  * @brief i2c master initialization
  */
@@ -53,6 +54,7 @@ static esp_err_t i2c_master_init()
                               I2C_MASTER_RX_BUF_DISABLE,
                               I2C_MASTER_TX_BUF_DISABLE, 0);
 }
+
 
 static esp_err_t SCD30_read_measurement_buffer(i2c_port_t i2c_num, uint8_t *data_rd, size_t size)
 {
@@ -92,6 +94,7 @@ static esp_err_t SCD30_read_measurement_buffer(i2c_port_t i2c_num, uint8_t *data
     return ret;
 }
 
+
 static esp_err_t SCD30_set_measurement_interval(i2c_port_t i2c_num)
 {
     int ret;
@@ -111,6 +114,7 @@ static esp_err_t SCD30_set_measurement_interval(i2c_port_t i2c_num)
     return ret;
 }
 
+
 static esp_err_t SCD30_start_periodic_measurement(i2c_port_t i2c_num)
 {
     int ret;
@@ -129,6 +133,7 @@ static esp_err_t SCD30_start_periodic_measurement(i2c_port_t i2c_num)
 
     return ret;
 }
+
 
 /**
  * @brief test code to operate on BH1750 sensor
@@ -159,13 +164,16 @@ static esp_err_t i2c_temp_hum_sensor(i2c_port_t i2c_num, uint8_t *hum_1, uint8_t
     return ret;
 }
 
+
 double count_temperature(uint8_t byte_1, uint8_t byte_2){
     return ((byte_1*64 + (byte_2 >> 2)/4) / pow(2,14)) * 165 - 40;
 }
 
+
 double count_humidity(uint8_t byte_1, uint8_t byte_2){
     return (((byte_1 & 0x3F)*256 + byte_2) / pow(2,14)) * 100;
 }
+
 
 int count_co2(uint8_t *data_rd) {
     unsigned int co2;
@@ -175,6 +183,7 @@ int count_co2(uint8_t *data_rd) {
                              ((unsigned int)data_rd[4]));
     return (int)(*(float*)&co2);
 }
+
 
 /**
  * @brief test function to show buffer
@@ -190,6 +199,7 @@ static void disp_buf(uint8_t *buf, int len)
     }
     printf("\n");
 }
+
 
 static void i2c_temp_hum_task(void *arg)
 {
@@ -244,7 +254,7 @@ static void i2c_co2_task(void *arg)
             printf("INFO[%d]  CO2 value is: %d \n", task_idx, co2);
 
             if(xQueueSendToBack(demo_queue,&co2,1000/portTICK_RATE_MS)!=pdTRUE) {
-                printf("tx_task1 fail to queue value %d", co2);
+                printf("WARNING  Fail to queue value %d", co2);
             }
 
         } else {
@@ -296,14 +306,15 @@ static void display_task(void *arg)
         u8g2_SetFont(&u8g2, u8g2_font_ncenB14_tr);
         u8g2_DrawStr(&u8g2, 0,15,"Hello World!");
 
-        enum {BufSize=9}; // If a is short use a smaller number, eg 5 or 6
+        enum {BufSize=9};
         char buf[BufSize];
         snprintf (buf, BufSize, "%d", co2);
         u8g2_DrawStr(&u8g2, 50, 30, buf);
 
-        float tst = 14.55;
-        char buf1[BufSize];
-        snprintf (buf, BufSize, "%f", tst);
+        float tst = 14.55456;
+        enum {BufSize1=9};
+        char buf1[BufSize1];
+        snprintf (buf1, BufSize1, "%2.2f", tst);
         u8g2_DrawStr(&u8g2, 50, 60, buf1);
 
         u8g2_SendBuffer(&u8g2);
