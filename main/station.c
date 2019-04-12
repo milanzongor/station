@@ -35,6 +35,13 @@
 static const char *TAG = "Station_tag";
 xQueueHandle demo_queue;
 
+struct sensor_hum_temp {
+    float humidity;
+    float temperature;
+    int co2;
+};
+
+
 
 /**
  * @brief i2c master initialization
@@ -219,6 +226,14 @@ static void i2c_temp_hum_task(void *arg)
             temperature = count_temperature(temperature_1, temperature_2);
             humidity = count_humidity(humidity_1, humidity_2);
             printf("INFO[%d]  Humidity: %2.2f, Temperature:  %2.2f \n",task_idx, humidity, temperature);
+
+            if(xQueueSendToBack(demo_queue,&temperature,1000/portTICK_RATE_MS)!=pdTRUE) {
+                printf("WARNING  Fail to queue value %2.2f", temperature);
+            }
+            if(xQueueSendToBack(demo_queue,&humidity,1000/portTICK_RATE_MS)!=pdTRUE) {
+                printf("WARNING  Fail to queue value %2.2f", humidity);
+            }
+
         } else {
             ESP_LOGW(TAG, "%s: No ack, sensor not connected...skip...", esp_err_to_name(ret));
         }
@@ -271,6 +286,7 @@ static void display_task(void *arg)
     int cnt = 0;
     uint32_t task_idx = (uint32_t)arg;
     int co2;
+    double temperature, humidity;
 
     u8g2_esp32_hal_t u8g2_esp32_hal = U8G2_ESP32_HAL_DEFAULT;
     u8g2_esp32_hal.clk   = PIN_CLK;
@@ -311,11 +327,10 @@ static void display_task(void *arg)
         snprintf (buf, BufSize, "%d", co2);
         u8g2_DrawStr(&u8g2, 50, 30, buf);
 
-        float tst = 14.55456;
-        enum {BufSize1=9};
-        char buf1[BufSize1];
-        snprintf (buf1, BufSize1, "%2.2f", tst);
-        u8g2_DrawStr(&u8g2, 50, 60, buf1);
+//        enum {BufSize1=9};
+//        char buf1[BufSize1];
+//        snprintf (buf1, BufSize1, "%2.2f", temperature);
+//        u8g2_DrawStr(&u8g2, 50, 60, buf1);
 
         u8g2_SendBuffer(&u8g2);
 
