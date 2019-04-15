@@ -7,7 +7,7 @@
 #include "/home/milan/Desktop/BP/station/libraries/u8g2_esp32_hal.h"
 #include "/home/milan/esp/esp-idf/components/u8g2/csrc/u8g2.h"
 
-
+// for I2C
 #define I2C_MASTER_SCL_IO 26               /*!< gpio number for I2C master clock */
 #define I2C_MASTER_SDA_IO 25               /*!< gpio number for I2C master data  */
 #define I2C_MASTER_NUM 1 /*!< I2C port number for master dev */
@@ -16,19 +16,35 @@
 #define I2C_MASTER_RX_BUF_DISABLE 0                           /*!< I2C master doesn't need buffer */
 #define SENSOR_CO2_ADDR 0x61   /*!< slave address for chipchap sensor */
 #define SENSOR_CHIP_CAP_ADDR 0x28   /*!< slave address for chipchap sensor */
-
 #define ACK_CHECK_EN 0x1                        /*!< I2C master will check ack from slave*/
 #define ACK_CHECK_DIS 0x0                       /*!< I2C master will not check ack from slave */
 #define ACK_VAL 0x0                             /*!< I2C ack value */
 #define NACK_VAL 0x1                            /*!< I2C nack value */
+#define SCD30_RDY_PIN_NUM 39
 
-#define RDY_GPIO 39
-
+// display VSPI
 #define PIN_CLK 18
 #define PIN_MOSI 23
 #define PIN_RESET -1
 #define PIN_DC 21
 #define PIN_CS 5
+
+// max31865 sensor HSPI
+#define PIN_NUM_MISO 12
+#define PIN_NUM_MOSI 13
+#define PIN_NUM_CLK  14
+#define PIN_NUM_CS   15
+#define PIN_NUM_DRDY 36
+#define PIN_NUM_DC   -1
+#define PIN_NUM_RST  -1
+
+#define  PIN_NUM_LED 22
+
+
+
+static uint8_t max31865_read[] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}; // 9 bytes to read
+static size_t max31865_read_length = sizeof(max31865_read); // equals 9
+static double Rref = 360.19; // reference resistor for PT100
 
 static const char *TAG = "Station_tag";
 
@@ -39,6 +55,7 @@ void float_to_str(float float_var, char *out_buf){
     memcpy(out_buf, buf, BufSize*sizeof(*out_buf));
 }
 
+//---CHIP-CAP-SENSOR----------------------------------------------------------------------------------------------------
 float count_temperature(uint8_t byte_1, uint8_t byte_2) {
     return (float) (((byte_1 * 64 + (byte_2 >> 2) / 4) / pow(2, 14)) * 165 - 40);
 }
@@ -63,7 +80,6 @@ esp_err_t i2c_master_init(i2c_mode_t i2c_master_num, uint32_t i2c_master_freq_hz
                               I2C_MASTER_TX_BUF_DISABLE, 0);
 }
 
-
 esp_err_t chip_cap_read_hum_temp(i2c_port_t i2c_num, uint8_t *hum_1, uint8_t *hum_2, uint8_t *temp_1, uint8_t *temp_2)
 {
     int ret;
@@ -81,6 +97,7 @@ esp_err_t chip_cap_read_hum_temp(i2c_port_t i2c_num, uint8_t *hum_1, uint8_t *hu
 }
 
 
+//---SCD30-SENSOR-------------------------------------------------------------------------------------------------------
 static esp_err_t SCD30_read_measurement_buffer(i2c_port_t i2c_num, uint8_t *data_rd, size_t size)
 {
     int ret;
@@ -119,7 +136,6 @@ static esp_err_t SCD30_read_measurement_buffer(i2c_port_t i2c_num, uint8_t *data
     return ret;
 }
 
-
 static esp_err_t SCD30_set_measurement_interval(i2c_port_t i2c_num)
 {
     int ret;
@@ -138,7 +154,6 @@ static esp_err_t SCD30_set_measurement_interval(i2c_port_t i2c_num)
 
     return ret;
 }
-
 
 static esp_err_t SCD30_start_periodic_measurement(i2c_port_t i2c_num)
 {
@@ -159,7 +174,6 @@ static esp_err_t SCD30_start_periodic_measurement(i2c_port_t i2c_num)
     return ret;
 }
 
-
 int count_co2(uint8_t *data_rd) {
     unsigned int co2;
     co2 = (unsigned int)((((unsigned int)data_rd[0]) << 24) |
@@ -168,6 +182,191 @@ int count_co2(uint8_t *data_rd) {
                              ((unsigned int)data_rd[4]));
     return (int)(*(float*)&co2);
 }
+
+
+//---MAX31865-SENSOR----------------------------------------------------------------------------------------------------
+static esp_err_t max31865_read_output(spi_device_handle_t spi, uint8_t *received_data) {
+    esp_err_t ret;
+
+    spi_transaction_t t;
+    memset(&t, 0, sizeof(t));       //Zero out the transaction
+    t.length = max31865_read_length*8;                 //Len is in bytes, transaction length is in bits.
+    t.tx_buffer = &max31865_read;               //Data
+    t.flags = SPI_TRANS_USE_RXDATA;
+    ret=spi_device_transmit(spi, &t);  //Transmit!
+    memcpy(received_data, t.rx_data, max31865_read_length*sizeof(*received_data));
+    if (received_data == NULL) {
+        printf("ERROR:  Just NULL received \n");
+    }
+
+    return ret;
+}
+
+
+static esp_err_t max31865_init(spi_device_handle_t spi) {
+    esp_err_t ret;
+
+    spi_transaction_t t;
+    memset(&t, 0, sizeof(t));       //Zero out the transaction
+    t.length=2*8;                     //Command is 8 bits
+    t.tx_data[0]=0x80;              // address to set initial values
+    t.tx_data[1]=0xC3;              // initial setup according to datasheet
+    t.flags=SPI_TRANS_USE_TXDATA;
+    ret=spi_device_transmit(spi, &t);  //Transmit!
+    printf("INFO:    MAX31865 initialized\n");
+
+    return ret;
+}
+
+
+double max31865_temperature(uint8_t *rx_read){
+    unsigned int RTDdata;
+    unsigned int ADCcode;
+    double R;
+    double temp = 0.0;
+
+    RTDdata = rx_read[2] << 8 | rx_read[3]; // MSB + LSB
+
+    if (RTDdata & 1) {
+        printf(" > Sensor connection fault");
+
+    } else {
+        ADCcode = RTDdata >> 1;
+        R       = (double)ADCcode * Rref / 32768;
+        temp    = ((double)ADCcode / 32) - 256;
+
+        printf(" > RTDdata = %04x\n", RTDdata);
+        printf(" > ADCcode = %d\n",   ADCcode);
+        printf(" > R       = %f\n",   R);
+        printf(" > temp    = %f\n",   temp);
+    }
+
+    return temp;
+}
+
+
+//---DISPLAY-TASK-------------------------------------------------------------------------------------------------------
+static void display_task(void *arg)
+{
+    int co2 = 555;
+    double outside_temp;
+
+    int ret;
+    float temperature, humidity;
+    uint8_t humidity_1, humidity_2, temperature_1, temperature_2;
+
+    enum {BufSize=9};
+    char buf[BufSize];
+
+    u8g2_t u8g2; // a structure which will contain all the data for one display
+    u8g2_Setup_uc1608_240x128_f(&u8g2, U8G2_R0, u8g2_esp32_spi_byte_cb, u8g2_esp32_gpio_and_delay_cb);  // init u8g2 structure
+
+    u8g2_InitDisplay(&u8g2); // send init sequence to the display, display is in sleep mode after this,
+    u8g2_SetPowerSave(&u8g2, 0); // wake up display
+
+
+    spi_device_handle_t spi2;
+    spi_bus_config_t buscfg2 = {
+            .miso_io_num=PIN_NUM_MISO,
+            .mosi_io_num=PIN_NUM_MOSI,
+            .sclk_io_num=PIN_NUM_CLK,
+            .quadwp_io_num=-1,
+            .quadhd_io_num=-1,
+            .max_transfer_sz = 0,   // 0 means that max transfer size is 4k bytes
+    };
+    spi_device_interface_config_t devcfg2 = {
+            .clock_speed_hz=10 * 1000 * 1000,           //Clock out at 10 MHz
+            .mode=1,                                //SPI mode 1
+            .spics_io_num=PIN_NUM_CS,               //CS pin
+            .queue_size=7,                          //We want to be able to queue 7 transactions at a time
+    };
+
+    //Initialize the SPI bus
+    ESP_ERROR_CHECK(spi_bus_initialize(HSPI_HOST, &buscfg2, 2)); // 1 is for dma channel
+    //Attach the MAX31865 to the SPI bus
+    ESP_ERROR_CHECK(spi_bus_add_device(HSPI_HOST, &devcfg2, &spi2));
+    gpio_set_direction(PIN_NUM_CS, GPIO_MODE_OUTPUT);
+    max31865_init(spi2);
+
+
+    while(1) {
+        ret = chip_cap_read_hum_temp(I2C_MASTER_NUM, &humidity_1, &humidity_2, &temperature_1, &temperature_2);
+        vTaskDelay(100 / portTICK_RATE_MS);
+
+        if (ret == ESP_OK) {
+            temperature = count_temperature(temperature_1, temperature_2);
+            humidity = count_humidity(humidity_1, humidity_2);
+            printf("CHIP_CAP ---> Humidity: %2.2f, Temperature:  %2.2f \n", humidity, temperature);
+
+            uint8_t received_data[9];
+            ret = max31865_read_output(spi2, received_data);
+            ESP_ERROR_CHECK(ret);
+
+            printf(" > Write 0x%02x -- Read 0x%02x (Start address 0x00)\n", max31865_read[0], received_data[0]);
+            printf(" > Write 0x%02x -- Read 0x%02x (Reg. Configuration)\n", max31865_read[1], received_data[1]);
+            printf(" > Write 0x%02x -- Read 0x%02x (Reg. RTD MSBs)\n", max31865_read[2], received_data[2]);
+            printf(" > Write 0x%02x -- Read 0x%02x (Reg. RTD LSBs)\n", max31865_read[3], received_data[3]);
+            printf(" > Write 0x%02x -- Read 0x%02x (Reg. High Fault Threshold MSB)\n", max31865_read[4], received_data[4]);
+            printf(" > Write 0x%02x -- Read 0x%02x (Reg. High Fault Threshold LSB)\n", max31865_read[5], received_data[5]);
+            printf(" > Write 0x%02x -- Read 0x%02x (Reg. Low Fault Threshold MSB)\n", max31865_read[6], received_data[6]);
+            printf(" > Write 0x%02x -- Read 0x%02x (Reg. Low Fault Threshold LSB)\n", max31865_read[7], received_data[7]);
+            printf(" > Write 0x%02x -- Read 0x%02x (Reg. Fault Status)\n", max31865_read[8], received_data[8]);
+            printf("\n");
+
+            outside_temp = max31865_temperature(received_data);
+            printf("Outside temperature is %f \n", outside_temp);
+
+
+            u8g2_ClearBuffer(&u8g2);
+            u8g2_SetFont(&u8g2, u8g2_font_timB10_tr);
+            u8g2_DrawStr(&u8g2, 0,15,"ChipCap: H:");
+            float_to_str(humidity, buf);
+            u8g2_DrawStr(&u8g2, 80, 15, buf);
+            u8g2_DrawStr(&u8g2, 120,15,"T:");
+            float_to_str(temperature, buf);
+            u8g2_DrawStr(&u8g2, 140, 15, buf);
+
+            u8g2_SendBuffer(&u8g2);
+        }
+    }
+
+    vTaskDelete(NULL);
+}
+
+
+
+void app_main()
+{
+    printf("ESP32 project @zongomil \n");
+    gpio_set_direction(PIN_NUM_LED, GPIO_MODE_OUTPUT); // turn on led
+    gpio_set_level(PIN_NUM_LED, 1);
+
+    ESP_ERROR_CHECK(i2c_master_init(I2C_MASTER_NUM, I2C_MASTER_FREQ_HZ, I2C_MASTER_SDA_IO, I2C_MASTER_SCL_IO));
+
+    u8g2_esp32_hal_t u8g2_esp32_hal = U8G2_ESP32_HAL_DEFAULT;
+    u8g2_esp32_hal.clk   = PIN_CLK;
+    u8g2_esp32_hal.mosi  = PIN_MOSI;
+    u8g2_esp32_hal.cs    = PIN_CS;
+    u8g2_esp32_hal.dc    = PIN_DC;
+    u8g2_esp32_hal.reset = PIN_RESET;
+    u8g2_esp32_hal_init(u8g2_esp32_hal);
+
+    xTaskCreate(display_task /* Pointer to task */,
+                "display_task" /* Name of task */,
+                1024 * 100 /* Stack depth in bytes */,
+                (void *)0, /* Pointer as parameter for the task */
+                10, /* Priority of task */
+                NULL /* Handle of created task */);
+
+    printf("End of main loop \n");
+
+}
+
+
+
+
+
+
 
 
 //static void i2c_co2_task(void *arg)
@@ -206,81 +405,3 @@ int count_co2(uint8_t *data_rd) {
 //    }
 //    vTaskDelete(NULL);
 //}
-
-
-static void display_task(void *arg)
-{
-    int co2 = 555;
-
-    int ret;
-    float temperature, humidity;
-    uint8_t humidity_1, humidity_2, temperature_1, temperature_2;
-
-    enum {BufSize=9};
-    char buf[BufSize];
-
-    u8g2_esp32_hal_t u8g2_esp32_hal = U8G2_ESP32_HAL_DEFAULT;
-    u8g2_esp32_hal.clk   = PIN_CLK;
-    u8g2_esp32_hal.mosi  = PIN_MOSI;
-    u8g2_esp32_hal.cs    = PIN_CS;
-    u8g2_esp32_hal.dc    = PIN_DC;
-    u8g2_esp32_hal.reset = PIN_RESET;
-    u8g2_esp32_hal_init(u8g2_esp32_hal);
-
-
-    u8g2_t u8g2; // a structure which will contain all the data for one display
-    u8g2_Setup_uc1608_240x128_f(
-            &u8g2,
-            U8G2_R0,
-            u8g2_esp32_spi_byte_cb,
-            u8g2_esp32_gpio_and_delay_cb);  // init u8g2 structure
-
-    u8g2_InitDisplay(&u8g2); // send init sequence to the display, display is in sleep mode after this,
-    u8g2_SetPowerSave(&u8g2, 0); // wake up display
-
-    while(1) {
-        ret = chip_cap_read_hum_temp(I2C_MASTER_NUM, &humidity_1, &humidity_2, &temperature_1, &temperature_2);
-        vTaskDelay(100 / portTICK_RATE_MS);
-
-        if (ret == ESP_OK) {
-            temperature = count_temperature(temperature_1, temperature_2);
-            humidity = count_humidity(humidity_1, humidity_2);
-            printf("CHIP_CAP ---> Humidity: %2.2f, Temperature:  %2.2f \n", humidity, temperature);
-
-
-            u8g2_ClearBuffer(&u8g2);
-            u8g2_SetFont(&u8g2, u8g2_font_timB10_tr);
-            u8g2_DrawStr(&u8g2, 0,15,"ChipCap: H:");
-            float_to_str(humidity, buf);
-            u8g2_DrawStr(&u8g2, 80, 15, buf);
-            u8g2_DrawStr(&u8g2, 120,15,"T:");
-            float_to_str(temperature, buf);
-            u8g2_DrawStr(&u8g2, 140, 15, buf);
-
-            u8g2_SendBuffer(&u8g2);
-        }
-    }
-
-    vTaskDelete(NULL);
-}
-
-
-
-void app_main()
-{
-    printf("ESP32 project @zongomil \n");
-    ESP_ERROR_CHECK(i2c_master_init(I2C_MASTER_NUM, I2C_MASTER_FREQ_HZ, I2C_MASTER_SDA_IO, I2C_MASTER_SCL_IO));
-
-    xTaskCreate(display_task /* Pointer to task */,
-                "display_task" /* Name of task */,
-                1024 * 100 /* Stack depth in bytes */,
-                (void *)0, /* Pointer as parameter for the task */
-                10, /* Priority of task */
-                NULL /* Handle of created task */);
-
-    printf("End of main loop \n");
-
-}
-
-
-
