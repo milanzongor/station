@@ -14,13 +14,15 @@
 #define I2C_MASTER_FREQ_HZ 10000        /*!< I2C master clock frequency */
 #define I2C_MASTER_TX_BUF_DISABLE 0                           /*!< I2C master doesn't need buffer */
 #define I2C_MASTER_RX_BUF_DISABLE 0                           /*!< I2C master doesn't need buffer */
-#define SENSOR_CO2_ADDR 0x61   /*!< slave address for chipchap sensor */
-#define SENSOR_CHIP_CAP_ADDR 0x28   /*!< slave address for chipchap sensor */
 #define ACK_CHECK_EN 0x1                        /*!< I2C master will check ack from slave*/
 #define ACK_CHECK_DIS 0x0                       /*!< I2C master will not check ack from slave */
 #define ACK_VAL 0x0                             /*!< I2C ack value */
 #define NACK_VAL 0x1                            /*!< I2C nack value */
 #define SCD30_RDY_PIN_NUM 39
+#define SENSOR_CO2_ADDR 0x61   /*!< slave address for chipchap sensor */
+#define SENSOR_CHIP_CAP_ADDR 0x28   /*!< slave address for chipchap sensor */
+#define SENSOR_PRESSURE_ADDR 0x60   /*!< slave address for chipchap sensor */
+
 
 // display VSPI
 #define PIN_CLK 18
@@ -235,20 +237,108 @@ double max31865_temperature(uint8_t *rx_read){
         R       = (double)ADCcode * Rref / 32768;
         temp    = ((double)ADCcode / 32) - 256;
 
-        printf(" > RTDdata = %04x\n", RTDdata);
-        printf(" > ADCcode = %d\n",   ADCcode);
-        printf(" > R       = %f\n",   R);
-        printf(" > temp    = %f\n",   temp);
+//        printf(" > RTDdata = %04x\n", RTDdata);
+//        printf(" > ADCcode = %d\n",   ADCcode);
+//        printf(" > R       = %f\n",   R);
+//        printf(" > temp    = %f\n",   temp);
     }
 
     return temp;
 }
 
 
+//---PRESSURE-SENSOR----------------------------------------------------------------------------------------------------
+static esp_err_t sensor_pressure_read_values(i2c_port_t i2c_num, uint8_t *data_rd, size_t size)
+{
+    int ret;
+
+    if (size == 0) {
+        return ESP_OK;
+    }
+
+    i2c_cmd_handle_t cmd = i2c_cmd_link_create();
+    i2c_master_start(cmd);
+    i2c_master_write_byte(cmd, SENSOR_PRESSURE_ADDR << 1 | I2C_MASTER_WRITE, 1 /* expect ack */);
+    i2c_master_write_byte(cmd, 0x12, ACK_CHECK_EN); // CMD to start conversion
+    i2c_master_write_byte(cmd, 0x00, ACK_CHECK_EN); // CMD empty byte
+    i2c_master_stop(cmd);
+    ret = i2c_master_cmd_begin(i2c_num, cmd, 1000 / portTICK_RATE_MS);
+    i2c_cmd_link_delete(cmd);
+    printf("INFO:  write sent: %d \n", ret);
+
+    if (ret != ESP_OK) {
+        return ret;
+    }
+    vTaskDelay(300 / portTICK_RATE_MS);
+
+    cmd = i2c_cmd_link_create();
+    i2c_master_start(cmd);
+    i2c_master_write_byte(cmd, SENSOR_PRESSURE_ADDR << 1 | I2C_MASTER_WRITE, 1 /* expect ack */);
+    i2c_master_write_byte(cmd, 0x00, ACK_CHECK_EN); // CMD empty byte
+    i2c_master_stop(cmd);
+    ret = i2c_master_cmd_begin(i2c_num, cmd, 1000 / portTICK_RATE_MS);
+    i2c_cmd_link_delete(cmd);
+    printf("INFO2:  write sent: %d \n", ret);
+
+    if (ret != ESP_OK) {
+        return ret;
+    }
+
+    cmd = i2c_cmd_link_create();
+    i2c_master_start(cmd);
+    i2c_master_write_byte(cmd, (SENSOR_PRESSURE_ADDR << 1) | I2C_MASTER_READ, ACK_CHECK_EN);
+    if (size > 1) {
+        i2c_master_read(cmd, data_rd, size - 1, ACK_VAL);
+    }
+    i2c_master_read_byte(cmd, data_rd + size - 1, NACK_VAL);
+    i2c_master_stop(cmd);
+    ret = i2c_master_cmd_begin(i2c_num, cmd, 1000 / portTICK_RATE_MS);
+    i2c_cmd_link_delete(cmd);
+//    printf("INFO:  read sent \n");
+
+    return ret;
+}
+
+
+static esp_err_t sensor_pressure_read_coefficients(i2c_port_t i2c_num, uint8_t *data_rd, size_t size)
+{
+    int ret;
+
+    i2c_cmd_handle_t cmd = i2c_cmd_link_create();
+    i2c_master_start(cmd);
+    i2c_master_write_byte(cmd, SENSOR_PRESSURE_ADDR << 1 | I2C_MASTER_WRITE, 1 /* expect ack */);
+    i2c_master_write_byte(cmd, 0x04, ACK_CHECK_EN); // CMD MSB
+    i2c_master_stop(cmd);
+    ret = i2c_master_cmd_begin(i2c_num, cmd, 1000 / portTICK_RATE_MS);
+    i2c_cmd_link_delete(cmd);
+//    printf("INFO:  write sent: %d \n", ret);
+
+    if (ret != ESP_OK) {
+        return ret;
+    }
+    vTaskDelay(300 / portTICK_RATE_MS);
+
+    cmd = i2c_cmd_link_create();
+    i2c_master_start(cmd);
+    i2c_master_write_byte(cmd, (SENSOR_PRESSURE_ADDR << 1) | I2C_MASTER_READ, ACK_CHECK_EN);
+    if (size > 1) {
+        i2c_master_read(cmd, data_rd, size - 1, ACK_VAL);
+    }
+    i2c_master_read_byte(cmd, data_rd + size - 1, NACK_VAL);
+    i2c_master_stop(cmd);
+    ret = i2c_master_cmd_begin(i2c_num, cmd, 1000 / portTICK_RATE_MS);
+    i2c_cmd_link_delete(cmd);
+//    printf("INFO:  read sent\n");
+
+    return ret;
+}
+
+
+
+
 //---DISPLAY-TASK-------------------------------------------------------------------------------------------------------
 static void display_task(void *arg)
 {
-    int co2 = 555;
     double outside_temp;
 
     int ret;
@@ -299,23 +389,10 @@ static void display_task(void *arg)
             printf("CHIP_CAP ---> Humidity: %2.2f, Temperature:  %2.2f \n", humidity, temperature);
 
             uint8_t received_data[9];
-            ret = max31865_read_output(spi2, received_data);
-            ESP_ERROR_CHECK(ret);
-
-            printf(" > Write 0x%02x -- Read 0x%02x (Start address 0x00)\n", max31865_read[0], received_data[0]);
-            printf(" > Write 0x%02x -- Read 0x%02x (Reg. Configuration)\n", max31865_read[1], received_data[1]);
-            printf(" > Write 0x%02x -- Read 0x%02x (Reg. RTD MSBs)\n", max31865_read[2], received_data[2]);
-            printf(" > Write 0x%02x -- Read 0x%02x (Reg. RTD LSBs)\n", max31865_read[3], received_data[3]);
-            printf(" > Write 0x%02x -- Read 0x%02x (Reg. High Fault Threshold MSB)\n", max31865_read[4], received_data[4]);
-            printf(" > Write 0x%02x -- Read 0x%02x (Reg. High Fault Threshold LSB)\n", max31865_read[5], received_data[5]);
-            printf(" > Write 0x%02x -- Read 0x%02x (Reg. Low Fault Threshold MSB)\n", max31865_read[6], received_data[6]);
-            printf(" > Write 0x%02x -- Read 0x%02x (Reg. Low Fault Threshold LSB)\n", max31865_read[7], received_data[7]);
-            printf(" > Write 0x%02x -- Read 0x%02x (Reg. Fault Status)\n", max31865_read[8], received_data[8]);
-            printf("\n");
-
+            ESP_ERROR_CHECK(max31865_read_output(spi2, received_data));
             outside_temp = max31865_temperature(received_data);
-            printf("Outside temperature is %f \n", outside_temp);
-
+            printf("Outside temperature --> %2.2f \n", outside_temp);
+            printf("\n");
 
             u8g2_ClearBuffer(&u8g2);
             u8g2_SetFont(&u8g2, u8g2_font_timB10_tr);
