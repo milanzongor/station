@@ -53,7 +53,7 @@ static const char *TAG = "Station_tag";
 void float_to_str(float float_var, char *out_buf){
     enum {BufSize=9};
     char buf[BufSize];
-    snprintf (buf, BufSize, "%2.2f", float_var);
+    snprintf (buf, BufSize, "%.2f", float_var);
     memcpy(out_buf, buf, BufSize*sizeof(*out_buf));
 }
 
@@ -248,7 +248,7 @@ double max31865_temperature(uint8_t *rx_read){
 
 
 //---PRESSURE-SENSOR----------------------------------------------------------------------------------------------------
-static esp_err_t sensor_pressure_read_values(i2c_port_t i2c_num, uint8_t *data_rd, size_t size)
+esp_err_t sensor_pressure_read_values(i2c_port_t i2c_num, uint8_t *data_rd, size_t size)
 {
     int ret;
 
@@ -264,7 +264,7 @@ static esp_err_t sensor_pressure_read_values(i2c_port_t i2c_num, uint8_t *data_r
     i2c_master_stop(cmd);
     ret = i2c_master_cmd_begin(i2c_num, cmd, 1000 / portTICK_RATE_MS);
     i2c_cmd_link_delete(cmd);
-    printf("INFO:  write sent: %d \n", ret);
+//    printf("INFO:  write sent: %d \n", ret);
 
     if (ret != ESP_OK) {
         return ret;
@@ -278,7 +278,7 @@ static esp_err_t sensor_pressure_read_values(i2c_port_t i2c_num, uint8_t *data_r
     i2c_master_stop(cmd);
     ret = i2c_master_cmd_begin(i2c_num, cmd, 1000 / portTICK_RATE_MS);
     i2c_cmd_link_delete(cmd);
-    printf("INFO2:  write sent: %d \n", ret);
+//    printf("INFO2:  write sent: %d \n", ret);
 
     if (ret != ESP_OK) {
         return ret;
@@ -300,7 +300,7 @@ static esp_err_t sensor_pressure_read_values(i2c_port_t i2c_num, uint8_t *data_r
 }
 
 
-static esp_err_t sensor_pressure_read_coefficients(i2c_port_t i2c_num, uint8_t *data_rd, size_t size)
+esp_err_t sensor_pressure_read_coefficients(i2c_port_t i2c_num, uint8_t *data_rd, size_t size)
 {
     int ret;
 
@@ -334,6 +334,39 @@ static esp_err_t sensor_pressure_read_coefficients(i2c_port_t i2c_num, uint8_t *
 }
 
 
+void sensor_pressure_count_coefficients(float *A0, float *B1, float *B2, float *C12, uint8_t *pressure_coeffs_arr)
+{
+    *A0 = (float) ((pressure_coeffs_arr[0] * 256 + pressure_coeffs_arr[1]) / 8.0);
+    *B1 = (pressure_coeffs_arr[2] * 256 + pressure_coeffs_arr[3]);
+    if (*B1 > 32767)
+    {
+        *B1 -= 65536;
+    }
+    *B1 = (float) (*B1 / 8192.0);
+    *B2 = (pressure_coeffs_arr[4] * 256 + pressure_coeffs_arr[5]);
+    if (*B2 > 32767)
+    {
+        *B2 -= 65536;
+    }
+    *B2 = (float) (*B2 / 16384.0);
+    *C12 = (float) (((pressure_coeffs_arr[6] * 256 + pressure_coeffs_arr[7]) / 4) / 4194304.0);
+}
+
+
+float sensor_pressure_count_temp(uint8_t *pressure_arr)
+{
+    int temp = (pressure_arr[2] * 256 + (pressure_arr[3] & 0xC0)) / 64;
+    return (float) ((temp - 498) / (-5.35) + 25.0);
+}
+
+
+float sensor_pressure_count_pres(uint8_t *pressure_arr, float A0, float B1, float B2, float C12)
+{
+    int temp = (pressure_arr[2] * 256 + (pressure_arr[3] & 0xC0)) / 64;
+    int pres = (pressure_arr[0] * 256 + (pressure_arr[1] & 0xC0)) / 64;
+    float pres_comp = A0 + (B1 + C12 * temp) * pres + B2 * temp;
+    return (float) ((65.0 / 1023.0) * pres_comp + 50.0);
+}
 
 
 //---DISPLAY-TASK-------------------------------------------------------------------------------------------------------
@@ -347,13 +380,12 @@ static void display_task(void *arg)
 
     enum {BufSize=9};
     char buf[BufSize];
-
+    //---DISPLAY---
     u8g2_t u8g2; // a structure which will contain all the data for one display
     u8g2_Setup_uc1608_240x128_f(&u8g2, U8G2_R0, u8g2_esp32_spi_byte_cb, u8g2_esp32_gpio_and_delay_cb);  // init u8g2 structure
 
     u8g2_InitDisplay(&u8g2); // send init sequence to the display, display is in sleep mode after this,
     u8g2_SetPowerSave(&u8g2, 0); // wake up display
-
 
     spi_device_handle_t spi2;
     spi_bus_config_t buscfg2 = {
@@ -371,6 +403,7 @@ static void display_task(void *arg)
             .queue_size=7,                          //We want to be able to queue 7 transactions at a time
     };
 
+    //---MAX31865---
     //Initialize the SPI bus
     ESP_ERROR_CHECK(spi_bus_initialize(HSPI_HOST, &buscfg2, 2)); // 1 is for dma channel
     //Attach the MAX31865 to the SPI bus
@@ -378,33 +411,60 @@ static void display_task(void *arg)
     gpio_set_direction(PIN_NUM_CS, GPIO_MODE_OUTPUT);
     max31865_init(spi2);
 
+    //---MPL115A2---
+    // Read 8 bytes of pressure_coeffs_arr from address(0x04)
+    size_t pressure_coeffs_arr_size = 8;
+    uint8_t *pressure_coeffs_arr = (uint8_t *)malloc(pressure_coeffs_arr_size);
+    ESP_ERROR_CHECK(sensor_pressure_read_coefficients(I2C_MASTER_NUM, pressure_coeffs_arr, pressure_coeffs_arr_size));
+
+    float A0, B1, B2, C12;
+    sensor_pressure_count_coefficients(&A0, &B1, &B2, &C12, pressure_coeffs_arr);
+
+    size_t pressure_arr_size = 8;
+    uint8_t *pressure_arr = (uint8_t *)malloc(pressure_coeffs_arr_size);
 
     while(1) {
-        ret = chip_cap_read_hum_temp(I2C_MASTER_NUM, &humidity_1, &humidity_2, &temperature_1, &temperature_2);
         vTaskDelay(100 / portTICK_RATE_MS);
 
-        if (ret == ESP_OK) {
-            temperature = count_temperature(temperature_1, temperature_2);
-            humidity = count_humidity(humidity_1, humidity_2);
-            printf("CHIP_CAP ---> Humidity: %2.2f, Temperature:  %2.2f \n", humidity, temperature);
+        ESP_ERROR_CHECK(chip_cap_read_hum_temp(I2C_MASTER_NUM, &humidity_1, &humidity_2, &temperature_1, &temperature_2));
+        temperature = count_temperature(temperature_1, temperature_2);
+        humidity = count_humidity(humidity_1, humidity_2);
+        printf("CHIP_CAP ---> Humidity: %2.2f, Temperature:  %2.2f \n", humidity, temperature);
 
-            uint8_t received_data[9];
-            ESP_ERROR_CHECK(max31865_read_output(spi2, received_data));
-            outside_temp = max31865_temperature(received_data);
-            printf("Outside temperature --> %2.2f \n", outside_temp);
-            printf("\n");
+        uint8_t received_data[9];
+        ESP_ERROR_CHECK(max31865_read_output(spi2, received_data));
+        outside_temp = max31865_temperature(received_data);
+        printf("MAX31865 --> Temperature: %2.2f \n", outside_temp);
 
-            u8g2_ClearBuffer(&u8g2);
-            u8g2_SetFont(&u8g2, u8g2_font_timB10_tr);
-            u8g2_DrawStr(&u8g2, 0,15,"ChipCap: H:");
-            float_to_str(humidity, buf);
-            u8g2_DrawStr(&u8g2, 80, 15, buf);
-            u8g2_DrawStr(&u8g2, 120,15,"T:");
-            float_to_str(temperature, buf);
-            u8g2_DrawStr(&u8g2, 140, 15, buf);
+        ESP_ERROR_CHECK(sensor_pressure_read_values(I2C_MASTER_NUM, pressure_arr, pressure_arr_size));
+        float pressure = sensor_pressure_count_pres(pressure_arr, A0, B1, B2, C12);
+        float cTemp = sensor_pressure_count_temp(pressure_arr);
+        printf("MPL115A2 --> Pressure: %.2f kPa, Temperature: %.2f C \n", pressure, cTemp);
+        printf("\n");
 
-            u8g2_SendBuffer(&u8g2);
-        }
+        u8g2_ClearBuffer(&u8g2);
+        u8g2_SetFont(&u8g2, u8g2_font_timB10_tr);
+
+        u8g2_DrawStr(&u8g2, 0,15,"ChipCap: H:");
+        float_to_str(humidity, buf);
+        u8g2_DrawStr(&u8g2, 80, 15, buf);
+        u8g2_DrawStr(&u8g2, 120,15,"T:");
+        float_to_str(temperature, buf);
+        u8g2_DrawStr(&u8g2, 140, 15, buf);
+
+        u8g2_DrawStr(&u8g2, 0,30,"MAX31865: T:");
+        float_to_str(outside_temp, buf);
+        u8g2_DrawStr(&u8g2, 100, 30, buf);
+
+        u8g2_DrawStr(&u8g2, 0,45,"MPL115A2: P:");
+        float_to_str(pressure, buf);
+        u8g2_DrawStr(&u8g2, 100, 45, buf);
+        u8g2_DrawStr(&u8g2, 140,45,"T:");
+        float_to_str(cTemp, buf);
+        u8g2_DrawStr(&u8g2, 160, 45, buf);
+
+
+        u8g2_SendBuffer(&u8g2);
     }
 
     vTaskDelete(NULL);
