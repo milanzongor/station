@@ -374,7 +374,6 @@ static void display_task(void *arg)
 {
     double outside_temp;
 
-    int ret;
     float temperature, humidity;
     uint8_t humidity_1, humidity_2, temperature_1, temperature_2;
 
@@ -423,8 +422,19 @@ static void display_task(void *arg)
     size_t pressure_arr_size = 8;
     uint8_t *pressure_arr = (uint8_t *)malloc(pressure_coeffs_arr_size);
 
+    //---SCD30---
+    size_t co2_data_length = 6;
+    uint8_t *co2_data_arr = (uint8_t *)malloc(co2_data_length);
+    uint32_t task_idx = (uint32_t)arg;
+    int co2;
+
+    ESP_ERROR_CHECK(SCD30_set_measurement_interval(I2C_MASTER_NUM)); // set measurement interval to 2s
+    vTaskDelay(1000 / portTICK_RATE_MS); // wait 1000ms after init
+    ESP_ERROR_CHECK(SCD30_start_periodic_measurement(I2C_MASTER_NUM)); // start periodic measurements
+    vTaskDelay(1000 / portTICK_RATE_MS); // wait 1000ms after init
+
     while(1) {
-        vTaskDelay(100 / portTICK_RATE_MS);
+        vTaskDelay(1500 / portTICK_RATE_MS);
 
         ESP_ERROR_CHECK(chip_cap_read_hum_temp(I2C_MASTER_NUM, &humidity_1, &humidity_2, &temperature_1, &temperature_2));
         temperature = count_temperature(temperature_1, temperature_2);
@@ -440,6 +450,10 @@ static void display_task(void *arg)
         float pressure = sensor_pressure_count_pres(pressure_arr, A0, B1, B2, C12);
         float cTemp = sensor_pressure_count_temp(pressure_arr);
         printf("MPL115A2 --> Pressure: %.2f kPa, Temperature: %.2f C \n", pressure, cTemp);
+
+        ESP_ERROR_CHECK(SCD30_read_measurement_buffer(I2C_MASTER_NUM, co2_data_arr, co2_data_length));
+        co2 = count_co2(co2_data_arr);
+        printf("SCD30 --> CO2: %d \n", co2);
         printf("\n");
 
         u8g2_ClearBuffer(&u8g2);
@@ -462,6 +476,10 @@ static void display_task(void *arg)
         u8g2_DrawStr(&u8g2, 140,45,"T:");
         float_to_str(cTemp, buf);
         u8g2_DrawStr(&u8g2, 160, 45, buf);
+
+        u8g2_DrawStr(&u8g2, 0,60,"SCD30: C02:");
+        float_to_str(co2, buf);
+        u8g2_DrawStr(&u8g2, 100, 60, buf);
 
 
         u8g2_SendBuffer(&u8g2);
