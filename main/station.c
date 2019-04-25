@@ -185,6 +185,23 @@ int count_co2(uint8_t *data_rd) {
     return (int)(*(float*)&co2);
 }
 
+float count_temp(uint8_t *data_rd) {
+    unsigned int temp;
+    temp = (unsigned int)((((unsigned int)data_rd[6]) << 24) |
+                         (((unsigned int)data_rd[7]) << 16) |
+                         (((unsigned int)data_rd[9]) << 8) |
+                         ((unsigned int)data_rd[10]));
+    return (*(float*)&temp);
+}
+
+float count_hum(uint8_t *data_rd) {
+    unsigned int hum;
+    hum = (unsigned int)((((unsigned int)data_rd[12]) << 24) |
+                          (((unsigned int)data_rd[13]) << 16) |
+                          (((unsigned int)data_rd[15]) << 8) |
+                          ((unsigned int)data_rd[16]));
+    return (*(float*)&hum);
+}
 
 //---MAX31865-SENSOR----------------------------------------------------------------------------------------------------
 static esp_err_t max31865_read_output(spi_device_handle_t spi, uint8_t *received_data) {
@@ -423,10 +440,11 @@ static void display_task(void *arg)
     uint8_t *pressure_arr = (uint8_t *)malloc(pressure_coeffs_arr_size);
 
     //---SCD30---
-    size_t co2_data_length = 6;
+    size_t co2_data_length = 18;
     uint8_t *co2_data_arr = (uint8_t *)malloc(co2_data_length);
     uint32_t task_idx = (uint32_t)arg;
     int co2;
+    float temp_scd30, hum_scd30;
 
     ESP_ERROR_CHECK(SCD30_set_measurement_interval(I2C_MASTER_NUM)); // set measurement interval to 2s
     vTaskDelay(1000 / portTICK_RATE_MS); // wait 1000ms after init
@@ -434,7 +452,7 @@ static void display_task(void *arg)
     vTaskDelay(1000 / portTICK_RATE_MS); // wait 1000ms after init
 
     while(1) {
-        vTaskDelay(1500 / portTICK_RATE_MS);
+        vTaskDelay(2000 / portTICK_RATE_MS);
 
         ESP_ERROR_CHECK(chip_cap_read_hum_temp(I2C_MASTER_NUM, &humidity_1, &humidity_2, &temperature_1, &temperature_2));
         temperature = count_temperature(temperature_1, temperature_2);
@@ -453,7 +471,9 @@ static void display_task(void *arg)
 
         ESP_ERROR_CHECK(SCD30_read_measurement_buffer(I2C_MASTER_NUM, co2_data_arr, co2_data_length));
         co2 = count_co2(co2_data_arr);
-        printf("SCD30 --> CO2: %d \n", co2);
+        temp_scd30 = count_temp(co2_data_arr);
+        hum_scd30 = count_hum(co2_data_arr);
+        printf("SCD30 --> CO2: %d PPM, Temperature: %.2f , Humidity: %.2f \n", co2, temp_scd30, hum_scd30);
         printf("\n");
 
         u8g2_ClearBuffer(&u8g2);
@@ -480,6 +500,12 @@ static void display_task(void *arg)
         u8g2_DrawStr(&u8g2, 0,60,"SCD30: C02:");
         float_to_str(co2, buf);
         u8g2_DrawStr(&u8g2, 100, 60, buf);
+        u8g2_DrawStr(&u8g2, 0,75,"SCD30: T:");
+        float_to_str(temp_scd30, buf);
+        u8g2_DrawStr(&u8g2, 100, 75, buf);
+        u8g2_DrawStr(&u8g2, 140,75,"H:");
+        float_to_str(hum_scd30, buf);
+        u8g2_DrawStr(&u8g2, 160, 75, buf);
 
 
         u8g2_SendBuffer(&u8g2);
