@@ -89,16 +89,16 @@ esp_err_t i2c_master_init(i2c_mode_t i2c_master_num, uint32_t i2c_master_freq_hz
                               I2C_MASTER_TX_BUF_DISABLE, 0);
 }
 
-esp_err_t chip_cap_read_hum_temp(i2c_port_t i2c_num, uint8_t *hum_1, uint8_t *hum_2, uint8_t *temp_1, uint8_t *temp_2)
+esp_err_t chip_cap_read_hum_temp(i2c_port_t i2c_num, uint8_t *data_rd, size_t size)
 {
     int ret;
     i2c_cmd_handle_t cmd = i2c_cmd_link_create();
     i2c_master_start(cmd);
     i2c_master_write_byte(cmd, SENSOR_CHIP_CAP_ADDR << 1 | I2C_MASTER_READ, ACK_CHECK_EN);
-    i2c_master_read_byte(cmd, hum_1, ACK_VAL);
-    i2c_master_read_byte(cmd, hum_2, ACK_VAL);
-    i2c_master_read_byte(cmd, temp_1, ACK_VAL);
-    i2c_master_read_byte(cmd, temp_2, NACK_VAL);
+    if (size > 1) {
+        i2c_master_read(cmd, data_rd, size - 1, ACK_VAL);
+    }
+    i2c_master_read_byte(cmd, data_rd + size - 1, NACK_VAL);
     i2c_master_stop(cmd);
     ret = i2c_master_cmd_begin(i2c_num, cmd, 1000 / portTICK_RATE_MS);
     i2c_cmd_link_delete(cmd);
@@ -396,10 +396,8 @@ float sensor_pressure_count_pres(uint8_t *pressure_arr, float A0, float B1, floa
 //---DISPLAY-TASK-------------------------------------------------------------------------------------------------------
 static void display_task(void *arg)
 {
-    uint8_t humidity_1, humidity_2, temperature_1, temperature_2;
-
-    enum {BufSize=9};
-    char buf[BufSize];
+//    enum {BufSize=9};
+    char buf[9];
 
     //---DISPLAY---
     u8g2_t u8g2; // a structure which will contain all the data for one display
@@ -423,6 +421,9 @@ static void display_task(void *arg)
             .spics_io_num=PIN_NUM_CS,               //CS pin
             .queue_size=7,                          //We want to be able to queue 7 transactions at a time
     };
+    //---ChipCap---
+    size_t chip_cap_data_length = 4;
+    uint8_t *chip_cap_data_arr = (uint8_t *)malloc(chip_cap_data_length);
 
     //---MAX31865---
     //Initialize the SPI bus
@@ -464,9 +465,9 @@ static void display_task(void *arg)
         backlight_level = gpio_get_level(PIN_NUM_MS_IN);
         gpio_set_level(PIN_NUM_MS_OUT, (uint32_t) backlight_level);
 
-        ESP_ERROR_CHECK(chip_cap_read_hum_temp(I2C_MASTER_NUM, &humidity_1, &humidity_2, &temperature_1, &temperature_2));
-        data.chip_cap.temperature = count_temperature(temperature_1, temperature_2);
-        data.chip_cap.humidity = count_humidity(humidity_1, humidity_2);
+        ESP_ERROR_CHECK(chip_cap_read_hum_temp(I2C_MASTER_NUM, chip_cap_data_arr, chip_cap_data_length));
+        data.chip_cap.temperature = count_temperature(chip_cap_data_arr[2], chip_cap_data_arr[3]);
+        data.chip_cap.humidity = count_humidity(chip_cap_data_arr[0], chip_cap_data_arr[1]);
         printf("CHIP_CAP ---> Humidity: %2.2f, Temperature:  %2.2f \n", data.chip_cap.humidity, data.chip_cap.temperature);
 
         uint8_t received_data[9];

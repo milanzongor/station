@@ -5939,6 +5939,9 @@
 		<Unit filename="/home/milan/Desktop/BP/station/main/station.c">
 			<Option target="main"/>
 		</Unit>
+		<Unit filename="/home/milan/Desktop/BP/station/main/station.h">
+			<Option target="main"/>
+		</Unit>
 		<Unit filename="/home/milan/esp/esp-idf/components/app_trace/app_trace.c">
 			<Option target="app_trace"/>
 		</Unit>
