@@ -1,3 +1,24 @@
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
+#include "freertos/portmacro.h"
+#include "freertos/event_groups.h"
+#include "esp_wifi.h"
+#include "esp_system.h"
+#include "esp_event.h"
+#include "esp_event_loop.h"
+#include "esp_err.h"
+#include "esp_log.h"
+#include "nvs_flash.h"
+#include "driver/i2c.h"
+#include "driver/gpio.h"
+#include "driver/ledc.h"
+#include "tcpip_adapter.h"
+#include "lwip/err.h"
+#include "lwip/sys.h"
+#include "lwip/netdb.h"
+#include "lwip/api.h"
+#include "string.h"
+#include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
 #include <coap/str.h>
@@ -45,6 +66,10 @@
 #define PIN_NUM_MS_IN 34
 #define PIN_NUM_MS_OUT 27
 
+#define WIFI_SSID "esp_wifi"
+#define WIFI_PASS "mypassword"
+static EventGroupHandle_t wifi_event_group;
+const int CONNECTED_BIT = BIT0;
 
 
 static uint8_t max31865_read[] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}; // 9 bytes to read
@@ -53,6 +78,97 @@ static double Rref = 360.19; // reference resistor for PT100
 
 static const char *TAG = "Station_tag";
 
+const static char http_html_hdr[] =
+        "HTTP/1.1 200 OK\r\nContent-type: text/html\r\n\r\n";
+
+
+const static char page_01[] = "<!DOCTYPE html>\n"
+                              "<html>\n"
+                              "  <head>\n"
+                              "    <title>ESP32 Weather Station</title>\n"
+                              "    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"><meta http-equiv=\"refresh\" content=\"2\" />\n"
+                              "    <link rel=\"icon\" href=\"data:,\">\n"
+                              "    <script>\n"
+                              "      function DisplayCurrentTime() {\n"
+                              "          var date = new Date();\n"
+                              "          var hours = date.getHours() < 10 ? \"0\" + date.getHours() : date.getHours();\n"
+                              "          var minutes = date.getMinutes() < 10 ? \"0\" + date.getMinutes() : date.getMinutes();\n"
+                              "          var seconds = date.getSeconds() < 10 ? \"0\" + date.getSeconds() : date.getSeconds();\n"
+                              "          time = hours + \":\" + minutes + \":\" + seconds;\n"
+                              "          var currentTime = document.getElementById(\"currentTime\");\n"
+                              "          currentTime.innerHTML = time;\n"
+                              "      };\n"
+                              "      function GetReadings() {\n"
+                              "      \tnocache = \"&nocache\";\n"
+                              "      \tvar request = new XMLHttpRequest();\n"
+                              "      \trequest.onreadystatechange = function() {\n"
+                              "    \t\t\tif (this.status == 200) {\n"
+                              "    \t\t\t\tif (this.responseXML != null) {\n"
+                              "    \t\t\t\t\t// XML file received - contains sensor readings\n"
+                              "    \t\t\t\t\tvar count;\n"
+                              "    \t\t\t\t\tvar num_an = this.responseXML.getElementsByTagName('reading').length;\n"
+                              "    \t\t\t\t\tfor (count = 0; count < num_an; count++) {\n"
+                              "    \t\t\t\t\t\tdocument.getElementsByClassName(\"reading\")[count].innerHTML =\n"
+                              "    \t\t\t\t\t  this.responseXML.getElementsByTagName('reading')[count].childNodes[0].nodeValue;\n"
+                              "    \t\t\t\t\t}\n"
+                              "    \t\t\t\t}\n"
+                              "    \t\t\t}\n"
+                              "      \t}\n"
+                              "      }\n"
+                              "      document.addEventListener('DOMContentLoaded', function() {\n"
+                              "        DisplayCurrentTime();\n"
+                              "        GetReadings();\n"
+                              "      }, false);\n"
+                              "    </script>\n"
+                              "    <style>\n"
+                              "      body {\n"
+                              "        text-align: center;\n"
+                              "        font-family: \"Trebuchet MS\", Arial;\n"
+                              "      }\n"
+                              "      table {\n"
+                              "        border-collapse: collapse;\n"
+                              "        width:60%;\n"
+                              "        margin-left:auto;\n"
+                              "        margin-right:auto;\n"
+                              "      }\n"
+                              "      th {\n"
+                              "        padding: 16px;\n"
+                              "        background-color: #0043af;\n"
+                              "        color: white;\n"
+                              "      }\n"
+                              "      tr {\n"
+                              "        border: 1px solid #ddd;\n"
+                              "        padding: 16px;\n"
+                              "      }\n"
+                              "      tr:hover {\n"
+                              "        background-color: #bcbcbc;\n"
+                              "      }\n"
+                              "      td {\n"
+                              "        border: none;\n"
+                              "        padding: 16px;\n"
+                              "      }\n"
+                              "      .sensor {\n"
+                              "        color:white;\n"
+                              "        font-weight: bold;\n"
+                              "        background-color: #bcbcbc;\n"
+                              "        padding: 8px;\n"
+                              "      }\n"
+                              "    </style>\n"
+                              "  </head>\n"
+                              "  <body>\n"
+                              "    <h1>ESP32 Weather Station</h1>\n"
+                              "    <h3>Last update: <span id=\"currentTime\"></span></h3>\n"
+                              "    <table>\n"
+                              "      <tr>\n"
+                              "        <th>SENSOR</th>\n"
+                              "        <th>MEASUREMENT</th>\n"
+                              "        <th>VALUE</th>\n"
+                              "      </tr>";
+
+const static char page_02[] = "</table>\n"
+                              "  </body>\n"
+                              "</html>";
+
 void float_to_str(float float_var, char *out_buf){
     enum {BufSize=9};
     char buf[BufSize];
@@ -60,8 +176,136 @@ void float_to_str(float float_var, char *out_buf){
     memcpy(out_buf, buf, BufSize*sizeof(*out_buf));
 }
 
-//---CHIP-CAP-SENSOR----------------------------------------------------------------------------------------------------
+//---WIFI---------------------------------------------------------------------------------------------------------------
+//    event handler for wifi task
+static esp_err_t event_handler(void *ctx, system_event_t *event) {
+    switch(event->event_id) {
+        case SYSTEM_EVENT_STA_START:
+            esp_wifi_connect();
+            break;
+        case SYSTEM_EVENT_STA_GOT_IP:
+            xEventGroupSetBits(wifi_event_group, CONNECTED_BIT);
+            break;
+        case SYSTEM_EVENT_STA_DISCONNECTED:
+            esp_wifi_connect();
+            xEventGroupClearBits(wifi_event_group, CONNECTED_BIT);
+            break;
+        default:
+            break;
+    }
+    return ESP_OK;
+}
 
+static void initialise_wifi(void)
+{
+    tcpip_adapter_init();
+    wifi_event_group = xEventGroupCreate();
+    ESP_ERROR_CHECK( esp_event_loop_init(event_handler, NULL) );
+    wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
+    ESP_ERROR_CHECK(esp_wifi_init(&cfg));
+    ESP_ERROR_CHECK(esp_wifi_set_storage(WIFI_STORAGE_RAM));
+    wifi_config_t wifi_config = {
+            .ap = {
+                    .ssid = WIFI_SSID,
+                    .password = WIFI_PASS,
+                    .max_connection = 4,
+            },
+    };
+    ESP_LOGI(TAG, "Setting WiFi configuration SSID %s...", wifi_config.ap.ssid);
+    ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_AP));
+    ESP_ERROR_CHECK(esp_wifi_set_config(ESP_IF_WIFI_AP, &wifi_config));
+    ESP_ERROR_CHECK(esp_wifi_start());
+}
+
+void add_table_row(char f[], char name[], char measurement[], float value, char units[]){
+    char sensor_value[9];
+    snprintf (sensor_value, 9, "%.2f", value);
+    sprintf(f,"<tr>\n"
+              "        <td><span class=\"sensor\">%s</span></td>\n"
+              "        <td>%s</td>\n"
+              "        <td><span class=\"reading\">%s</span>%s</td>\n"
+              "      </tr>", name, measurement, sensor_value, units);
+
+}
+
+void format_html(char *buffer) {
+    char f[512];
+    add_table_row(f, data.chip_cap.name, "temperature", data.chip_cap.temperature, "*C");
+    sprintf(buffer,"%s%s",page_01,f);
+
+    add_table_row(f, data.chip_cap.name, "humidity", data.chip_cap.humidity, "%");
+    sprintf(buffer,"%s%s",buffer,f);
+
+    add_table_row(f, data.scd30.name, "CO2", data.scd30.co2_value, "PPM");
+    sprintf(buffer,"%s%s",buffer,f);
+
+    add_table_row(f, data.scd30.name, "temperature", data.scd30.temperature, "*C");
+    sprintf(buffer,"%s%s",buffer,f);
+
+    add_table_row(f, data.scd30.name, "humidity", data.scd30.humidity, "%");
+    sprintf(buffer,"%s%s",buffer,f);
+
+    add_table_row(f, data.max31865.name, "Outside temperature", data.max31865.temperature, "*C");
+    sprintf(buffer,"%s%s",buffer,f);
+
+    add_table_row(f, data.mpl115a2.name, "temperature", data.mpl115a2.temperature, "*C");
+    sprintf(buffer,"%s%s",buffer,f);
+
+    add_table_row(f, data.mpl115a2.name, "pressure", data.mpl115a2.pressure, "KPa");
+    sprintf(buffer,"%s%s",buffer,f);
+
+    sprintf(buffer,"%s%s",buffer,page_02);
+
+}
+
+static void http_server_netconn_serve(struct netconn *conn) {
+    struct netbuf *inbuf;
+    char *buf;
+    u16_t buflen;
+    err_t err;
+
+    err = netconn_recv(conn, &inbuf);
+
+    if (err == ERR_OK) {
+        netbuf_data(inbuf, (void**)&buf, &buflen);
+
+        if( buflen >= 5 && strstr(buf,"GET /") != NULL ) {
+            char *str = malloc(4096);
+            if( str ) {
+                format_html(str);
+            }
+            else {
+                printf("*** ERROR allocating buffer.\n");
+                return;
+            }
+            netconn_write(conn, http_html_hdr, sizeof(http_html_hdr)-1, NETCONN_NOCOPY);
+            netconn_write(conn, str, strlen(str), NETCONN_NOCOPY);
+            free(str);
+        }
+
+    }
+    /* Close the connection (server closes in HTTP) */
+    netconn_close(conn);
+    netbuf_delete(inbuf);
+}
+
+//	http server task
+static void http_server(void *pvParameters) {
+    struct netconn *conn, *newconn;
+    err_t err;
+    conn = netconn_new(NETCONN_TCP);
+    netconn_bind(conn, NULL, 80);
+    netconn_listen(conn);
+    do {
+        err = netconn_accept(conn, &newconn);
+        if (err == ERR_OK) {
+            http_server_netconn_serve(newconn);
+            netconn_delete(newconn);
+        }
+    } while(err == ERR_OK);
+    netconn_close(conn);
+    netconn_delete(conn);
+}
 
 
 //---CHIP-CAP-SENSOR----------------------------------------------------------------------------------------------------
@@ -543,10 +787,21 @@ void app_main()
     u8g2_esp32_hal.reset = PIN_RESET;
     u8g2_esp32_hal_init(u8g2_esp32_hal);
 
-    strcpy(data.chip_cap.name, "ChipCap 2-sip");
+    strcpy(data.chip_cap.name, "ChipCap");
     strcpy(data.max31865.name, "MAX31865");
     strcpy(data.scd30.name, "SCD30");
     strcpy(data.mpl115a2.name, "MPL115A2");
+
+    //Initialize NVS
+    esp_err_t ret = nvs_flash_init();
+    if (ret == ESP_ERR_NVS_NO_FREE_PAGES) {
+        ESP_ERROR_CHECK(nvs_flash_erase());
+        ret = nvs_flash_init();
+    }
+    ESP_ERROR_CHECK(ret);
+
+    initialise_wifi();
+
 
     xTaskCreate(display_task /* Pointer to task */,
                 "display_task" /* Name of task */,
@@ -554,6 +809,13 @@ void app_main()
                 (void *)0, /* Pointer as parameter for the task */
                 10, /* Priority of task */
                 NULL /* Handle of created task */);
+
+    xTaskCreate(&http_server,
+                "http server",
+                8000,
+                NULL,
+                5,
+                NULL);
 
     printf("End of main loop \n");
 
