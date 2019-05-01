@@ -6,6 +6,7 @@
 #include "sdkconfig.h"
 #include "/home/milan/Desktop/BP/station/libraries/u8g2_esp32_hal.h"
 #include "/home/milan/esp/esp-idf/components/u8g2/csrc/u8g2.h"
+#include "station.h"
 
 // for I2C
 #define I2C_MASTER_SCL_IO 26               /*!< gpio number for I2C master clock */
@@ -40,7 +41,9 @@
 #define PIN_NUM_DC   -1
 #define PIN_NUM_RST  -1
 
-#define  PIN_NUM_LED 22
+#define PIN_NUM_LED 22
+#define PIN_NUM_MS_IN 34
+#define PIN_NUM_MS_OUT 27
 
 
 
@@ -56,6 +59,10 @@ void float_to_str(float float_var, char *out_buf){
     snprintf (buf, BufSize, "%.2f", float_var);
     memcpy(out_buf, buf, BufSize*sizeof(*out_buf));
 }
+
+//---CHIP-CAP-SENSOR----------------------------------------------------------------------------------------------------
+
+
 
 //---CHIP-CAP-SENSOR----------------------------------------------------------------------------------------------------
 float count_temperature(uint8_t byte_1, uint8_t byte_2) {
@@ -152,7 +159,7 @@ static esp_err_t SCD30_set_measurement_interval(i2c_port_t i2c_num)
     i2c_master_stop(cmd);
     ret = i2c_master_cmd_begin(i2c_num, cmd, 1000 / portTICK_RATE_MS);
     i2c_cmd_link_delete(cmd);
-    printf("INFO:  write sent: %d \n", ret);
+//    printf("INFO:  write sent: %d \n", ret);
 
     return ret;
 }
@@ -171,7 +178,7 @@ static esp_err_t SCD30_start_periodic_measurement(i2c_port_t i2c_num)
     i2c_master_stop(cmd);
     ret = i2c_master_cmd_begin(i2c_num, cmd, 1000 / portTICK_RATE_MS);
     i2c_cmd_link_delete(cmd);
-    printf("INFO:  write sent: %d \n", ret);
+//    printf("INFO:  write sent: %d \n", ret);
 
     return ret;
 }
@@ -232,13 +239,13 @@ static esp_err_t max31865_init(spi_device_handle_t spi) {
     t.tx_data[1]=0xC3;              // initial setup according to datasheet
     t.flags=SPI_TRANS_USE_TXDATA;
     ret=spi_device_transmit(spi, &t);  //Transmit!
-    printf("INFO:    MAX31865 initialized\n");
+//    printf("INFO:    MAX31865 initialized\n");
 
     return ret;
 }
 
 
-double max31865_temperature(uint8_t *rx_read){
+float max31865_temperature(uint8_t *rx_read){
     unsigned int RTDdata;
     unsigned int ADCcode;
     double R;
@@ -260,7 +267,7 @@ double max31865_temperature(uint8_t *rx_read){
 //        printf(" > temp    = %f\n",   temp);
     }
 
-    return temp;
+    return (float) temp;
 }
 
 
@@ -389,13 +396,11 @@ float sensor_pressure_count_pres(uint8_t *pressure_arr, float A0, float B1, floa
 //---DISPLAY-TASK-------------------------------------------------------------------------------------------------------
 static void display_task(void *arg)
 {
-    double outside_temp;
-
-    float temperature, humidity;
     uint8_t humidity_1, humidity_2, temperature_1, temperature_2;
 
     enum {BufSize=9};
     char buf[BufSize];
+
     //---DISPLAY---
     u8g2_t u8g2; // a structure which will contain all the data for one display
     u8g2_Setup_uc1608_240x128_f(&u8g2, U8G2_R0, u8g2_esp32_spi_byte_cb, u8g2_esp32_gpio_and_delay_cb);  // init u8g2 structure
@@ -442,69 +447,74 @@ static void display_task(void *arg)
     //---SCD30---
     size_t co2_data_length = 18;
     uint8_t *co2_data_arr = (uint8_t *)malloc(co2_data_length);
-    uint32_t task_idx = (uint32_t)arg;
-    int co2;
-    float temp_scd30, hum_scd30;
 
     ESP_ERROR_CHECK(SCD30_set_measurement_interval(I2C_MASTER_NUM)); // set measurement interval to 2s
     vTaskDelay(1000 / portTICK_RATE_MS); // wait 1000ms after init
     ESP_ERROR_CHECK(SCD30_start_periodic_measurement(I2C_MASTER_NUM)); // start periodic measurements
     vTaskDelay(1000 / portTICK_RATE_MS); // wait 1000ms after init
 
+    //---motion_sensor---
+    gpio_set_direction(PIN_NUM_MS_IN, GPIO_MODE_INPUT);
+    gpio_set_direction(PIN_NUM_MS_OUT, GPIO_MODE_OUTPUT);
+    int backlight_level = 0;
+
     while(1) {
         vTaskDelay(2000 / portTICK_RATE_MS);
 
+        backlight_level = gpio_get_level(PIN_NUM_MS_IN);
+        gpio_set_level(PIN_NUM_MS_OUT, (uint32_t) backlight_level);
+
         ESP_ERROR_CHECK(chip_cap_read_hum_temp(I2C_MASTER_NUM, &humidity_1, &humidity_2, &temperature_1, &temperature_2));
-        temperature = count_temperature(temperature_1, temperature_2);
-        humidity = count_humidity(humidity_1, humidity_2);
-        printf("CHIP_CAP ---> Humidity: %2.2f, Temperature:  %2.2f \n", humidity, temperature);
+        data.chip_cap.temperature = count_temperature(temperature_1, temperature_2);
+        data.chip_cap.humidity = count_humidity(humidity_1, humidity_2);
+        printf("CHIP_CAP ---> Humidity: %2.2f, Temperature:  %2.2f \n", data.chip_cap.humidity, data.chip_cap.temperature);
 
         uint8_t received_data[9];
         ESP_ERROR_CHECK(max31865_read_output(spi2, received_data));
-        outside_temp = max31865_temperature(received_data);
-        printf("MAX31865 --> Temperature: %2.2f \n", outside_temp);
+        data.max31865.temperature = max31865_temperature(received_data);
+        printf("MAX31865 --> Temperature: %2.2f \n", data.max31865.temperature);
 
         ESP_ERROR_CHECK(sensor_pressure_read_values(I2C_MASTER_NUM, pressure_arr, pressure_arr_size));
-        float pressure = sensor_pressure_count_pres(pressure_arr, A0, B1, B2, C12);
-        float cTemp = sensor_pressure_count_temp(pressure_arr);
-        printf("MPL115A2 --> Pressure: %.2f kPa, Temperature: %.2f C \n", pressure, cTemp);
+        data.mpl115a2.pressure = sensor_pressure_count_pres(pressure_arr, A0, B1, B2, C12);
+        data.mpl115a2.temperature = sensor_pressure_count_temp(pressure_arr);
+        printf("MPL115A2 --> Pressure: %.2f kPa, Temperature: %.2f C \n", data.mpl115a2.pressure, data.mpl115a2.temperature);
 
         ESP_ERROR_CHECK(SCD30_read_measurement_buffer(I2C_MASTER_NUM, co2_data_arr, co2_data_length));
-        co2 = count_co2(co2_data_arr);
-        temp_scd30 = count_temp(co2_data_arr);
-        hum_scd30 = count_hum(co2_data_arr);
-        printf("SCD30 --> CO2: %d PPM, Temperature: %.2f , Humidity: %.2f \n", co2, temp_scd30, hum_scd30);
+        data.scd30.co2_value = count_co2(co2_data_arr);
+        data.scd30.temperature = count_temp(co2_data_arr);
+        data.scd30.humidity = count_hum(co2_data_arr);
+        printf("SCD30 --> CO2: %d PPM, Temperature: %.2f , Humidity: %.2f \n", data.scd30.co2_value, data.scd30.temperature, data.scd30.humidity);
         printf("\n");
 
         u8g2_ClearBuffer(&u8g2);
         u8g2_SetFont(&u8g2, u8g2_font_timB10_tr);
 
         u8g2_DrawStr(&u8g2, 0,15,"ChipCap: H:");
-        float_to_str(humidity, buf);
+        float_to_str(data.chip_cap.humidity, buf);
         u8g2_DrawStr(&u8g2, 80, 15, buf);
         u8g2_DrawStr(&u8g2, 120,15,"T:");
-        float_to_str(temperature, buf);
+        float_to_str(data.chip_cap.temperature, buf);
         u8g2_DrawStr(&u8g2, 140, 15, buf);
 
         u8g2_DrawStr(&u8g2, 0,30,"MAX31865: T:");
-        float_to_str(outside_temp, buf);
+        float_to_str(data.max31865.temperature, buf);
         u8g2_DrawStr(&u8g2, 100, 30, buf);
 
         u8g2_DrawStr(&u8g2, 0,45,"MPL115A2: P:");
-        float_to_str(pressure, buf);
+        float_to_str(data.mpl115a2.pressure, buf);
         u8g2_DrawStr(&u8g2, 100, 45, buf);
         u8g2_DrawStr(&u8g2, 140,45,"T:");
-        float_to_str(cTemp, buf);
+        float_to_str(data.mpl115a2.temperature, buf);
         u8g2_DrawStr(&u8g2, 160, 45, buf);
 
         u8g2_DrawStr(&u8g2, 0,60,"SCD30: C02:");
-        float_to_str(co2, buf);
+        float_to_str(data.scd30.co2_value, buf);
         u8g2_DrawStr(&u8g2, 100, 60, buf);
         u8g2_DrawStr(&u8g2, 0,75,"SCD30: T:");
-        float_to_str(temp_scd30, buf);
+        float_to_str(data.scd30.temperature, buf);
         u8g2_DrawStr(&u8g2, 100, 75, buf);
         u8g2_DrawStr(&u8g2, 140,75,"H:");
-        float_to_str(hum_scd30, buf);
+        float_to_str(data.scd30.humidity, buf);
         u8g2_DrawStr(&u8g2, 160, 75, buf);
 
 
@@ -532,6 +542,11 @@ void app_main()
     u8g2_esp32_hal.reset = PIN_RESET;
     u8g2_esp32_hal_init(u8g2_esp32_hal);
 
+    strcpy(data.chip_cap.name, "ChipCap 2-sip");
+    strcpy(data.max31865.name, "MAX31865");
+    strcpy(data.scd30.name, "SCD30");
+    strcpy(data.mpl115a2.name, "MPL115A2");
+
     xTaskCreate(display_task /* Pointer to task */,
                 "display_task" /* Name of task */,
                 1024 * 100 /* Stack depth in bytes */,
@@ -542,47 +557,3 @@ void app_main()
     printf("End of main loop \n");
 
 }
-
-
-
-
-
-
-
-
-//static void i2c_co2_task(void *arg)
-//{
-//    int ret;
-//    int cnt = 0;
-//    size_t co2_data_length = 6;
-//    uint8_t *co2_data_arr = (uint8_t *)malloc(co2_data_length);
-//    uint32_t task_idx = (uint32_t)arg;
-//    int co2;
-//
-//    ESP_ERROR_CHECK(SCD30_set_measurement_interval(I2C_MASTER_NUM)); // set measurement interval to 2s
-//    vTaskDelay(1000 / portTICK_RATE_MS); // wait 1000ms after init
-//    ESP_ERROR_CHECK(SCD30_start_periodic_measurement(I2C_MASTER_NUM)); // start periodic measurements
-//    vTaskDelay(1000 / portTICK_RATE_MS); // wait 1000ms after init
-//
-//
-//    while (1) {
-//        ESP_LOGI(TAG, "TASK[%d] test cnt: %d", task_idx, cnt++);
-//        ret = SCD30_read_measurement_buffer(I2C_MASTER_NUM, co2_data_arr, co2_data_length);
-//
-//        if (ret == ESP_ERR_TIMEOUT) {
-//            ESP_LOGE(TAG, "I2C Timeout");
-//        } else if (ret == ESP_OK) {
-//            co2 = count_co2(co2_data_arr);
-//            printf("INFO[%d]  CO2 value is: %d \n", task_idx, co2);
-//
-//            if(xQueueSendToBack(demo_queue,&co2,1000/portTICK_RATE_MS)!=pdTRUE) {
-//                printf("WARNING  Fail to queue value %d", co2);
-//            }
-//
-//        } else {
-//            ESP_LOGW(TAG, "%s: No ack, sensor not connected...skip...", esp_err_to_name(ret));
-//        }
-//        vTaskDelay(MEASUREMENT_DELAY / portTICK_RATE_MS);
-//    }
-//    vTaskDelete(NULL);
-//}
