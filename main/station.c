@@ -290,7 +290,7 @@ static void http_server_netconn_serve(struct netconn *conn) {
 }
 
 //	http server task
-static void http_server(void *pvParameters) {
+static void http_server_task() {
     struct netconn *conn, *newconn;
     err_t err;
     conn = netconn_new(NETCONN_TCP);
@@ -638,7 +638,7 @@ float sensor_pressure_count_pres(uint8_t *pressure_arr, float A0, float B1, floa
 
 
 //---DISPLAY-TASK-------------------------------------------------------------------------------------------------------
-static void display_task(void *arg)
+static void display_task()
 {
 //    enum {BufSize=9};
     char buf[9];
@@ -698,16 +698,8 @@ static void display_task(void *arg)
     ESP_ERROR_CHECK(SCD30_start_periodic_measurement(I2C_MASTER_NUM)); // start periodic measurements
     vTaskDelay(1000 / portTICK_RATE_MS); // wait 1000ms after init
 
-    //---motion_sensor---
-    gpio_set_direction(PIN_NUM_MS_IN, GPIO_MODE_INPUT);
-    gpio_set_direction(PIN_NUM_MS_OUT, GPIO_MODE_OUTPUT);
-    int backlight_level = 0;
-
     while(1) {
         vTaskDelay(2000 / portTICK_RATE_MS);
-
-        backlight_level = gpio_get_level(PIN_NUM_MS_IN);
-        gpio_set_level(PIN_NUM_MS_OUT, (uint32_t) backlight_level);
 
         ESP_ERROR_CHECK(chip_cap_read_hum_temp(I2C_MASTER_NUM, chip_cap_data_arr, chip_cap_data_length));
         data.chip_cap.temperature = count_temperature(chip_cap_data_arr[2], chip_cap_data_arr[3]);
@@ -769,6 +761,23 @@ static void display_task(void *arg)
     vTaskDelete(NULL);
 }
 
+//---BACKLIGHT-TASK-----------------------------------------------------------------------------------------------------
+static void backlight_task()
+{
+    //---motion_sensor---
+    gpio_set_direction(PIN_NUM_MS_IN, GPIO_MODE_INPUT);
+    gpio_set_direction(PIN_NUM_MS_OUT, GPIO_MODE_OUTPUT);
+    int backlight_level = 0;
+
+    while(1) {
+        vTaskDelay(200 / portTICK_RATE_MS);
+        backlight_level = gpio_get_level(PIN_NUM_MS_IN);
+        gpio_set_level(PIN_NUM_MS_OUT, (uint32_t) backlight_level);
+//        printf("Backlight level %d \n", backlight_level);
+    }
+
+    vTaskDelete(NULL);
+}
 
 
 void app_main()
@@ -810,9 +819,16 @@ void app_main()
                 10, /* Priority of task */
                 NULL /* Handle of created task */);
 
-    xTaskCreate(&http_server,
+    xTaskCreate(http_server_task,
                 "http server",
                 8000,
+                NULL,
+                5,
+                NULL);
+
+    xTaskCreate(backlight_task,
+                "backlight_task",
+                2000,
                 NULL,
                 5,
                 NULL);
