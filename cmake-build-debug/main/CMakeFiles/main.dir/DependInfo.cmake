@@ -27,6 +27,7 @@ set(CMAKE_C_TARGET_INCLUDE_PATH
   "/home/milan/esp/esp-idf/components/driver/include"
   "/home/milan/esp/esp-idf/components/esp_ringbuf/include"
   "/home/milan/esp/esp-idf/components/sdmmc/include"
+  "../components/max31865_lib/include"
   "../components/mpl115a2_lib/include"
   "../components/scd30_lib/include"
   "../components/u8g2_esp32_hal/include"

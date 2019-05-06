@@ -1,16 +1,14 @@
-#ifndef _MPL115A2_LIB_H_
-#define _MPL115A2_LIB_H_
+#ifndef _MAX31865_LIB_H_
+#define _MAX31865_LIB_H_
 
 #include "esp_err.h"
-#include "driver/i2c.h"
+#include "driver/spi_master.h"
 
+//---MAX31865-SENSOR----------------------------------------------------------------------------------------------------
+esp_err_t max31865_read_output(spi_device_handle_t spi, uint8_t *received_data);
+esp_err_t max31865_init(spi_device_handle_t spi);
+float max31865_temperature(uint8_t *rx_read);
 
-//---PRESSURE-SENSOR----------------------------------------------------------------------------------------------------
-esp_err_t sensor_pressure_read_values(i2c_port_t i2c_num, uint8_t *data_rd, size_t size);
-esp_err_t sensor_pressure_read_coefficients(i2c_port_t i2c_num, uint8_t *data_rd, size_t size);
-void sensor_pressure_count_coefficients(float *A0, float *B1, float *B2, float *C12, uint8_t *pressure_coeffs_arr);
-float sensor_pressure_count_temp(uint8_t *pressure_arr);
-float sensor_pressure_count_pres(uint8_t *pressure_arr, float A0, float B1, float B2, float C12);
 
 #endif
 

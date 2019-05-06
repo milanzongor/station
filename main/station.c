@@ -22,8 +22,7 @@
 #include <stdio.h>
 #include <math.h>
 #include <coap/str.h>
-#include "esp_log.h"
-#include "driver/i2c.h"
+
 #include "sdkconfig.h"
 #include "/home/milan/Desktop/BP/station/libraries/u8g2_esp32_hal.h"
 #include "/home/milan/esp/esp-idf/components/u8g2/csrc/u8g2.h"
@@ -32,6 +31,7 @@
 #include "chip_cap_2_lib.h"
 #include "scd30_lib.h"
 #include "mpl115a2_lib.h"
+#include "max31865_lib.h"
 
 // for I2C
 #define I2C_MASTER_SCL_IO 26               /*!< gpio number for I2C master clock */
@@ -76,9 +76,9 @@ static EventGroupHandle_t wifi_event_group;
 const int CONNECTED_BIT = BIT0;
 
 
-static uint8_t max31865_read[] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}; // 9 bytes to read
-static size_t max31865_read_length = sizeof(max31865_read); // equals 9
-static double Rref = 360.19; // reference resistor for PT100
+//static uint8_t max31865_read[] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}; // 9 bytes to read
+//static size_t max31865_read_length = sizeof(max31865_read); // equals 9
+//static double Rref = 360.19; // reference resistor for PT100
 
 static const char *TAG = "Station_tag";
 
@@ -309,67 +309,6 @@ static void http_server_task() {
     } while(err == ERR_OK);
     netconn_close(conn);
     netconn_delete(conn);
-}
-
-
-//---MAX31865-SENSOR----------------------------------------------------------------------------------------------------
-static esp_err_t max31865_read_output(spi_device_handle_t spi, uint8_t *received_data) {
-    esp_err_t ret;
-
-    spi_transaction_t t;
-    memset(&t, 0, sizeof(t));       //Zero out the transaction
-    t.length = max31865_read_length*8;                 //Len is in bytes, transaction length is in bits.
-    t.tx_buffer = &max31865_read;               //Data
-    t.flags = SPI_TRANS_USE_RXDATA;
-    ret=spi_device_transmit(spi, &t);  //Transmit!
-    memcpy(received_data, t.rx_data, max31865_read_length*sizeof(*received_data));
-    if (received_data == NULL) {
-        printf("ERROR:  Just NULL received \n");
-    }
-
-    return ret;
-}
-
-
-static esp_err_t max31865_init(spi_device_handle_t spi) {
-    esp_err_t ret;
-
-    spi_transaction_t t;
-    memset(&t, 0, sizeof(t));       //Zero out the transaction
-    t.length=2*8;                     //Command is 8 bits
-    t.tx_data[0]=0x80;              // address to set initial values
-    t.tx_data[1]=0xC3;              // initial setup according to datasheet
-    t.flags=SPI_TRANS_USE_TXDATA;
-    ret=spi_device_transmit(spi, &t);  //Transmit!
-//    printf("INFO:    MAX31865 initialized\n");
-
-    return ret;
-}
-
-
-float max31865_temperature(uint8_t *rx_read){
-    unsigned int RTDdata;
-    unsigned int ADCcode;
-    double R;
-    double temp = 0.0;
-
-    RTDdata = rx_read[2] << 8 | rx_read[3]; // MSB + LSB
-
-    if (RTDdata & 1) {
-        printf(" > Sensor connection fault");
-
-    } else {
-        ADCcode = RTDdata >> 1;
-        R       = (double)ADCcode * Rref / 32768;
-        temp    = ((double)ADCcode / 32) - 256;
-
-//        printf(" > RTDdata = %04x\n", RTDdata);
-//        printf(" > ADCcode = %d\n",   ADCcode);
-//        printf(" > R       = %f\n",   R);
-//        printf(" > temp    = %f\n",   temp);
-    }
-
-    return (float) temp;
 }
 
 

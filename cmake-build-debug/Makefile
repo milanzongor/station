@@ -813,6 +813,19 @@ chip_cap_2_lib/fast:
 .PHONY : chip_cap_2_lib/fast
 
 #=============================================================================
+# Target rules for targets named max31865_lib
+
+# Build rule for target.
+max31865_lib: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 max31865_lib
+.PHONY : max31865_lib
+
+# fast build rule for target.
+max31865_lib/fast:
+	$(MAKE) -f max31865_lib/CMakeFiles/max31865_lib.dir/build.make max31865_lib/CMakeFiles/max31865_lib.dir/build
+.PHONY : max31865_lib/fast
+
+#=============================================================================
 # Target rules for targets named mpl115a2_lib
 
 # Build rule for target.
@@ -1304,6 +1317,7 @@ help:
 	@echo "... cxx"
 	@echo "... sdmmc"
 	@echo "... chip_cap_2_lib"
+	@echo "... max31865_lib"
 	@echo "... mpl115a2_lib"
 	@echo "... scd30_lib"
 	@echo "... u8g2_esp32_hal"

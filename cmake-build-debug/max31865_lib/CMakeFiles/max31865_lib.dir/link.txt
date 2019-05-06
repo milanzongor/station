@@ -1,0 +1,2 @@
+/home/milan/esp/xtensa-esp32-elf/bin/xtensa-esp32-elf-ar qc libmax31865_lib.a  CMakeFiles/max31865_lib.dir/max31865_lib.c.obj
+/home/milan/esp/xtensa-esp32-elf/bin/xtensa-esp32-elf-ranlib libmax31865_lib.a
