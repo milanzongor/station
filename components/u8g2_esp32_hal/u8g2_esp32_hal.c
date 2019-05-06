@@ -54,7 +54,7 @@ uint8_t u8g2_esp32_spi_byte_cb(u8x8_t *u8x8, uint8_t msg, uint8_t arg_int, void 
 		  bus_config.quadwp_io_num = -1; // Not used
 		  bus_config.quadhd_io_num = -1; // Not used
 		  //ESP_LOGI(TAG, "... Initializing bus.");
-		  ESP_ERROR_CHECK(spi_bus_initialize(VSPI_HOST, &bus_config, 1)); // zongomil changed 1 to 0 DMA channel
+		  ESP_ERROR_CHECK(spi_bus_initialize(VSPI_HOST, &bus_config, 1));
 
 		  spi_device_interface_config_t dev_config;
 		  dev_config.address_bits     = 0;
@@ -64,7 +64,7 @@ uint8_t u8g2_esp32_spi_byte_cb(u8x8_t *u8x8, uint8_t msg, uint8_t arg_int, void 
 		  dev_config.duty_cycle_pos   = 0;
 		  dev_config.cs_ena_posttrans = 0;
 		  dev_config.cs_ena_pretrans  = 0;
-		  dev_config.clock_speed_hz   = 100000;
+		  dev_config.clock_speed_hz   = 10000;
 		  dev_config.spics_io_num     = u8g2_esp32_hal.cs;
 		  dev_config.flags            = SPI_DEVICE_POSITIVE_CS;
 		  dev_config.queue_size       = 200;
