@@ -787,6 +787,58 @@ cxx/fast:
 .PHONY : cxx/fast
 
 #=============================================================================
+# Target rules for targets named sdmmc
+
+# Build rule for target.
+sdmmc: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 sdmmc
+.PHONY : sdmmc
+
+# fast build rule for target.
+sdmmc/fast:
+	$(MAKE) -f sdmmc/CMakeFiles/sdmmc.dir/build.make sdmmc/CMakeFiles/sdmmc.dir/build
+.PHONY : sdmmc/fast
+
+#=============================================================================
+# Target rules for targets named chip_cap_2_lib
+
+# Build rule for target.
+chip_cap_2_lib: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 chip_cap_2_lib
+.PHONY : chip_cap_2_lib
+
+# fast build rule for target.
+chip_cap_2_lib/fast:
+	$(MAKE) -f chip_cap_2_lib/CMakeFiles/chip_cap_2_lib.dir/build.make chip_cap_2_lib/CMakeFiles/chip_cap_2_lib.dir/build
+.PHONY : chip_cap_2_lib/fast
+
+#=============================================================================
+# Target rules for targets named scd30_lib
+
+# Build rule for target.
+scd30_lib: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 scd30_lib
+.PHONY : scd30_lib
+
+# fast build rule for target.
+scd30_lib/fast:
+	$(MAKE) -f scd30_lib/CMakeFiles/scd30_lib.dir/build.make scd30_lib/CMakeFiles/scd30_lib.dir/build
+.PHONY : scd30_lib/fast
+
+#=============================================================================
+# Target rules for targets named u8g2_esp32_hal
+
+# Build rule for target.
+u8g2_esp32_hal: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 u8g2_esp32_hal
+.PHONY : u8g2_esp32_hal
+
+# fast build rule for target.
+u8g2_esp32_hal/fast:
+	$(MAKE) -f u8g2_esp32_hal/CMakeFiles/u8g2_esp32_hal.dir/build.make u8g2_esp32_hal/CMakeFiles/u8g2_esp32_hal.dir/build
+.PHONY : u8g2_esp32_hal/fast
+
+#=============================================================================
 # Target rules for targets named asio
 
 # Build rule for target.
@@ -954,19 +1006,6 @@ wear_levelling: cmake_check_build_system
 wear_levelling/fast:
 	$(MAKE) -f wear_levelling/CMakeFiles/wear_levelling.dir/build.make wear_levelling/CMakeFiles/wear_levelling.dir/build
 .PHONY : wear_levelling/fast
-
-#=============================================================================
-# Target rules for targets named sdmmc
-
-# Build rule for target.
-sdmmc: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 sdmmc
-.PHONY : sdmmc
-
-# fast build rule for target.
-sdmmc/fast:
-	$(MAKE) -f sdmmc/CMakeFiles/sdmmc.dir/build.make sdmmc/CMakeFiles/sdmmc.dir/build
-.PHONY : sdmmc/fast
 
 #=============================================================================
 # Target rules for targets named fatfs
@@ -1250,6 +1289,10 @@ help:
 	@echo "... esp32_sections_info"
 	@echo "... esp32_linker_script"
 	@echo "... cxx"
+	@echo "... sdmmc"
+	@echo "... chip_cap_2_lib"
+	@echo "... scd30_lib"
+	@echo "... u8g2_esp32_hal"
 	@echo "... asio"
 	@echo "... jsmn"
 	@echo "... coap"
@@ -1263,7 +1306,6 @@ help:
 	@echo "... esp_https_ota"
 	@echo "... expat"
 	@echo "... wear_levelling"
-	@echo "... sdmmc"
 	@echo "... fatfs"
 	@echo "... freemodbus"
 	@echo "... json"

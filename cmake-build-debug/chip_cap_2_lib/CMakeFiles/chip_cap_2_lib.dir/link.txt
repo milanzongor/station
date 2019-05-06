@@ -1,0 +1,2 @@
+/home/milan/esp/xtensa-esp32-elf/bin/xtensa-esp32-elf-ar qc libchip_cap_2_lib.a  CMakeFiles/chip_cap_2_lib.dir/chip_cap_2_lib.c.obj
+/home/milan/esp/xtensa-esp32-elf/bin/xtensa-esp32-elf-ranlib libchip_cap_2_lib.a

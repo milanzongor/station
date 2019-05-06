@@ -108,6 +108,10 @@ station.elf: smartconfig_ack/libsmartconfig_ack.a
 station.elf: wpa_supplicant/libwpa_supplicant.a
 station.elf: esp32/libesp32.a
 station.elf: cxx/libcxx.a
+station.elf: sdmmc/libsdmmc.a
+station.elf: chip_cap_2_lib/libchip_cap_2_lib.a
+station.elf: scd30_lib/libscd30_lib.a
+station.elf: u8g2_esp32_hal/libu8g2_esp32_hal.a
 station.elf: asio/libasio.a
 station.elf: jsmn/libjsmn.a
 station.elf: coap/libcoap.a
@@ -121,7 +125,6 @@ station.elf: esp_http_server/libesp_http_server.a
 station.elf: esp_https_ota/libesp_https_ota.a
 station.elf: expat/libexpat.a
 station.elf: wear_levelling/libwear_levelling.a
-station.elf: sdmmc/libsdmmc.a
 station.elf: fatfs/libfatfs.a
 station.elf: freemodbus/libfreemodbus.a
 station.elf: json/libjson.a
