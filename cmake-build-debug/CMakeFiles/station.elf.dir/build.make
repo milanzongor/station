@@ -110,6 +110,7 @@ station.elf: esp32/libesp32.a
 station.elf: cxx/libcxx.a
 station.elf: sdmmc/libsdmmc.a
 station.elf: chip_cap_2_lib/libchip_cap_2_lib.a
+station.elf: mpl115a2_lib/libmpl115a2_lib.a
 station.elf: scd30_lib/libscd30_lib.a
 station.elf: u8g2_esp32_hal/libu8g2_esp32_hal.a
 station.elf: asio/libasio.a

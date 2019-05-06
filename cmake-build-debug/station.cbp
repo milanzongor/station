@@ -5,7 +5,7 @@
 		<Option title="station"/>
 		<Option makefile_is_custom="1"/>
 		<Option compiler="gcc"/>
-		<Option virtualFolders="CMake Files\;CMake Files\..\;CMake Files\..\..\;CMake Files\..\..\..\;CMake Files\..\..\..\esp\;CMake Files\..\..\..\esp\esp-idf\;CMake Files\..\..\..\esp\esp-idf\tools\;CMake Files\..\..\..\esp\esp-idf\tools\cmake\;CMake Files\..\..\..\esp\esp-idf\tools\cmake\third_party\;CMake Files\..\..\..\esp\esp-idf\tools\kconfig_new\;CMake Files\..\..\..\esp\esp-idf\.git\;CMake Files\..\..\..\esp\esp-idf\.git\refs\;CMake Files\..\..\..\esp\esp-idf\.git\refs\heads\;CMake Files\..\..\..\esp\esp-idf\.git\modules\;CMake Files\..\..\..\esp\esp-idf\.git\modules\components\;CMake Files\..\..\..\esp\esp-idf\.git\modules\components\asio\;CMake Files\..\..\..\esp\esp-idf\.git\modules\components\asio\asio\;CMake Files\..\..\..\esp\esp-idf\.git\modules\components\aws_iot\;CMake Files\..\..\..\esp\esp-idf\.git\modules\components\aws_iot\aws-iot-device-sdk-embedded-C\;CMake Files\..\..\..\esp\esp-idf\.git\modules\components\bt\;CMake Files\..\..\..\esp\esp-idf\.git\modules\components\bt\lib\;CMake Files\..\..\..\esp\esp-idf\.git\modules\components\coap\;CMake Files\..\..\..\esp\esp-idf\.git\modules\components\coap\libcoap\;CMake Files\..\..\..\esp\esp-idf\.git\modules\components\esp32\;CMake Files\..\..\..\esp\esp-idf\.git\modules\components\esp32\lib\;CMake Files\..\..\..\esp\esp-idf\.git\modules\components\esptool_py\;CMake Files\..\..\..\esp\esp-idf\.git\modules\components\esptool_py\esptool\;CMake Files\..\..\..\esp\esp-idf\.git\modules\components\expat\;CMake Files\..\..\..\esp\esp-idf\.git\modules\components\expat\expat\;CMake Files\..\..\..\esp\esp-idf\.git\modules\components\json\;CMake Files\..\..\..\esp\esp-idf\.git\modules\components\json\cJSON\;CMake Files\..\..\..\esp\esp-idf\.git\modules\components\libsodium\;CMake Files\..\..\..\esp\esp-idf\.git\modules\components\libsodium\libsodium\;CMake Files\..\..\..\esp\esp-idf\.git\modules\components\lwip\;CMake Files\..\..\..\esp\esp-idf\.git\modules\components\lwip\lwip\;CMake Files\..\..\..\esp\esp-idf\.git\modules\components\mbedtls\;CMake Files\..\..\..\esp\esp-idf\.git\modules\components\mbedtls\mbedtls\;CMake Files\..\..\..\esp\esp-idf\.git\modules\components\micro-ecc\;CMake Files\..\..\..\esp\esp-idf\.git\modules\components\micro-ecc\micro-ecc\;CMake Files\..\..\..\esp\esp-idf\.git\modules\components\mqtt\;CMake Files\..\..\..\esp\esp-idf\.git\modules\components\mqtt\esp-mqtt\;CMake Files\..\..\..\esp\esp-idf\.git\modules\components\nghttp\;CMake Files\..\..\..\esp\esp-idf\.git\modules\components\nghttp\nghttp2\;CMake Files\..\..\..\esp\esp-idf\.git\modules\components\protobuf-c\;CMake Files\..\..\..\esp\esp-idf\.git\modules\components\protobuf-c\protobuf-c\;CMake Files\..\..\..\esp\esp-idf\.git\modules\components\spiffs\;CMake Files\..\..\..\esp\esp-idf\.git\modules\components\spiffs\spiffs\;CMake Files\..\..\..\esp\esp-idf\.git\modules\components\unity\;CMake Files\..\..\..\esp\esp-idf\.git\modules\components\unity\unity\;CMake Files\..\..\..\esp\esp-idf\components\;CMake Files\..\..\..\esp\esp-idf\components\partition_table\;CMake Files\..\..\..\esp\esp-idf\components\app_update\;CMake Files\..\..\..\esp\esp-idf\components\bootloader\;CMake Files\..\..\..\esp\esp-idf\components\esptool_py\;CMake Files\..\..\..\esp\esp-idf\components\esptool_py\esptool\;CMake Files\..\..\..\esp\esp-idf\components\log\;CMake Files\..\..\..\esp\esp-idf\components\heap\;CMake Files\..\..\..\esp\esp-idf\components\app_trace\;CMake Files\..\..\..\esp\esp-idf\components\freertos\;CMake Files\..\..\..\esp\esp-idf\components\vfs\;CMake Files\..\..\..\esp\esp-idf\components\driver\;CMake Files\..\..\..\esp\esp-idf\components\esp_event\;CMake Files\..\..\..\esp\esp-idf\components\ethernet\;CMake Files\..\..\..\esp\esp-idf\components\lwip\;CMake Files\..\..\..\esp\esp-idf\components\lwip\lwip\;CMake Files\..\..\..\esp\esp-idf\components\tcpip_adapter\;CMake Files\..\..\..\esp\esp-idf\components\spi_flash\;CMake Files\..\..\..\esp\esp-idf\components\mbedtls\;CMake Files\..\..\..\esp\esp-idf\components\mbedtls\mbedtls\;CMake Files\..\..\..\esp\esp-idf\components\nvs_flash\;CMake Files\..\..\..\esp\esp-idf\components\pthread\;CMake Files\..\..\..\esp\esp-idf\components\esp32\;CMake Files\..\..\..\esp\esp-idf\components\esp32\lib\;CMake Files\..\..\..\esp\esp-idf\components\aws_iot\;CMake Files\..\..\..\esp\esp-idf\components\aws_iot\aws-iot-device-sdk-embedded-C\;CMake Files\..\..\..\esp\esp-idf\components\bt\;CMake Files\..\..\..\esp\esp-idf\components\bt\lib\;CMake Files\..\..\..\esp\esp-idf\components\esp_adc_cal\;CMake Files\..\..\..\esp\esp-idf\components\esp_http_client\;CMake Files\..\..\..\esp\esp-idf\components\esp_http_server\;CMake Files\..\..\..\esp\esp-idf\components\wear_levelling\;CMake Files\..\..\..\esp\esp-idf\components\fatfs\;CMake Files\..\..\..\esp\esp-idf\components\freemodbus\;CMake Files\..\..\..\esp\esp-idf\components\libsodium\;CMake Files\..\..\..\esp\esp-idf\components\libsodium\libsodium\;CMake Files\..\..\..\esp\esp-idf\components\mdns\;CMake Files\..\..\..\esp\esp-idf\components\mqtt\;CMake Files\..\..\..\esp\esp-idf\components\mqtt\esp-mqtt\;CMake Files\..\..\..\esp\esp-idf\components\openssl\;CMake Files\..\..\..\esp\esp-idf\components\spiffs\;CMake Files\..\..\..\esp\esp-idf\components\spiffs\spiffs\;CMake Files\..\..\..\esp\esp-idf\components\unity\;CMake Files\..\..\..\esp\esp-idf\components\unity\unity\;CMake Files\..\..\..\esp\esp-idf\components\asio\;CMake Files\..\..\..\esp\esp-idf\components\asio\asio\;CMake Files\..\..\..\esp\esp-idf\components\coap\;CMake Files\..\..\..\esp\esp-idf\components\coap\libcoap\;CMake Files\..\..\..\esp\esp-idf\components\expat\;CMake Files\..\..\..\esp\esp-idf\components\expat\expat\;CMake Files\..\..\..\esp\esp-idf\components\json\;CMake Files\..\..\..\esp\esp-idf\components\json\cJSON\;CMake Files\..\..\..\esp\esp-idf\components\micro-ecc\;CMake Files\..\..\..\esp\esp-idf\components\micro-ecc\micro-ecc\;CMake Files\..\..\..\esp\esp-idf\components\nghttp\;CMake Files\..\..\..\esp\esp-idf\components\nghttp\nghttp2\;CMake Files\..\..\..\esp\esp-idf\components\protobuf-c\;CMake Files\..\..\..\esp\esp-idf\components\protobuf-c\protobuf-c\;CMake Files\..\..\..\esp\esp-idf\components\soc\;CMake Files\..\..\..\esp\esp-idf\components\soc\esp32\;CMake Files\..\..\..\esp\esp-idf\components\xtensa-debug-module\;CMake Files\..\..\..\esp\esp-idf\components\newlib\;CMake Files\..\..\..\esp\esp-idf\components\esp_ringbuf\;CMake Files\..\..\..\esp\esp-idf\components\bootloader_support\;CMake Files\..\..\..\esp\esp-idf\components\smartconfig_ack\;CMake Files\..\..\..\esp\esp-idf\components\wpa_supplicant\;CMake Files\..\..\..\esp\esp-idf\components\cxx\;CMake Files\..\..\..\esp\esp-idf\components\sdmmc\;CMake Files\..\..\..\esp\esp-idf\components\jsmn\;CMake Files\..\..\..\esp\esp-idf\components\console\;CMake Files\..\..\..\esp\esp-idf\components\esp-tls\;CMake Files\..\..\..\esp\esp-idf\components\tcp_transport\;CMake Files\..\..\..\esp\esp-idf\components\esp_https_ota\;CMake Files\..\..\..\esp\esp-idf\components\idf_test\;CMake Files\..\..\..\esp\esp-idf\components\protocomm\;CMake Files\..\..\..\esp\esp-idf\components\u8g2\;CMake Files\..\..\..\esp\esp-idf\components\ulp\;CMake Files\..\..\..\esp\esp-idf\components\wifi_provisioning\;CMake Files\cmake-build-debug\;CMake Files\cmake-build-debug\mconf-idf-prefix\;CMake Files\cmake-build-debug\mconf-idf-prefix\tmp\;CMake Files\cmake-build-debug\config\;CMake Files\cmake-build-debug\bootloader-prefix\;CMake Files\cmake-build-debug\bootloader-prefix\tmp\;CMake Files\.git\;CMake Files\.git\refs\;CMake Files\.git\refs\heads\;CMake Files\components\;CMake Files\components\chip_cap_2_lib\;CMake Files\components\scd30_lib\;CMake Files\components\u8g2_esp32_hal\;CMake Files\main\;"/>
+		<Option virtualFolders="CMake Files\;CMake Files\..\;CMake Files\..\..\;CMake Files\..\..\..\;CMake Files\..\..\..\esp\;CMake Files\..\..\..\esp\esp-idf\;CMake Files\..\..\..\esp\esp-idf\tools\;CMake Files\..\..\..\esp\esp-idf\tools\cmake\;CMake Files\..\..\..\esp\esp-idf\tools\cmake\third_party\;CMake Files\..\..\..\esp\esp-idf\tools\kconfig_new\;CMake Files\..\..\..\esp\esp-idf\.git\;CMake Files\..\..\..\esp\esp-idf\.git\refs\;CMake Files\..\..\..\esp\esp-idf\.git\refs\heads\;CMake Files\..\..\..\esp\esp-idf\.git\modules\;CMake Files\..\..\..\esp\esp-idf\.git\modules\components\;CMake Files\..\..\..\esp\esp-idf\.git\modules\components\asio\;CMake Files\..\..\..\esp\esp-idf\.git\modules\components\asio\asio\;CMake Files\..\..\..\esp\esp-idf\.git\modules\components\aws_iot\;CMake Files\..\..\..\esp\esp-idf\.git\modules\components\aws_iot\aws-iot-device-sdk-embedded-C\;CMake Files\..\..\..\esp\esp-idf\.git\modules\components\bt\;CMake Files\..\..\..\esp\esp-idf\.git\modules\components\bt\lib\;CMake Files\..\..\..\esp\esp-idf\.git\modules\components\coap\;CMake Files\..\..\..\esp\esp-idf\.git\modules\components\coap\libcoap\;CMake Files\..\..\..\esp\esp-idf\.git\modules\components\esp32\;CMake Files\..\..\..\esp\esp-idf\.git\modules\components\esp32\lib\;CMake Files\..\..\..\esp\esp-idf\.git\modules\components\esptool_py\;CMake Files\..\..\..\esp\esp-idf\.git\modules\components\esptool_py\esptool\;CMake Files\..\..\..\esp\esp-idf\.git\modules\components\expat\;CMake Files\..\..\..\esp\esp-idf\.git\modules\components\expat\expat\;CMake Files\..\..\..\esp\esp-idf\.git\modules\components\json\;CMake Files\..\..\..\esp\esp-idf\.git\modules\components\json\cJSON\;CMake Files\..\..\..\esp\esp-idf\.git\modules\components\libsodium\;CMake Files\..\..\..\esp\esp-idf\.git\modules\components\libsodium\libsodium\;CMake Files\..\..\..\esp\esp-idf\.git\modules\components\lwip\;CMake Files\..\..\..\esp\esp-idf\.git\modules\components\lwip\lwip\;CMake Files\..\..\..\esp\esp-idf\.git\modules\components\mbedtls\;CMake Files\..\..\..\esp\esp-idf\.git\modules\components\mbedtls\mbedtls\;CMake Files\..\..\..\esp\esp-idf\.git\modules\components\micro-ecc\;CMake Files\..\..\..\esp\esp-idf\.git\modules\components\micro-ecc\micro-ecc\;CMake Files\..\..\..\esp\esp-idf\.git\modules\components\mqtt\;CMake Files\..\..\..\esp\esp-idf\.git\modules\components\mqtt\esp-mqtt\;CMake Files\..\..\..\esp\esp-idf\.git\modules\components\nghttp\;CMake Files\..\..\..\esp\esp-idf\.git\modules\components\nghttp\nghttp2\;CMake Files\..\..\..\esp\esp-idf\.git\modules\components\protobuf-c\;CMake Files\..\..\..\esp\esp-idf\.git\modules\components\protobuf-c\protobuf-c\;CMake Files\..\..\..\esp\esp-idf\.git\modules\components\spiffs\;CMake Files\..\..\..\esp\esp-idf\.git\modules\components\spiffs\spiffs\;CMake Files\..\..\..\esp\esp-idf\.git\modules\components\unity\;CMake Files\..\..\..\esp\esp-idf\.git\modules\components\unity\unity\;CMake Files\..\..\..\esp\esp-idf\components\;CMake Files\..\..\..\esp\esp-idf\components\partition_table\;CMake Files\..\..\..\esp\esp-idf\components\app_update\;CMake Files\..\..\..\esp\esp-idf\components\bootloader\;CMake Files\..\..\..\esp\esp-idf\components\esptool_py\;CMake Files\..\..\..\esp\esp-idf\components\esptool_py\esptool\;CMake Files\..\..\..\esp\esp-idf\components\log\;CMake Files\..\..\..\esp\esp-idf\components\heap\;CMake Files\..\..\..\esp\esp-idf\components\app_trace\;CMake Files\..\..\..\esp\esp-idf\components\freertos\;CMake Files\..\..\..\esp\esp-idf\components\vfs\;CMake Files\..\..\..\esp\esp-idf\components\driver\;CMake Files\..\..\..\esp\esp-idf\components\esp_event\;CMake Files\..\..\..\esp\esp-idf\components\ethernet\;CMake Files\..\..\..\esp\esp-idf\components\lwip\;CMake Files\..\..\..\esp\esp-idf\components\lwip\lwip\;CMake Files\..\..\..\esp\esp-idf\components\tcpip_adapter\;CMake Files\..\..\..\esp\esp-idf\components\spi_flash\;CMake Files\..\..\..\esp\esp-idf\components\mbedtls\;CMake Files\..\..\..\esp\esp-idf\components\mbedtls\mbedtls\;CMake Files\..\..\..\esp\esp-idf\components\nvs_flash\;CMake Files\..\..\..\esp\esp-idf\components\pthread\;CMake Files\..\..\..\esp\esp-idf\components\esp32\;CMake Files\..\..\..\esp\esp-idf\components\esp32\lib\;CMake Files\..\..\..\esp\esp-idf\components\aws_iot\;CMake Files\..\..\..\esp\esp-idf\components\aws_iot\aws-iot-device-sdk-embedded-C\;CMake Files\..\..\..\esp\esp-idf\components\bt\;CMake Files\..\..\..\esp\esp-idf\components\bt\lib\;CMake Files\..\..\..\esp\esp-idf\components\esp_adc_cal\;CMake Files\..\..\..\esp\esp-idf\components\esp_http_client\;CMake Files\..\..\..\esp\esp-idf\components\esp_http_server\;CMake Files\..\..\..\esp\esp-idf\components\wear_levelling\;CMake Files\..\..\..\esp\esp-idf\components\fatfs\;CMake Files\..\..\..\esp\esp-idf\components\freemodbus\;CMake Files\..\..\..\esp\esp-idf\components\libsodium\;CMake Files\..\..\..\esp\esp-idf\components\libsodium\libsodium\;CMake Files\..\..\..\esp\esp-idf\components\mdns\;CMake Files\..\..\..\esp\esp-idf\components\mqtt\;CMake Files\..\..\..\esp\esp-idf\components\mqtt\esp-mqtt\;CMake Files\..\..\..\esp\esp-idf\components\openssl\;CMake Files\..\..\..\esp\esp-idf\components\spiffs\;CMake Files\..\..\..\esp\esp-idf\components\spiffs\spiffs\;CMake Files\..\..\..\esp\esp-idf\components\unity\;CMake Files\..\..\..\esp\esp-idf\components\unity\unity\;CMake Files\..\..\..\esp\esp-idf\components\asio\;CMake Files\..\..\..\esp\esp-idf\components\asio\asio\;CMake Files\..\..\..\esp\esp-idf\components\coap\;CMake Files\..\..\..\esp\esp-idf\components\coap\libcoap\;CMake Files\..\..\..\esp\esp-idf\components\expat\;CMake Files\..\..\..\esp\esp-idf\components\expat\expat\;CMake Files\..\..\..\esp\esp-idf\components\json\;CMake Files\..\..\..\esp\esp-idf\components\json\cJSON\;CMake Files\..\..\..\esp\esp-idf\components\micro-ecc\;CMake Files\..\..\..\esp\esp-idf\components\micro-ecc\micro-ecc\;CMake Files\..\..\..\esp\esp-idf\components\nghttp\;CMake Files\..\..\..\esp\esp-idf\components\nghttp\nghttp2\;CMake Files\..\..\..\esp\esp-idf\components\protobuf-c\;CMake Files\..\..\..\esp\esp-idf\components\protobuf-c\protobuf-c\;CMake Files\..\..\..\esp\esp-idf\components\soc\;CMake Files\..\..\..\esp\esp-idf\components\soc\esp32\;CMake Files\..\..\..\esp\esp-idf\components\xtensa-debug-module\;CMake Files\..\..\..\esp\esp-idf\components\newlib\;CMake Files\..\..\..\esp\esp-idf\components\esp_ringbuf\;CMake Files\..\..\..\esp\esp-idf\components\bootloader_support\;CMake Files\..\..\..\esp\esp-idf\components\smartconfig_ack\;CMake Files\..\..\..\esp\esp-idf\components\wpa_supplicant\;CMake Files\..\..\..\esp\esp-idf\components\cxx\;CMake Files\..\..\..\esp\esp-idf\components\sdmmc\;CMake Files\..\..\..\esp\esp-idf\components\jsmn\;CMake Files\..\..\..\esp\esp-idf\components\console\;CMake Files\..\..\..\esp\esp-idf\components\esp-tls\;CMake Files\..\..\..\esp\esp-idf\components\tcp_transport\;CMake Files\..\..\..\esp\esp-idf\components\esp_https_ota\;CMake Files\..\..\..\esp\esp-idf\components\idf_test\;CMake Files\..\..\..\esp\esp-idf\components\protocomm\;CMake Files\..\..\..\esp\esp-idf\components\u8g2\;CMake Files\..\..\..\esp\esp-idf\components\ulp\;CMake Files\..\..\..\esp\esp-idf\components\wifi_provisioning\;CMake Files\cmake-build-debug\;CMake Files\cmake-build-debug\mconf-idf-prefix\;CMake Files\cmake-build-debug\mconf-idf-prefix\tmp\;CMake Files\cmake-build-debug\config\;CMake Files\cmake-build-debug\bootloader-prefix\;CMake Files\cmake-build-debug\bootloader-prefix\tmp\;CMake Files\.git\;CMake Files\.git\refs\;CMake Files\.git\refs\heads\;CMake Files\components\;CMake Files\components\chip_cap_2_lib\;CMake Files\components\mpl115a2_lib\;CMake Files\components\scd30_lib\;CMake Files\components\u8g2_esp32_hal\;CMake Files\main\;"/>
 		<Build>
 			<Target title="all">
 				<Option working_dir="/home/milan/Desktop/BP/station/cmake-build-debug"/>
@@ -136,6 +136,7 @@
 					<Add directory="/home/milan/esp/esp-idf/components/esp32/include"/>
 					<Add directory="/home/milan/esp/esp-idf/components/sdmmc/include"/>
 					<Add directory="/home/milan/Desktop/BP/station/components/chip_cap_2_lib/include"/>
+					<Add directory="/home/milan/Desktop/BP/station/components/mpl115a2_lib/include"/>
 					<Add directory="/home/milan/Desktop/BP/station/components/scd30_lib/include"/>
 					<Add directory="/home/milan/Desktop/BP/station/components/u8g2_esp32_hal/include"/>
 					<Add directory="/home/milan/esp/esp-idf/components/asio/asio/asio/include"/>
@@ -241,6 +242,7 @@
 					<Add directory="/home/milan/esp/esp-idf/components/esp32/include"/>
 					<Add directory="/home/milan/esp/esp-idf/components/sdmmc/include"/>
 					<Add directory="/home/milan/Desktop/BP/station/components/chip_cap_2_lib/include"/>
+					<Add directory="/home/milan/Desktop/BP/station/components/mpl115a2_lib/include"/>
 					<Add directory="/home/milan/Desktop/BP/station/components/scd30_lib/include"/>
 					<Add directory="/home/milan/Desktop/BP/station/components/u8g2_esp32_hal/include"/>
 					<Add directory="/home/milan/esp/esp-idf/components/asio/asio/asio/include"/>
@@ -3121,6 +3123,102 @@
 					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/milan/Desktop/BP/station/cmake-build-debug/chip_cap_2_lib/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
 					<Clean command="/usr/bin/make -j4 -f &quot;/home/milan/Desktop/BP/station/cmake-build-debug/chip_cap_2_lib/Makefile&quot;  VERBOSE=1 clean"/>
 					<DistClean command="/usr/bin/make -j4 -f &quot;/home/milan/Desktop/BP/station/cmake-build-debug/chip_cap_2_lib/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="mpl115a2_lib">
+				<Option output="/home/milan/Desktop/BP/station/cmake-build-debug/mpl115a2_lib/libmpl115a2_lib.a" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/milan/Desktop/BP/station/cmake-build-debug/mpl115a2_lib"/>
+				<Option object_output="./"/>
+				<Option type="2"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-DESP_PLATFORM"/>
+					<Add option="-DHAVE_CONFIG_H"/>
+					<Add option="-DGCC_NOT_5_2_0=1"/>
+					<Add option="-DIDF_VER=&quot;v3.2-beta1-182-g4c88170&quot;"/>
+					<Add directory="/home/milan/Desktop/BP/station/cmake-build-debug/config"/>
+					<Add directory="/home/milan/Desktop/BP/station/components/mpl115a2_lib/include"/>
+					<Add directory="/home/milan/esp/esp-idf/components/driver/include"/>
+					<Add directory="/home/milan/esp/esp-idf/components/esp_ringbuf/include"/>
+					<Add directory="/home/milan/esp/esp-idf/components/sdmmc/include"/>
+					<Add directory="/home/milan/esp/esp-idf/components/esp32/include"/>
+					<Add directory="/home/milan/esp/esp-idf/components/tcpip_adapter/include"/>
+					<Add directory="/home/milan/esp/esp-idf/components/lwip/include/apps"/>
+					<Add directory="/home/milan/esp/esp-idf/components/lwip/lwip/src/include"/>
+					<Add directory="/home/milan/esp/esp-idf/components/lwip/port/esp32/include"/>
+					<Add directory="/home/milan/esp/esp-idf/components/lwip/port/esp32/include/arch"/>
+					<Add directory="/home/milan/esp/esp-idf/components/lwip/include_compat"/>
+					<Add directory="/home/milan/esp/esp-idf/components/vfs/include"/>
+					<Add directory="/home/milan/esp/esp-idf/components/esp_event/include"/>
+					<Add directory="/home/milan/esp/esp-idf/components/log/include"/>
+					<Add directory="/home/milan/esp/esp-idf/components/newlib/platform_include"/>
+					<Add directory="/home/milan/esp/esp-idf/components/newlib/include"/>
+					<Add directory="/home/milan/esp/esp-idf/components/freertos/include"/>
+					<Add directory="/home/milan/esp/esp-idf/components/app_trace/include"/>
+					<Add directory="/home/milan/esp/esp-idf/components/heap/include"/>
+					<Add directory="/home/milan/esp/esp-idf/components/soc/esp32/include"/>
+					<Add directory="/home/milan/esp/esp-idf/components/soc/include"/>
+					<Add directory="/home/milan/esp/xtensa-esp32-elf/bin/../lib/gcc/xtensa-esp32-elf/5.2.0/../../../../xtensa-esp32-elf/include/c++/5.2.0"/>
+					<Add directory="/home/milan/esp/xtensa-esp32-elf/bin/../lib/gcc/xtensa-esp32-elf/5.2.0/../../../../xtensa-esp32-elf/include/c++/5.2.0/xtensa-esp32-elf"/>
+					<Add directory="/home/milan/esp/xtensa-esp32-elf/bin/../lib/gcc/xtensa-esp32-elf/5.2.0/../../../../xtensa-esp32-elf/include/c++/5.2.0/backward"/>
+					<Add directory="/home/milan/esp/xtensa-esp32-elf/bin/../lib/gcc/xtensa-esp32-elf/5.2.0/include"/>
+					<Add directory="/home/milan/esp/xtensa-esp32-elf/bin/../lib/gcc/xtensa-esp32-elf/5.2.0/include-fixed"/>
+					<Add directory="/home/milan/esp/xtensa-esp32-elf/bin/../lib/gcc/xtensa-esp32-elf/5.2.0/../../../../xtensa-esp32-elf/include"/>
+					<Add directory="/home/milan/esp/xtensa-esp32-elf/bin/../xtensa-esp32-elf/sysroot/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/home/milan/Desktop/BP/station/cmake-build-debug/mpl115a2_lib/Makefile&quot;  VERBOSE=1 mpl115a2_lib"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/milan/Desktop/BP/station/cmake-build-debug/mpl115a2_lib/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/home/milan/Desktop/BP/station/cmake-build-debug/mpl115a2_lib/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/home/milan/Desktop/BP/station/cmake-build-debug/mpl115a2_lib/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="mpl115a2_lib/fast">
+				<Option output="/home/milan/Desktop/BP/station/cmake-build-debug/mpl115a2_lib/libmpl115a2_lib.a" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/milan/Desktop/BP/station/cmake-build-debug/mpl115a2_lib"/>
+				<Option object_output="./"/>
+				<Option type="2"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-DESP_PLATFORM"/>
+					<Add option="-DHAVE_CONFIG_H"/>
+					<Add option="-DGCC_NOT_5_2_0=1"/>
+					<Add option="-DIDF_VER=&quot;v3.2-beta1-182-g4c88170&quot;"/>
+					<Add directory="/home/milan/Desktop/BP/station/cmake-build-debug/config"/>
+					<Add directory="/home/milan/Desktop/BP/station/components/mpl115a2_lib/include"/>
+					<Add directory="/home/milan/esp/esp-idf/components/driver/include"/>
+					<Add directory="/home/milan/esp/esp-idf/components/esp_ringbuf/include"/>
+					<Add directory="/home/milan/esp/esp-idf/components/sdmmc/include"/>
+					<Add directory="/home/milan/esp/esp-idf/components/esp32/include"/>
+					<Add directory="/home/milan/esp/esp-idf/components/tcpip_adapter/include"/>
+					<Add directory="/home/milan/esp/esp-idf/components/lwip/include/apps"/>
+					<Add directory="/home/milan/esp/esp-idf/components/lwip/lwip/src/include"/>
+					<Add directory="/home/milan/esp/esp-idf/components/lwip/port/esp32/include"/>
+					<Add directory="/home/milan/esp/esp-idf/components/lwip/port/esp32/include/arch"/>
+					<Add directory="/home/milan/esp/esp-idf/components/lwip/include_compat"/>
+					<Add directory="/home/milan/esp/esp-idf/components/vfs/include"/>
+					<Add directory="/home/milan/esp/esp-idf/components/esp_event/include"/>
+					<Add directory="/home/milan/esp/esp-idf/components/log/include"/>
+					<Add directory="/home/milan/esp/esp-idf/components/newlib/platform_include"/>
+					<Add directory="/home/milan/esp/esp-idf/components/newlib/include"/>
+					<Add directory="/home/milan/esp/esp-idf/components/freertos/include"/>
+					<Add directory="/home/milan/esp/esp-idf/components/app_trace/include"/>
+					<Add directory="/home/milan/esp/esp-idf/components/heap/include"/>
+					<Add directory="/home/milan/esp/esp-idf/components/soc/esp32/include"/>
+					<Add directory="/home/milan/esp/esp-idf/components/soc/include"/>
+					<Add directory="/home/milan/esp/xtensa-esp32-elf/bin/../lib/gcc/xtensa-esp32-elf/5.2.0/../../../../xtensa-esp32-elf/include/c++/5.2.0"/>
+					<Add directory="/home/milan/esp/xtensa-esp32-elf/bin/../lib/gcc/xtensa-esp32-elf/5.2.0/../../../../xtensa-esp32-elf/include/c++/5.2.0/xtensa-esp32-elf"/>
+					<Add directory="/home/milan/esp/xtensa-esp32-elf/bin/../lib/gcc/xtensa-esp32-elf/5.2.0/../../../../xtensa-esp32-elf/include/c++/5.2.0/backward"/>
+					<Add directory="/home/milan/esp/xtensa-esp32-elf/bin/../lib/gcc/xtensa-esp32-elf/5.2.0/include"/>
+					<Add directory="/home/milan/esp/xtensa-esp32-elf/bin/../lib/gcc/xtensa-esp32-elf/5.2.0/include-fixed"/>
+					<Add directory="/home/milan/esp/xtensa-esp32-elf/bin/../lib/gcc/xtensa-esp32-elf/5.2.0/../../../../xtensa-esp32-elf/include"/>
+					<Add directory="/home/milan/esp/xtensa-esp32-elf/bin/../xtensa-esp32-elf/sysroot/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/home/milan/Desktop/BP/station/cmake-build-debug/mpl115a2_lib/Makefile&quot;  VERBOSE=1 mpl115a2_lib/fast"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/milan/Desktop/BP/station/cmake-build-debug/mpl115a2_lib/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/home/milan/Desktop/BP/station/cmake-build-debug/mpl115a2_lib/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/home/milan/Desktop/BP/station/cmake-build-debug/mpl115a2_lib/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
 			<Target title="scd30_lib">
@@ -6039,6 +6137,7 @@
 					<Add directory="/home/milan/esp/esp-idf/components/driver/include"/>
 					<Add directory="/home/milan/esp/esp-idf/components/esp_ringbuf/include"/>
 					<Add directory="/home/milan/esp/esp-idf/components/sdmmc/include"/>
+					<Add directory="/home/milan/Desktop/BP/station/components/mpl115a2_lib/include"/>
 					<Add directory="/home/milan/Desktop/BP/station/components/scd30_lib/include"/>
 					<Add directory="/home/milan/Desktop/BP/station/components/u8g2_esp32_hal/include"/>
 					<Add directory="/home/milan/esp/esp-idf/components/app_trace/include"/>
@@ -6144,6 +6243,7 @@
 					<Add directory="/home/milan/esp/esp-idf/components/driver/include"/>
 					<Add directory="/home/milan/esp/esp-idf/components/esp_ringbuf/include"/>
 					<Add directory="/home/milan/esp/esp-idf/components/sdmmc/include"/>
+					<Add directory="/home/milan/Desktop/BP/station/components/mpl115a2_lib/include"/>
 					<Add directory="/home/milan/Desktop/BP/station/components/scd30_lib/include"/>
 					<Add directory="/home/milan/Desktop/BP/station/components/u8g2_esp32_hal/include"/>
 					<Add directory="/home/milan/esp/esp-idf/components/app_trace/include"/>
@@ -6238,6 +6338,9 @@
 		</Unit>
 		<Unit filename="/home/milan/Desktop/BP/station/components/chip_cap_2_lib/chip_cap_2_lib.c">
 			<Option target="chip_cap_2_lib"/>
+		</Unit>
+		<Unit filename="/home/milan/Desktop/BP/station/components/mpl115a2_lib/mpl115a2_lib.c">
+			<Option target="mpl115a2_lib"/>
 		</Unit>
 		<Unit filename="/home/milan/Desktop/BP/station/components/scd30_lib/scd30_lib.c">
 			<Option target="scd30_lib"/>
@@ -9268,6 +9371,9 @@
 		</Unit>
 		<Unit filename="/home/milan/Desktop/BP/station/components/chip_cap_2_lib/CMakeLists.txt">
 			<Option virtualFolder="CMake Files\components\chip_cap_2_lib\"/>
+		</Unit>
+		<Unit filename="/home/milan/Desktop/BP/station/components/mpl115a2_lib/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\components\mpl115a2_lib\"/>
 		</Unit>
 		<Unit filename="/home/milan/Desktop/BP/station/components/scd30_lib/CMakeLists.txt">
 			<Option virtualFolder="CMake Files\components\scd30_lib\"/>

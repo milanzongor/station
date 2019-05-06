@@ -813,6 +813,19 @@ chip_cap_2_lib/fast:
 .PHONY : chip_cap_2_lib/fast
 
 #=============================================================================
+# Target rules for targets named mpl115a2_lib
+
+# Build rule for target.
+mpl115a2_lib: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 mpl115a2_lib
+.PHONY : mpl115a2_lib
+
+# fast build rule for target.
+mpl115a2_lib/fast:
+	$(MAKE) -f mpl115a2_lib/CMakeFiles/mpl115a2_lib.dir/build.make mpl115a2_lib/CMakeFiles/mpl115a2_lib.dir/build
+.PHONY : mpl115a2_lib/fast
+
+#=============================================================================
 # Target rules for targets named scd30_lib
 
 # Build rule for target.
@@ -1291,6 +1304,7 @@ help:
 	@echo "... cxx"
 	@echo "... sdmmc"
 	@echo "... chip_cap_2_lib"
+	@echo "... mpl115a2_lib"
 	@echo "... scd30_lib"
 	@echo "... u8g2_esp32_hal"
 	@echo "... asio"
