@@ -21,6 +21,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
+#include <time.h>
 #include <coap/str.h>
 
 #include "sdkconfig.h"
@@ -278,30 +279,37 @@ static void display_task()
     ESP_ERROR_CHECK(SCD30_start_periodic_measurement(I2C_MASTER_NUM)); // start periodic measurements
     vTaskDelay(1000 / portTICK_RATE_MS); // wait 1000ms after init
 
+    time_t curtime;
+    struct tm *loc_time;
+
     while(1) {
         vTaskDelay(2000 / portTICK_RATE_MS);
 
         ESP_ERROR_CHECK(chip_cap_read_hum_temp(I2C_MASTER_NUM, chip_cap_data_arr, chip_cap_data_length));
         data.chip_cap.temperature = count_temperature(chip_cap_data_arr[2], chip_cap_data_arr[3]);
         data.chip_cap.humidity = count_humidity(chip_cap_data_arr[0], chip_cap_data_arr[1]);
-        printf("CHIP_CAP ---> Humidity: %2.2f, Temperature:  %2.2f \n", data.chip_cap.humidity, data.chip_cap.temperature);
+//        printf("CHIP_CAP ---> Humidity: %2.2f, Temperature:  %2.2f \n", data.chip_cap.humidity, data.chip_cap.temperature);
 
         uint8_t received_data[9];
         ESP_ERROR_CHECK(max31865_read_output(spi2, received_data));
         data.max31865.temperature = max31865_temperature(received_data);
-        printf("MAX31865 --> Temperature: %2.2f \n", data.max31865.temperature);
+//        printf("MAX31865 --> Temperature: %2.2f \n", data.max31865.temperature);
 
         ESP_ERROR_CHECK(sensor_pressure_read_values(I2C_MASTER_NUM, pressure_arr, pressure_arr_size));
         data.mpl115a2.pressure = sensor_pressure_count_pres(pressure_arr, A0, B1, B2, C12);
         data.mpl115a2.temperature = sensor_pressure_count_temp(pressure_arr);
-        printf("MPL115A2 --> Pressure: %.2f kPa, Temperature: %.2f C \n", data.mpl115a2.pressure, data.mpl115a2.temperature);
+//        printf("MPL115A2 --> Pressure: %.2f kPa, Temperature: %.2f C \n", data.mpl115a2.pressure, data.mpl115a2.temperature);
 
         ESP_ERROR_CHECK(SCD30_read_measurement_buffer(I2C_MASTER_NUM, co2_data_arr, co2_data_length));
         data.scd30.co2_value = count_co2(co2_data_arr);
         data.scd30.temperature = count_temp(co2_data_arr);
         data.scd30.humidity = count_hum(co2_data_arr);
-        printf("SCD30 --> CO2: %d PPM, Temperature: %.2f , Humidity: %.2f \n", data.scd30.co2_value, data.scd30.temperature, data.scd30.humidity);
-        printf("\n");
+//        printf("SCD30 --> CO2: %d PPM, Temperature: %.2f , Humidity: %.2f \n", data.scd30.co2_value, data.scd30.temperature, data.scd30.humidity);
+//        printf("\n");
+        curtime = time(NULL);
+        loc_time = gmtime(&curtime);
+//        printf ( "%d:%d:%d\n", loc_time->tm_hour, loc_time->tm_min, loc_time->tm_sec );
+        printf("%.2f,%.2f,%.2f,%.2f,%.2f,%d,%.2f,%.2f,%d:%d:%d\n", data.chip_cap.humidity, data.chip_cap.temperature, data.max31865.temperature, data.mpl115a2.pressure, data.mpl115a2.temperature, data.scd30.co2_value, data.scd30.temperature, data.scd30.humidity, loc_time->tm_hour + 9, loc_time->tm_min + 47, loc_time->tm_sec);
 
         u8g2_ClearBuffer(&u8g2);
         u8g2_SetFont(&u8g2, u8g2_font_timB10_tr);
