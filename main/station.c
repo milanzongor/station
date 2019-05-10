@@ -309,7 +309,7 @@ static void display_task()
         curtime = time(NULL);
         loc_time = gmtime(&curtime);
 //        printf ( "%d:%d:%d\n", loc_time->tm_hour, loc_time->tm_min, loc_time->tm_sec );
-        printf("%.2f,%.2f,%.2f,%.2f,%.2f,%d,%.2f,%.2f,%d:%d:%d\n", data.chip_cap.humidity, data.chip_cap.temperature, data.max31865.temperature, data.mpl115a2.pressure, data.mpl115a2.temperature, data.scd30.co2_value, data.scd30.temperature, data.scd30.humidity, loc_time->tm_hour + 9, loc_time->tm_min + 47, loc_time->tm_sec);
+        printf("%.2f,%.2f,%.2f,%.2f,%.2f,%d,%.2f,%.2f,%d:%d:%d\n", data.chip_cap.humidity, data.chip_cap.temperature, data.max31865.temperature, data.mpl115a2.pressure, data.mpl115a2.temperature, data.scd30.co2_value, data.scd30.temperature, data.scd30.humidity, loc_time->tm_hour, loc_time->tm_min, loc_time->tm_sec);
 
         u8g2_ClearBuffer(&u8g2);
         u8g2_SetFont(&u8g2, u8g2_font_timB10_tr);
