@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>ESP32 Weather Station</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" href="data:,">
+    <script>
+      function DisplayCurrentTime() {
+          var date = new Date();
+          var hours = date.getHours() < 10 ? "0" + date.getHours() : date.getHours();
+          var minutes = date.getMinutes() < 10 ? "0" + date.getMinutes() : date.getMinutes();
+          var seconds = date.getSeconds() < 10 ? "0" + date.getSeconds() : date.getSeconds();
+          time = hours + ":" + minutes + ":" + seconds;
+          var currentTime = document.getElementById("currentTime");
+          currentTime.innerHTML = time;
+      };
+      function GetReadings() {
+      	nocache = "&nocache";
+      	var request = new XMLHttpRequest();
+      	request.onreadystatechange = function() {
+    			if (this.status == 200) {
+    				if (this.responseXML != null) {
+    					// XML file received - contains sensor readings
+    					var count;
+    					var num_an = this.responseXML.getElementsByTagName('reading').length;
+    					for (count = 0; count < num_an; count++) {
+    						document.getElementsByClassName("reading")[count].innerHTML =
+    					  this.responseXML.getElementsByTagName('reading')[count].childNodes[0].nodeValue;
+    					}
+    				}
+    			}
+      	}
+      	// // Send HTTP GET request to get the latest sensor readings
+      	// request.open("GET", "?update_readings" + nocache, true);
+      	// request.send(null);
+       //  DisplayCurrentTime();
+       //  setTimeout('GetReadings()', 10000);
+      }
+      document.addEventListener('DOMContentLoaded', function() {
+        DisplayCurrentTime();
+        GetReadings();
+      }, false);
+
+      window.onload = function() {
+
+var chart = new CanvasJS.Chart("chartContainer", {
+	animationEnabled: true,
+	title: {
+		text: "Hourly Average CPU Utilization"
+	},
+	axisX: {
+		title: "Time"
+	},
+	axisY: {
+		title: "Percentage",
+		suffix: "%"
+	},
+	data: [{
+		type: "line",
+		name: "CPU Utilization",
+		connectNullData: true,
+		//nullDataLineDashType: "solid",
+		xValueType: "dateTime",
+		xValueFormatString: "DD MMM hh:mm TT",
+		yValueFormatString: "#,##0.##\"%\"",
+		dataPoints: [
+			{ x: 1501048673000, y: 55.93 },
+			{ x: 1501052273000, y: 40.89 },
+			{ x: 1501055873000, y: 56.62 },
+			{ x: 1501059473000, y: 26.00 },
+			{ x: 1501063073000, y: 20.37 },
+			{ x: 1501066673000, y: 19.77 },
+			{ x: 1501070273000, y: 23.50 },
+			{ x: 1501073873000, y: 18.57 },
+			{ x: 1501077473000, y: 15.91 },
+			{ x: 1501081073000, y: null }, // Null Data
+			{ x: 1501084673000, y: 10.314 },
+			{ x: 1501088273000, y: 10.574 },
+			{ x: 1501091873000, y: 14.422 },
+			{ x: 1501095473000, y: 18.576 },
+			{ x: 1501099073000, y: 22.342 },
+			{ x: 1501102673000, y: 22.836 },
+			{ x: 1501106273000, y: 23.220 },
+			{ x: 1501109873000, y: 23.594 },
+			{ x: 1501113473000, y: 24.596 },
+			{ x: 1501117073000, y: 31.947 },
+			{ x: 1501120673000, y: 31.142 }
+		]
+	}]
+});
+chart.render();
+
+}
+      
+    </script>
+    <style>
+      body {
+        text-align: center;
+        font-family: "Trebuchet MS", Arial;
+      }
+      table {
+        border-collapse: collapse;
+        width:60%;
+        margin-left:auto;
+        margin-right:auto;
+      }
+      th {
+        padding: 16px;
+        background-color: #0043af;
+        color: white;
+      }
+      tr {
+        border: 1px solid #ddd;
+        padding: 16px;
+      }
+      tr:hover {
+        background-color: #bcbcbc;
+      }
+      td {
+        border: none;
+        padding: 16px;
+      }
+      .sensor {
+        color:white;
+        font-weight: bold;
+        background-color: #bcbcbc;
+        padding: 8px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>ESP32 Weather Station</h1>
+    <h3>Last update: <span id="currentTime"></span></h3>
+    <table>
+      <tr>
+        <th>SENSOR</th>
+        <th>MEASUREMENT</th>
+        <th>VALUE</th>
+      </tr>
+      
+      <tr>
+        <td><span class="sensor">ChipCap 2-sip</span></td>
+        <td>Temperature</td>
+        <td><span class="reading">...</span> *C</td>
+      </tr>
+      <tr>
+        <td><span class="sensor">ChipCap 2-sip</span></td>
+        <td>Humidity</td>
+        <td><span class="reading">...</span> %</td>
+      </tr>
+
+      <tr>
+        <td><span class="sensor">SCD30</span></td>
+        <td>Temperature</td>
+        <td><span class="reading">...</span> *C</td>
+      </tr>
+      <tr>
+        <td><span class="sensor">SCD30</span></td>
+        <td>Humidity</td>
+        <td><span class="reading">...</span> %</td>
+      </tr>
+      <tr>
+        <td><span class="sensor">SCD30</span></td>
+        <td>CO2</td>
+        <td><span class="reading">...</span> PPM</td>
+      </tr>
+
+      <tr>
+        <td><span class="sensor">MAX31865</span></td>
+        <td>Outside temperature</td>
+        <td><span class="reading">...</span> *C</td>
+      </tr>
+
+      <tr>
+        <td><span class="sensor">MPL115A2</span></td>
+        <td>Pressure</td>
+        <td><span class="reading">...</span>KPa</td>
+      </tr>
+      <tr>
+        <td><span class="sensor">MPL115A2</span></td>
+        <td>Temperature</td>
+        <td><span class="reading">...</span>*C</td>
+      </tr>
+    </table>
+
+    <div id="chartContainer" style="height: 370px; width: 100%;"></div>
+	<script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+
+  </body>
+</html>

@@ -7952,58 +7952,6 @@
                     {
                         "children": [], 
                         "depends_on": null, 
-                        "help": "Google Cloud project ID\n", 
-                        "name": "GIOT_PROJECT_ID", 
-                        "range": null, 
-                        "title": "Google Cloud Project ID", 
-                        "type": "string"
-                    }, 
-                    {
-                        "children": [], 
-                        "depends_on": null, 
-                        "help": "Google Cloud region\n", 
-                        "name": "GIOT_LOCATION", 
-                        "range": null, 
-                        "title": "Google Cloud location", 
-                        "type": "string"
-                    }, 
-                    {
-                        "children": [], 
-                        "depends_on": null, 
-                        "help": "Google IoT Core registry id\n", 
-                        "name": "GIOT_REGISTRY_ID", 
-                        "range": null, 
-                        "title": "Google IoT Core Registry ID", 
-                        "type": "string"
-                    }, 
-                    {
-                        "children": [], 
-                        "depends_on": null, 
-                        "help": "Google IoT Core device id\n", 
-                        "name": "GIOT_DEVICE_ID", 
-                        "range": null, 
-                        "title": "Google IoT Core Device ID", 
-                        "type": "string"
-                    }, 
-                    {
-                        "children": [], 
-                        "depends_on": null, 
-                        "help": "Select this option to enable debugging support\n", 
-                        "name": "GIOT_DEBUG_OUTPUT", 
-                        "range": null, 
-                        "title": "Enable debugging", 
-                        "type": "bool"
-                    }
-                ], 
-                "depends_on": null, 
-                "title": "Google IoT Core Configuration", 
-                "type": "menu"
-            }, 
-            {
-                "children": [
-                    {
-                        "children": [], 
-                        "depends_on": null, 
                         "help": "Some ESP32s have Two Point calibration values burned into eFuse BLOCK3.\nThis option will allow the ADC calibration component to characterize the\nADC-Voltage curve using Two Point values if they are available.\n", 
                         "name": "ADC_CAL_EFUSE_TP_ENABLE", 
                         "range": null, 

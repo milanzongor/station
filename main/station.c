@@ -25,7 +25,7 @@
 #include <coap/str.h>
 
 #include "sdkconfig.h"
-#include "/home/milan/Desktop/BP/station/libraries/u8g2_esp32_hal.h"
+#include "u8g2_esp32_hal.h"
 #include "/home/milan/esp/esp-idf/components/u8g2/csrc/u8g2.h"
 #include "station.h"
 #include "u8g2_esp32_hal.h"
@@ -85,6 +85,15 @@ void float_to_str(float float_var, char *out_buf){
     snprintf (buf, BufSize, "%.2f", float_var);
     memcpy(out_buf, buf, BufSize*sizeof(*out_buf));
 }
+
+//unsigned long get_time() {
+//    struct timeval tv;
+//    gettimeofday(&tv, NULL);
+//    unsigned long ret = tv.tv_usec;
+//    ret /= 1000;
+//    ret += (tv.tv_sec * 1000);
+//    return ret;
+//}
 
 //---WIFI---------------------------------------------------------------------------------------------------------------
 //    event handler for wifi task
@@ -180,9 +189,10 @@ static void http_server_netconn_serve(struct netconn *conn) {
         netbuf_data(inbuf, (void**)&buf, &buflen);
 
         if( buflen >= 5 && strstr(buf,"GET /") != NULL ) {
-            char *str = malloc(4096);
+            char *str = malloc(1024 * 64);
             if( str ) {
-                format_html(str);
+//                format_html(str);
+                sprintf(str,"%s",page);
             }
             else {
                 printf("*** ERROR allocating buffer.\n");
@@ -368,72 +378,60 @@ static void backlight_task()
 }
 
 
-unsigned long get_time() {
-    struct timeval tv;
-    gettimeofday(&tv, NULL);
-    unsigned long ret = tv.tv_usec;
-    ret /= 1000;
-    ret += (tv.tv_sec * 1000);
-    return ret;
-}
-
-
 void app_main()
 {
     printf("ESP32 project @zongomil \n");
-    unsigned long day_time = get_time();
-    printf("Time of the day is: %ld \n", day_time);
 
-//    gpio_set_direction(PIN_NUM_LED, GPIO_MODE_OUTPUT); // turn on led
-//    gpio_set_level(PIN_NUM_LED, 1);
-//
-//    ESP_ERROR_CHECK(i2c_master_init(I2C_MASTER_NUM, I2C_MASTER_FREQ_HZ, I2C_MASTER_SDA_IO, I2C_MASTER_SCL_IO));
-//
-//    u8g2_esp32_hal_t u8g2_esp32_hal = U8G2_ESP32_HAL_DEFAULT;
-//    u8g2_esp32_hal.clk   = PIN_CLK;
-//    u8g2_esp32_hal.mosi  = PIN_MOSI;
-//    u8g2_esp32_hal.cs    = PIN_CS;
-//    u8g2_esp32_hal.dc    = PIN_DC;
-//    u8g2_esp32_hal.reset = PIN_RESET;
-//    u8g2_esp32_hal_init(u8g2_esp32_hal);
-//
-//    strcpy(data.chip_cap.name, "ChipCap");
-//    strcpy(data.max31865.name, "MAX31865");
-//    strcpy(data.scd30.name, "SCD30");
-//    strcpy(data.mpl115a2.name, "MPL115A2");
-//
-//    //Initialize NVS
-//    esp_err_t ret = nvs_flash_init();
-//    if (ret == ESP_ERR_NVS_NO_FREE_PAGES) {
-//        ESP_ERROR_CHECK(nvs_flash_erase());
-//        ret = nvs_flash_init();
-//    }
-//    ESP_ERROR_CHECK(ret);
-//
-//    initialise_wifi();
-//
-//
-//    xTaskCreate(display_task /* Pointer to task */,
-//                "display_task" /* Name of task */,
-//                1024 * 100 /* Stack depth in bytes */,
-//                (void *)0, /* Pointer as parameter for the task */
-//                10, /* Priority of task */
-//                NULL /* Handle of created task */);
-//
-//    xTaskCreate(http_server_task,
-//                "http server",
-//                8000,
-//                NULL,
-//                5,
-//                NULL);
-//
-//    xTaskCreate(backlight_task,
-//                "backlight_task",
-//                2000,
-//                NULL,
-//                5,
-//                NULL);
-//
-//    printf("End of main loop \n");
+    gpio_set_direction(PIN_NUM_LED, GPIO_MODE_OUTPUT); // turn on led
+    gpio_set_level(PIN_NUM_LED, 1);
+
+    ESP_ERROR_CHECK(i2c_master_init(I2C_MASTER_NUM, I2C_MASTER_FREQ_HZ, I2C_MASTER_SDA_IO, I2C_MASTER_SCL_IO));
+
+    u8g2_esp32_hal_t u8g2_esp32_hal = U8G2_ESP32_HAL_DEFAULT;
+    u8g2_esp32_hal.clk   = PIN_CLK;
+    u8g2_esp32_hal.mosi  = PIN_MOSI;
+    u8g2_esp32_hal.cs    = PIN_CS;
+    u8g2_esp32_hal.dc    = PIN_DC;
+    u8g2_esp32_hal.reset = PIN_RESET;
+    u8g2_esp32_hal_init(u8g2_esp32_hal);
+
+    strcpy(data.chip_cap.name, "ChipCap");
+    strcpy(data.max31865.name, "MAX31865");
+    strcpy(data.scd30.name, "SCD30");
+    strcpy(data.mpl115a2.name, "MPL115A2");
+
+    //Initialize NVS
+    esp_err_t ret = nvs_flash_init();
+    if (ret == ESP_ERR_NVS_NO_FREE_PAGES) {
+        ESP_ERROR_CHECK(nvs_flash_erase());
+        ret = nvs_flash_init();
+    }
+    ESP_ERROR_CHECK(ret);
+
+    initialise_wifi();
+
+
+    xTaskCreate(display_task /* Pointer to task */,
+                "display_task" /* Name of task */,
+                1024 * 10 /* Stack depth in bytes */,
+                NULL, /* Pointer as parameter for the task */
+                10, /* Priority of task */
+                NULL /* Handle of created task */);
+
+    xTaskCreate(http_server_task,
+                "http server",
+                1024 * 8,
+                NULL,
+                5,
+                NULL);
+
+    xTaskCreate(backlight_task,
+                "backlight_task",
+                1024 * 2,
+                NULL,
+                5,
+                NULL);
+
+    printf("End of main loop \n");
 
 }
