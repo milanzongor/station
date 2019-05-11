@@ -368,59 +368,72 @@ static void backlight_task()
 }
 
 
+unsigned long get_time() {
+    struct timeval tv;
+    gettimeofday(&tv, NULL);
+    unsigned long ret = tv.tv_usec;
+    ret /= 1000;
+    ret += (tv.tv_sec * 1000);
+    return ret;
+}
+
+
 void app_main()
 {
     printf("ESP32 project @zongomil \n");
-    gpio_set_direction(PIN_NUM_LED, GPIO_MODE_OUTPUT); // turn on led
-    gpio_set_level(PIN_NUM_LED, 1);
+    unsigned long day_time = get_time();
+    printf("Time of the day is: %ld \n", day_time);
 
-    ESP_ERROR_CHECK(i2c_master_init(I2C_MASTER_NUM, I2C_MASTER_FREQ_HZ, I2C_MASTER_SDA_IO, I2C_MASTER_SCL_IO));
-
-    u8g2_esp32_hal_t u8g2_esp32_hal = U8G2_ESP32_HAL_DEFAULT;
-    u8g2_esp32_hal.clk   = PIN_CLK;
-    u8g2_esp32_hal.mosi  = PIN_MOSI;
-    u8g2_esp32_hal.cs    = PIN_CS;
-    u8g2_esp32_hal.dc    = PIN_DC;
-    u8g2_esp32_hal.reset = PIN_RESET;
-    u8g2_esp32_hal_init(u8g2_esp32_hal);
-
-    strcpy(data.chip_cap.name, "ChipCap");
-    strcpy(data.max31865.name, "MAX31865");
-    strcpy(data.scd30.name, "SCD30");
-    strcpy(data.mpl115a2.name, "MPL115A2");
-
-    //Initialize NVS
-    esp_err_t ret = nvs_flash_init();
-    if (ret == ESP_ERR_NVS_NO_FREE_PAGES) {
-        ESP_ERROR_CHECK(nvs_flash_erase());
-        ret = nvs_flash_init();
-    }
-    ESP_ERROR_CHECK(ret);
-
-    initialise_wifi();
-
-
-    xTaskCreate(display_task /* Pointer to task */,
-                "display_task" /* Name of task */,
-                1024 * 100 /* Stack depth in bytes */,
-                (void *)0, /* Pointer as parameter for the task */
-                10, /* Priority of task */
-                NULL /* Handle of created task */);
-
-    xTaskCreate(http_server_task,
-                "http server",
-                8000,
-                NULL,
-                5,
-                NULL);
-
-    xTaskCreate(backlight_task,
-                "backlight_task",
-                2000,
-                NULL,
-                5,
-                NULL);
-
-    printf("End of main loop \n");
+//    gpio_set_direction(PIN_NUM_LED, GPIO_MODE_OUTPUT); // turn on led
+//    gpio_set_level(PIN_NUM_LED, 1);
+//
+//    ESP_ERROR_CHECK(i2c_master_init(I2C_MASTER_NUM, I2C_MASTER_FREQ_HZ, I2C_MASTER_SDA_IO, I2C_MASTER_SCL_IO));
+//
+//    u8g2_esp32_hal_t u8g2_esp32_hal = U8G2_ESP32_HAL_DEFAULT;
+//    u8g2_esp32_hal.clk   = PIN_CLK;
+//    u8g2_esp32_hal.mosi  = PIN_MOSI;
+//    u8g2_esp32_hal.cs    = PIN_CS;
+//    u8g2_esp32_hal.dc    = PIN_DC;
+//    u8g2_esp32_hal.reset = PIN_RESET;
+//    u8g2_esp32_hal_init(u8g2_esp32_hal);
+//
+//    strcpy(data.chip_cap.name, "ChipCap");
+//    strcpy(data.max31865.name, "MAX31865");
+//    strcpy(data.scd30.name, "SCD30");
+//    strcpy(data.mpl115a2.name, "MPL115A2");
+//
+//    //Initialize NVS
+//    esp_err_t ret = nvs_flash_init();
+//    if (ret == ESP_ERR_NVS_NO_FREE_PAGES) {
+//        ESP_ERROR_CHECK(nvs_flash_erase());
+//        ret = nvs_flash_init();
+//    }
+//    ESP_ERROR_CHECK(ret);
+//
+//    initialise_wifi();
+//
+//
+//    xTaskCreate(display_task /* Pointer to task */,
+//                "display_task" /* Name of task */,
+//                1024 * 100 /* Stack depth in bytes */,
+//                (void *)0, /* Pointer as parameter for the task */
+//                10, /* Priority of task */
+//                NULL /* Handle of created task */);
+//
+//    xTaskCreate(http_server_task,
+//                "http server",
+//                8000,
+//                NULL,
+//                5,
+//                NULL);
+//
+//    xTaskCreate(backlight_task,
+//                "backlight_task",
+//                2000,
+//                NULL,
+//                5,
+//                NULL);
+//
+//    printf("End of main loop \n");
 
 }
