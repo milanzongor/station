@@ -140,17 +140,25 @@ void add_table_row(char f[], char name[], char measurement[], float value, char 
     char sensor_value[9];
     snprintf (sensor_value, 9, "%.2f", value);
     sprintf(f,"<tr>\n"
-              "        <td><span class=\"sensor\">%s</span></td>\n"
-              "        <td>%s</td>\n"
-              "        <td><span class=\"reading\">%s</span>%s</td>\n"
-              "      </tr>", name, measurement, sensor_value, units);
+              "<td><span class=\"sensor\">%s</span></td>\n"
+              "<td>%s</td>\n"
+              "<td><span class=\"reading\">%s</span>%s</td>\n"
+              "</tr>", name, measurement, sensor_value, units);
 
 }
 
+
 void format_html(char *buffer) {
     char f[512];
-    add_table_row(f, data.chip_cap.name, "temperature", data.chip_cap.temperature, "*C");
-    sprintf(buffer,"%s%s",page_01,f);
+
+    sprintf(buffer,"%s%s", buffer, page_01);
+    sprintf(buffer, "%s%s%s%.2f%s%s%.2f%s", buffer, html_row_01, gauge_temp, data.chip_cap.temperature, html_row_02, gauge_hum, data.chip_cap.humidity, html_row_03);
+    sprintf(buffer, "%s%s%s%.2f%s%s%.2f%s",buffer, html_row_01, gauge_pres, data.mpl115a2.pressure, html_row_02, gauge_co2, (float)data.scd30.co2_value, html_row_03);
+
+    sprintf(buffer,"%s%s", buffer, page_02);
+
+    add_table_row(f, data.chip_cap.name, "temperature", data.chip_cap.temperature, "&#176C");
+    sprintf(buffer,"%s%s",buffer,f);
 
     add_table_row(f, data.chip_cap.name, "humidity", data.chip_cap.humidity, "%");
     sprintf(buffer,"%s%s",buffer,f);
@@ -158,22 +166,22 @@ void format_html(char *buffer) {
     add_table_row(f, data.scd30.name, "CO2", data.scd30.co2_value, "PPM");
     sprintf(buffer,"%s%s",buffer,f);
 
-    add_table_row(f, data.scd30.name, "temperature", data.scd30.temperature, "*C");
+    add_table_row(f, data.scd30.name, "temperature", data.scd30.temperature, "&#176C");
     sprintf(buffer,"%s%s",buffer,f);
 
     add_table_row(f, data.scd30.name, "humidity", data.scd30.humidity, "%");
     sprintf(buffer,"%s%s",buffer,f);
 
-    add_table_row(f, data.max31865.name, "Outside temperature", data.max31865.temperature, "*C");
+    add_table_row(f, data.max31865.name, "Outside temperature", data.max31865.temperature, "&#176C");
     sprintf(buffer,"%s%s",buffer,f);
 
-    add_table_row(f, data.mpl115a2.name, "temperature", data.mpl115a2.temperature, "*C");
+    add_table_row(f, data.mpl115a2.name, "temperature", data.mpl115a2.temperature, "&#176C");
     sprintf(buffer,"%s%s",buffer,f);
 
     add_table_row(f, data.mpl115a2.name, "pressure", data.mpl115a2.pressure, "KPa");
     sprintf(buffer,"%s%s",buffer,f);
 
-    sprintf(buffer,"%s%s",buffer,page_02);
+    sprintf(buffer,"%s%s",buffer,page_03);
 
 }
 
@@ -189,10 +197,9 @@ static void http_server_netconn_serve(struct netconn *conn) {
         netbuf_data(inbuf, (void**)&buf, &buflen);
 
         if( buflen >= 5 && strstr(buf,"GET /") != NULL ) {
-            char *str = malloc(1024 * 64);
+            char *str = calloc(1024 * 64, sizeof(char));
             if( str ) {
-//                format_html(str);
-                sprintf(str,"%s",page);
+                format_html(str);
             }
             else {
                 printf("*** ERROR allocating buffer.\n");
@@ -222,6 +229,7 @@ static void http_server_task() {
             http_server_netconn_serve(newconn);
             netconn_delete(newconn);
         }
+        vTaskDelay(1000 / portTICK_RATE_MS);
     } while(err == ERR_OK);
     netconn_close(conn);
     netconn_delete(conn);
