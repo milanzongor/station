@@ -24,7 +24,7 @@
 #define NACK_VAL 0x1                            /*!< I2C nack value */
 
 float count_temperature(uint8_t byte_1, uint8_t byte_2) {
-   return (float) (((byte_1 * 64 + (byte_2 >> 2) / 4) / pow(2, 14)) * 165 - 40);
+   return (float) (((byte_1 * 64 + (byte_2 >> 2)) / pow(2, 14)) * 165 - 40);
 }
 
 float count_humidity(uint8_t byte_1, uint8_t byte_2) {
