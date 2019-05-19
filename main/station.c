@@ -35,6 +35,7 @@
 #include "scd30_lib.h"
 #include "mpl115a2_lib.h"
 #include "max31865_lib.h"
+#include "mics6814_lib.h"
 
 // for I2C
 #define I2C_MASTER_SCL_IO 26               /*!< gpio number for I2C master clock */
@@ -51,7 +52,6 @@
 #define SENSOR_CO2_ADDR 0x61   /*!< slave address for chipchap sensor */
 #define SENSOR_CHIP_CAP_ADDR 0x28   /*!< slave address for chipchap sensor */
 #define SENSOR_PRESSURE_ADDR 0x60   /*!< slave address for chipchap sensor */
-
 
 // display VSPI
 #define PIN_CLK 18
@@ -76,18 +76,13 @@
 #define WIFI_SSID "esp_wifi"
 #define WIFI_PASS "mypassword"
 
+// mics6814
 #define DEFAULT_VREF    1100
-#define NO_OF_SAMPLES   64          //Multisampling
-#define MAX_VOLTAGE 3300
-#define R0_CO 500000                //500 kOhm
-#define R_CO 1056000
-
 #define PIN_NUM_MICS6418_POWER 19
 #define PIN_NUM_CO_TURN 32
-#define PIN_NUM_LED 22
 
 static esp_adc_cal_characteristics_t *adc_chars;
-static const adc_channel_t channel = ADC1_CHANNEL_5;     /*!< ADC1 channel 5 is GPIO33 */
+static const adc_channel_t channel = ADC1_CHANNEL_5;     // ADC1 channel 5 is GPIO33
 static const adc_atten_t atten = ADC_ATTEN_DB_6;        // 0dB attenuation
 static const adc_unit_t unit = ADC_UNIT_1;
 
@@ -105,78 +100,6 @@ void float_to_str(float float_var, char *out_buf){
     memcpy(out_buf, buf, BufSize*sizeof(*out_buf));
 }
 
-//---MiCS6814------------------------------------------------------------------------------------------------------------
-
-float count_co_ratio(int output_voltage){
-    float Rs = (MAX_VOLTAGE/output_voltage - 1)*R_CO;
-    return Rs/R0_CO;
-}
-
-double calculate_gas(int gas, int co_sensor_voltage)
-{
-    double ratio0 = 0.00; //NH3
-    double ratio1 = ((MAX_VOLTAGE/co_sensor_voltage- 1)*R_CO) / R0_CO; //CO sensor
-    double ratio2 = 0.00; //NO2
-
-    double c = 0;
-    switch(gas)
-    {
-        case CO:
-        {
-            c = pow(ratio1, -1.179)*4.385;
-            break;
-        }
-        case NO2:
-        {
-            c = pow(ratio2, 1.007)/6.855;
-            break;
-        }
-        case NH3:
-        {
-            c = pow(ratio0, -1.67)/1.47;
-            break;
-        }
-        case C3H8:
-        {
-            c = pow(ratio0, -2.518)*570.164;
-            break;
-        }
-        case C4H10:
-        {
-            c = pow(ratio0, -2.138)*398.107;
-            break;
-        }
-        case CH4:
-        {
-            c = pow(ratio1, -4.363)*630.957;
-            break;
-        }
-        case H2:
-        {
-            c = pow(ratio1, -1.8)*0.73;
-            break;
-        }
-        case C2H5OH:
-        {
-            c = pow(ratio1, -1.552)*1.622;
-            break;
-        }
-        default:
-            break;
-    }
-
-    return c;
-}
-
-uint32_t read_adc(){
-    uint32_t adc_reading = 0;
-    //Multisampling
-    for (int i = 0; i < NO_OF_SAMPLES; i++) {
-        adc_reading += adc1_get_raw((adc1_channel_t)channel);
-    }
-    adc_reading /= NO_OF_SAMPLES;
-    return adc_reading;
-}
 
 //---WIFI---------------------------------------------------------------------------------------------------------------
 //    event handler for wifi task
@@ -231,7 +154,7 @@ void add_table_row(char f[], char name[], char measurement[], float value, char 
 }
 
 
-void format_html(char *buffer) {
+static void format_html(char *buffer) {
     char f[512];
 
     sprintf(buffer,"%s%s", buffer, page_01);
@@ -246,7 +169,7 @@ void format_html(char *buffer) {
     add_table_row(f, data.chip_cap.name, "humidity", data.chip_cap.humidity, "%");
     sprintf(buffer,"%s%s",buffer,f);
 
-    add_table_row(f, data.scd30.name, "CO2", data.scd30.co2_value, "PPM");
+    add_table_row(f, data.scd30.name, "CO2", data.scd30.co2_value, "ppm");
     sprintf(buffer,"%s%s",buffer,f);
 
     add_table_row(f, data.scd30.name, "temperature", data.scd30.temperature, "&#176C");
@@ -262,6 +185,18 @@ void format_html(char *buffer) {
     sprintf(buffer,"%s%s",buffer,f);
 
     add_table_row(f, data.mpl115a2.name, "pressure", data.mpl115a2.pressure, "KPa");
+    sprintf(buffer,"%s%s",buffer,f);
+
+    add_table_row(f, data.mics6814.name, "CO", (float) data.mics6814.co, "ppm");
+    sprintf(buffer,"%s%s",buffer,f);
+
+    add_table_row(f, data.mics6814.name, "H2", (float) data.mics6814.h2, "ppm");
+    sprintf(buffer,"%s%s",buffer,f);
+
+    add_table_row(f, data.mics6814.name, "CH4", (float) data.mics6814.ch4, "ppm");
+    sprintf(buffer,"%s%s",buffer,f);
+
+    add_table_row(f, data.mics6814.name, "C2H5OH", (float) data.mics6814.c2h5oh, "ppm");
     sprintf(buffer,"%s%s",buffer,f);
 
     sprintf(buffer,"%s%s",buffer,page_03);
@@ -425,7 +360,7 @@ static void display_task()
 //        printf("SCD30 --> CO2: %d PPM, Temperature: %.2f , Humidity: %.2f \n", data.scd30.co2_value, data.scd30.temperature, data.scd30.humidity);
 //        printf("\n");
 
-        adc_reading = read_adc();
+        adc_reading = read_adc(channel);
         int co_sensor_voltage = esp_adc_cal_raw_to_voltage(adc_reading, adc_chars);
 //        float ratio_co = count_co_ratio(co_sensor_voltage);
         data.mics6814.co = calculate_gas(CO, co_sensor_voltage);
@@ -449,24 +384,37 @@ static void display_task()
 
         u8g2_DrawStr(&u8g2, 0,30,"MAX31865: T:");
         float_to_str(data.max31865.temperature, buf);
-        u8g2_DrawStr(&u8g2, 100, 30, buf);
+        u8g2_DrawStr(&u8g2, 90, 30, buf);
 
         u8g2_DrawStr(&u8g2, 0,45,"MPL115A2: P:");
         float_to_str(data.mpl115a2.pressure, buf);
-        u8g2_DrawStr(&u8g2, 100, 45, buf);
+        u8g2_DrawStr(&u8g2, 90, 45, buf);
         u8g2_DrawStr(&u8g2, 140,45,"T:");
         float_to_str(data.mpl115a2.temperature, buf);
         u8g2_DrawStr(&u8g2, 160, 45, buf);
 
         u8g2_DrawStr(&u8g2, 0,60,"SCD30: C02:");
         float_to_str(data.scd30.co2_value, buf);
-        u8g2_DrawStr(&u8g2, 100, 60, buf);
+        u8g2_DrawStr(&u8g2, 80, 60, buf);
         u8g2_DrawStr(&u8g2, 0,75,"SCD30: T:");
         float_to_str(data.scd30.temperature, buf);
-        u8g2_DrawStr(&u8g2, 100, 75, buf);
-        u8g2_DrawStr(&u8g2, 140,75,"H:");
+        u8g2_DrawStr(&u8g2, 80, 75, buf);
+        u8g2_DrawStr(&u8g2, 120,75,"H:");
         float_to_str(data.scd30.humidity, buf);
-        u8g2_DrawStr(&u8g2, 160, 75, buf);
+        u8g2_DrawStr(&u8g2, 140, 75, buf);
+
+        u8g2_DrawStr(&u8g2, 0,90,"MiCS-6814: CO:");
+        float_to_str((float) data.mics6814.co, buf);
+        u8g2_DrawStr(&u8g2, 100, 90, buf);
+        u8g2_DrawStr(&u8g2, 140,90,"H2:");
+        float_to_str((float) data.mics6814.h2, buf);
+        u8g2_DrawStr(&u8g2, 170, 90, buf);
+        u8g2_DrawStr(&u8g2, 0,105,"MiCS-6814: CH4:");
+        float_to_str((float) data.mics6814.ch4, buf);
+        u8g2_DrawStr(&u8g2, 110, 105, buf);
+        u8g2_DrawStr(&u8g2, 145,105,"C2H5OH:");
+        float_to_str((float) data.mics6814.c2h5oh, buf);
+        u8g2_DrawStr(&u8g2, 205, 105, buf);
 
         u8g2_SendBuffer(&u8g2);
 
@@ -536,7 +484,7 @@ void app_main()
 
     xTaskCreate(display_task /* Pointer to task */,
                 "display_task" /* Name of task */,
-                1024 * 10 /* Stack depth in bytes */,
+                1024 * 20 /* Stack depth in bytes */,
                 NULL, /* Pointer as parameter for the task */
                 10, /* Priority of task */
                 NULL /* Handle of created task */);
@@ -559,4 +507,3 @@ void app_main()
 
 }
 
-//data-value-box="true"

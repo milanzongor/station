@@ -76,7 +76,7 @@ CMakeFiles/app-flash.dir/all: CMakeFiles/app.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/app-flash.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/milan/Desktop/BP/station/cmake-build-debug/CMakeFiles 89
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/milan/Desktop/BP/station/cmake-build-debug/CMakeFiles 88
 	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/app-flash.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/milan/Desktop/BP/station/cmake-build-debug/CMakeFiles 0
 .PHONY : CMakeFiles/app-flash.dir/rule
@@ -110,7 +110,7 @@ CMakeFiles/flash.dir/all: partition_table/CMakeFiles/partition_table.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/flash.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/milan/Desktop/BP/station/cmake-build-debug/CMakeFiles 90
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/milan/Desktop/BP/station/cmake-build-debug/CMakeFiles 89
 	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/flash.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/milan/Desktop/BP/station/cmake-build-debug/CMakeFiles 0
 .PHONY : CMakeFiles/flash.dir/rule
@@ -148,7 +148,7 @@ all: CMakeFiles/app.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/app.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/milan/Desktop/BP/station/cmake-build-debug/CMakeFiles 89
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/milan/Desktop/BP/station/cmake-build-debug/CMakeFiles 88
 	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/app.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/milan/Desktop/BP/station/cmake-build-debug/CMakeFiles 0
 .PHONY : CMakeFiles/app.dir/rule
@@ -272,6 +272,7 @@ CMakeFiles/station.elf.dir/all: cxx/CMakeFiles/cxx.dir/all
 CMakeFiles/station.elf.dir/all: sdmmc/CMakeFiles/sdmmc.dir/all
 CMakeFiles/station.elf.dir/all: chip_cap_2_lib/CMakeFiles/chip_cap_2_lib.dir/all
 CMakeFiles/station.elf.dir/all: max31865_lib/CMakeFiles/max31865_lib.dir/all
+CMakeFiles/station.elf.dir/all: mics6814_lib/CMakeFiles/mics6814_lib.dir/all
 CMakeFiles/station.elf.dir/all: mpl115a2_lib/CMakeFiles/mpl115a2_lib.dir/all
 CMakeFiles/station.elf.dir/all: scd30_lib/CMakeFiles/scd30_lib.dir/all
 CMakeFiles/station.elf.dir/all: u8g2_esp32_hal/CMakeFiles/u8g2_esp32_hal.dir/all
@@ -314,7 +315,7 @@ all: CMakeFiles/station.elf.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/station.elf.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/milan/Desktop/BP/station/cmake-build-debug/CMakeFiles 89
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/milan/Desktop/BP/station/cmake-build-debug/CMakeFiles 88
 	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/station.elf.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/milan/Desktop/BP/station/cmake-build-debug/CMakeFiles 0
 .PHONY : CMakeFiles/station.elf.dir/rule
@@ -346,7 +347,7 @@ CMakeFiles/size.dir/all: CMakeFiles/station.elf.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/size.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/milan/Desktop/BP/station/cmake-build-debug/CMakeFiles 89
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/milan/Desktop/BP/station/cmake-build-debug/CMakeFiles 88
 	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/size.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/milan/Desktop/BP/station/cmake-build-debug/CMakeFiles 0
 .PHONY : CMakeFiles/size.dir/rule
@@ -378,7 +379,7 @@ CMakeFiles/size-components.dir/all: CMakeFiles/station.elf.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/size-components.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/milan/Desktop/BP/station/cmake-build-debug/CMakeFiles 89
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/milan/Desktop/BP/station/cmake-build-debug/CMakeFiles 88
 	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/size-components.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/milan/Desktop/BP/station/cmake-build-debug/CMakeFiles 0
 .PHONY : CMakeFiles/size-components.dir/rule
@@ -410,7 +411,7 @@ CMakeFiles/menuconfig.dir/all: CMakeFiles/mconf-idf.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/menuconfig.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/milan/Desktop/BP/station/cmake-build-debug/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/milan/Desktop/BP/station/cmake-build-debug/CMakeFiles 1
 	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/menuconfig.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/milan/Desktop/BP/station/cmake-build-debug/CMakeFiles 0
 .PHONY : CMakeFiles/menuconfig.dir/rule
@@ -437,12 +438,12 @@ clean: CMakeFiles/menuconfig.dir/clean
 CMakeFiles/mconf-idf.dir/all:
 	$(MAKE) -f CMakeFiles/mconf-idf.dir/build.make CMakeFiles/mconf-idf.dir/depend
 	$(MAKE) -f CMakeFiles/mconf-idf.dir/build.make CMakeFiles/mconf-idf.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/milan/Desktop/BP/station/cmake-build-debug/CMakeFiles --progress-num= "Built target mconf-idf"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/milan/Desktop/BP/station/cmake-build-debug/CMakeFiles --progress-num=71 "Built target mconf-idf"
 .PHONY : CMakeFiles/mconf-idf.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/mconf-idf.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/milan/Desktop/BP/station/cmake-build-debug/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/milan/Desktop/BP/station/cmake-build-debug/CMakeFiles 1
 	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/mconf-idf.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/milan/Desktop/BP/station/cmake-build-debug/CMakeFiles 0
 .PHONY : CMakeFiles/mconf-idf.dir/rule
@@ -506,7 +507,7 @@ CMakeFiles/size-files.dir/all: CMakeFiles/station.elf.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/size-files.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/milan/Desktop/BP/station/cmake-build-debug/CMakeFiles 89
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/milan/Desktop/BP/station/cmake-build-debug/CMakeFiles 88
 	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/size-files.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/milan/Desktop/BP/station/cmake-build-debug/CMakeFiles 0
 .PHONY : CMakeFiles/size-files.dir/rule
@@ -571,7 +572,7 @@ CMakeFiles/ldgen.dir/all: esp32/CMakeFiles/ldgen_esp32.common.ld_script.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/ldgen.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/milan/Desktop/BP/station/cmake-build-debug/CMakeFiles 14
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/milan/Desktop/BP/station/cmake-build-debug/CMakeFiles 13
 	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/ldgen.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/milan/Desktop/BP/station/cmake-build-debug/CMakeFiles 0
 .PHONY : CMakeFiles/ldgen.dir/rule
@@ -1435,7 +1436,7 @@ esp_event/preinstall:
 esp_event/CMakeFiles/esp_event.dir/all:
 	$(MAKE) -f esp_event/CMakeFiles/esp_event.dir/build.make esp_event/CMakeFiles/esp_event.dir/depend
 	$(MAKE) -f esp_event/CMakeFiles/esp_event.dir/build.make esp_event/CMakeFiles/esp_event.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/milan/Desktop/BP/station/cmake-build-debug/CMakeFiles --progress-num= "Built target esp_event"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/milan/Desktop/BP/station/cmake-build-debug/CMakeFiles --progress-num=26 "Built target esp_event"
 .PHONY : esp_event/CMakeFiles/esp_event.dir/all
 
 # Include target in all.
@@ -1445,7 +1446,7 @@ all: esp_event/CMakeFiles/esp_event.dir/all
 
 # Build rule for subdir invocation for target.
 esp_event/CMakeFiles/esp_event.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/milan/Desktop/BP/station/cmake-build-debug/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/milan/Desktop/BP/station/cmake-build-debug/CMakeFiles 1
 	$(MAKE) -f CMakeFiles/Makefile2 esp_event/CMakeFiles/esp_event.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/milan/Desktop/BP/station/cmake-build-debug/CMakeFiles 0
 .PHONY : esp_event/CMakeFiles/esp_event.dir/rule
@@ -1853,7 +1854,7 @@ mbedtls/preinstall:
 mbedtls/CMakeFiles/mbedtls.dir/all:
 	$(MAKE) -f mbedtls/CMakeFiles/mbedtls.dir/build.make mbedtls/CMakeFiles/mbedtls.dir/depend
 	$(MAKE) -f mbedtls/CMakeFiles/mbedtls.dir/build.make mbedtls/CMakeFiles/mbedtls.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/milan/Desktop/BP/station/cmake-build-debug/CMakeFiles --progress-num=61,62,63,64,65,66,67,68,69,70,71 "Built target mbedtls"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/milan/Desktop/BP/station/cmake-build-debug/CMakeFiles --progress-num=61,62,63,64,65,66,67,68,69,70 "Built target mbedtls"
 .PHONY : mbedtls/CMakeFiles/mbedtls.dir/all
 
 # Include target in all.
@@ -1863,7 +1864,7 @@ all: mbedtls/CMakeFiles/mbedtls.dir/all
 
 # Build rule for subdir invocation for target.
 mbedtls/CMakeFiles/mbedtls.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/milan/Desktop/BP/station/cmake-build-debug/CMakeFiles 11
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/milan/Desktop/BP/station/cmake-build-debug/CMakeFiles 10
 	$(MAKE) -f CMakeFiles/Makefile2 mbedtls/CMakeFiles/mbedtls.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/milan/Desktop/BP/station/cmake-build-debug/CMakeFiles 0
 .PHONY : mbedtls/CMakeFiles/mbedtls.dir/rule
@@ -2278,12 +2279,12 @@ clean: esp32/CMakeFiles/esp32.dir/clean
 esp32/CMakeFiles/ldgen_esp32.common.ld_script.dir/all: CMakeFiles/ldgen_section_infos.dir/all
 	$(MAKE) -f esp32/CMakeFiles/ldgen_esp32.common.ld_script.dir/build.make esp32/CMakeFiles/ldgen_esp32.common.ld_script.dir/depend
 	$(MAKE) -f esp32/CMakeFiles/ldgen_esp32.common.ld_script.dir/build.make esp32/CMakeFiles/ldgen_esp32.common.ld_script.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/milan/Desktop/BP/station/cmake-build-debug/CMakeFiles --progress-num=37 "Built target ldgen_esp32.common.ld_script"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/milan/Desktop/BP/station/cmake-build-debug/CMakeFiles --progress-num= "Built target ldgen_esp32.common.ld_script"
 .PHONY : esp32/CMakeFiles/ldgen_esp32.common.ld_script.dir/all
 
 # Build rule for subdir invocation for target.
 esp32/CMakeFiles/ldgen_esp32.common.ld_script.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/milan/Desktop/BP/station/cmake-build-debug/CMakeFiles 14
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/milan/Desktop/BP/station/cmake-build-debug/CMakeFiles 13
 	$(MAKE) -f CMakeFiles/Makefile2 esp32/CMakeFiles/ldgen_esp32.common.ld_script.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/milan/Desktop/BP/station/cmake-build-debug/CMakeFiles 0
 .PHONY : esp32/CMakeFiles/ldgen_esp32.common.ld_script.dir/rule
@@ -2584,6 +2585,61 @@ max31865_lib/CMakeFiles/max31865_lib.dir/clean:
 
 # clean rule for target.
 clean: max31865_lib/CMakeFiles/max31865_lib.dir/clean
+
+.PHONY : clean
+
+#=============================================================================
+# Directory level rules for directory mics6814_lib
+
+# Convenience name for "all" pass in the directory.
+mics6814_lib/all: mics6814_lib/CMakeFiles/mics6814_lib.dir/all
+
+.PHONY : mics6814_lib/all
+
+# Convenience name for "clean" pass in the directory.
+mics6814_lib/clean: mics6814_lib/CMakeFiles/mics6814_lib.dir/clean
+
+.PHONY : mics6814_lib/clean
+
+# Convenience name for "preinstall" pass in the directory.
+mics6814_lib/preinstall:
+
+.PHONY : mics6814_lib/preinstall
+
+#=============================================================================
+# Target rules for target mics6814_lib/CMakeFiles/mics6814_lib.dir
+
+# All Build rule for target.
+mics6814_lib/CMakeFiles/mics6814_lib.dir/all:
+	$(MAKE) -f mics6814_lib/CMakeFiles/mics6814_lib.dir/build.make mics6814_lib/CMakeFiles/mics6814_lib.dir/depend
+	$(MAKE) -f mics6814_lib/CMakeFiles/mics6814_lib.dir/build.make mics6814_lib/CMakeFiles/mics6814_lib.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/milan/Desktop/BP/station/cmake-build-debug/CMakeFiles --progress-num= "Built target mics6814_lib"
+.PHONY : mics6814_lib/CMakeFiles/mics6814_lib.dir/all
+
+# Include target in all.
+all: mics6814_lib/CMakeFiles/mics6814_lib.dir/all
+
+.PHONY : all
+
+# Build rule for subdir invocation for target.
+mics6814_lib/CMakeFiles/mics6814_lib.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/milan/Desktop/BP/station/cmake-build-debug/CMakeFiles 0
+	$(MAKE) -f CMakeFiles/Makefile2 mics6814_lib/CMakeFiles/mics6814_lib.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/milan/Desktop/BP/station/cmake-build-debug/CMakeFiles 0
+.PHONY : mics6814_lib/CMakeFiles/mics6814_lib.dir/rule
+
+# Convenience name for target.
+mics6814_lib: mics6814_lib/CMakeFiles/mics6814_lib.dir/rule
+
+.PHONY : mics6814_lib
+
+# clean rule for target.
+mics6814_lib/CMakeFiles/mics6814_lib.dir/clean:
+	$(MAKE) -f mics6814_lib/CMakeFiles/mics6814_lib.dir/build.make mics6814_lib/CMakeFiles/mics6814_lib.dir/clean
+.PHONY : mics6814_lib/CMakeFiles/mics6814_lib.dir/clean
+
+# clean rule for target.
+clean: mics6814_lib/CMakeFiles/mics6814_lib.dir/clean
 
 .PHONY : clean
 
@@ -3161,7 +3217,7 @@ esp_adc_cal/preinstall:
 esp_adc_cal/CMakeFiles/esp_adc_cal.dir/all:
 	$(MAKE) -f esp_adc_cal/CMakeFiles/esp_adc_cal.dir/build.make esp_adc_cal/CMakeFiles/esp_adc_cal.dir/depend
 	$(MAKE) -f esp_adc_cal/CMakeFiles/esp_adc_cal.dir/build.make esp_adc_cal/CMakeFiles/esp_adc_cal.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/milan/Desktop/BP/station/cmake-build-debug/CMakeFiles --progress-num=26 "Built target esp_adc_cal"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/milan/Desktop/BP/station/cmake-build-debug/CMakeFiles --progress-num= "Built target esp_adc_cal"
 .PHONY : esp_adc_cal/CMakeFiles/esp_adc_cal.dir/all
 
 # Include target in all.
@@ -3171,7 +3227,7 @@ all: esp_adc_cal/CMakeFiles/esp_adc_cal.dir/all
 
 # Build rule for subdir invocation for target.
 esp_adc_cal/CMakeFiles/esp_adc_cal.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/milan/Desktop/BP/station/cmake-build-debug/CMakeFiles 1
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/milan/Desktop/BP/station/cmake-build-debug/CMakeFiles 0
 	$(MAKE) -f CMakeFiles/Makefile2 esp_adc_cal/CMakeFiles/esp_adc_cal.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/milan/Desktop/BP/station/cmake-build-debug/CMakeFiles 0
 .PHONY : esp_adc_cal/CMakeFiles/esp_adc_cal.dir/rule
@@ -3454,7 +3510,7 @@ expat/preinstall:
 expat/CMakeFiles/expat.dir/all:
 	$(MAKE) -f expat/CMakeFiles/expat.dir/build.make expat/CMakeFiles/expat.dir/depend
 	$(MAKE) -f expat/CMakeFiles/expat.dir/build.make expat/CMakeFiles/expat.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/milan/Desktop/BP/station/cmake-build-debug/CMakeFiles --progress-num=30 "Built target expat"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/milan/Desktop/BP/station/cmake-build-debug/CMakeFiles --progress-num= "Built target expat"
 .PHONY : expat/CMakeFiles/expat.dir/all
 
 # Include target in all.
@@ -3464,7 +3520,7 @@ all: expat/CMakeFiles/expat.dir/all
 
 # Build rule for subdir invocation for target.
 expat/CMakeFiles/expat.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/milan/Desktop/BP/station/cmake-build-debug/CMakeFiles 1
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/milan/Desktop/BP/station/cmake-build-debug/CMakeFiles 0
 	$(MAKE) -f CMakeFiles/Makefile2 expat/CMakeFiles/expat.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/milan/Desktop/BP/station/cmake-build-debug/CMakeFiles 0
 .PHONY : expat/CMakeFiles/expat.dir/rule
@@ -3564,7 +3620,7 @@ fatfs/preinstall:
 fatfs/CMakeFiles/fatfs.dir/all:
 	$(MAKE) -f fatfs/CMakeFiles/fatfs.dir/build.make fatfs/CMakeFiles/fatfs.dir/depend
 	$(MAKE) -f fatfs/CMakeFiles/fatfs.dir/build.make fatfs/CMakeFiles/fatfs.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/milan/Desktop/BP/station/cmake-build-debug/CMakeFiles --progress-num=31 "Built target fatfs"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/milan/Desktop/BP/station/cmake-build-debug/CMakeFiles --progress-num=30,31 "Built target fatfs"
 .PHONY : fatfs/CMakeFiles/fatfs.dir/all
 
 # Include target in all.
@@ -3574,7 +3630,7 @@ all: fatfs/CMakeFiles/fatfs.dir/all
 
 # Build rule for subdir invocation for target.
 fatfs/CMakeFiles/fatfs.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/milan/Desktop/BP/station/cmake-build-debug/CMakeFiles 1
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/milan/Desktop/BP/station/cmake-build-debug/CMakeFiles 2
 	$(MAKE) -f CMakeFiles/Makefile2 fatfs/CMakeFiles/fatfs.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/milan/Desktop/BP/station/cmake-build-debug/CMakeFiles 0
 .PHONY : fatfs/CMakeFiles/fatfs.dir/rule
@@ -3747,7 +3803,7 @@ libsodium/preinstall:
 libsodium/CMakeFiles/libsodium.dir/all:
 	$(MAKE) -f libsodium/CMakeFiles/libsodium.dir/build.make libsodium/CMakeFiles/libsodium.dir/depend
 	$(MAKE) -f libsodium/CMakeFiles/libsodium.dir/build.make libsodium/CMakeFiles/libsodium.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/milan/Desktop/BP/station/cmake-build-debug/CMakeFiles --progress-num=38,39,40,41,42,43,44,45,46,47,48,49,50 "Built target libsodium"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/milan/Desktop/BP/station/cmake-build-debug/CMakeFiles --progress-num=37,38,39,40,41,42,43,44,45,46,47,48,49,50 "Built target libsodium"
 .PHONY : libsodium/CMakeFiles/libsodium.dir/all
 
 # Include target in all.
@@ -3757,7 +3813,7 @@ all: libsodium/CMakeFiles/libsodium.dir/all
 
 # Build rule for subdir invocation for target.
 libsodium/CMakeFiles/libsodium.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/milan/Desktop/BP/station/cmake-build-debug/CMakeFiles 13
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/milan/Desktop/BP/station/cmake-build-debug/CMakeFiles 14
 	$(MAKE) -f CMakeFiles/Makefile2 libsodium/CMakeFiles/libsodium.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/milan/Desktop/BP/station/cmake-build-debug/CMakeFiles 0
 .PHONY : libsodium/CMakeFiles/libsodium.dir/rule

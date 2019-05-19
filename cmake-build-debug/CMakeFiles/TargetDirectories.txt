@@ -113,6 +113,9 @@
 /home/milan/Desktop/BP/station/cmake-build-debug/max31865_lib/CMakeFiles/edit_cache.dir
 /home/milan/Desktop/BP/station/cmake-build-debug/max31865_lib/CMakeFiles/rebuild_cache.dir
 /home/milan/Desktop/BP/station/cmake-build-debug/max31865_lib/CMakeFiles/max31865_lib.dir
+/home/milan/Desktop/BP/station/cmake-build-debug/mics6814_lib/CMakeFiles/edit_cache.dir
+/home/milan/Desktop/BP/station/cmake-build-debug/mics6814_lib/CMakeFiles/rebuild_cache.dir
+/home/milan/Desktop/BP/station/cmake-build-debug/mics6814_lib/CMakeFiles/mics6814_lib.dir
 /home/milan/Desktop/BP/station/cmake-build-debug/mpl115a2_lib/CMakeFiles/rebuild_cache.dir
 /home/milan/Desktop/BP/station/cmake-build-debug/mpl115a2_lib/CMakeFiles/edit_cache.dir
 /home/milan/Desktop/BP/station/cmake-build-debug/mpl115a2_lib/CMakeFiles/mpl115a2_lib.dir
