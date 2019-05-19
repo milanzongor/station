@@ -14,6 +14,10 @@
 
 #include "max31865_lib.h"
 
+#define RTD_A 3.9083e-3
+#define RTD_B -5.775e-7
+#define R0 100
+
 uint8_t max31865_read[] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}; // 9 bytes to read
 size_t max31865_read_length = sizeof(max31865_read); // equals 9
 double Rref = 360.19; // reference resistor for PT100
@@ -56,7 +60,7 @@ esp_err_t max31865_init(spi_device_handle_t spi) {
 float max31865_temperature(uint8_t *rx_read){
    unsigned int RTDdata;
    unsigned int ADCcode;
-   double R;
+   double Rt;
    double temp = 0.0;
 
    RTDdata = rx_read[2] << 8 | rx_read[3]; // MSB + LSB
@@ -66,12 +70,26 @@ float max31865_temperature(uint8_t *rx_read){
 
    } else {
       ADCcode = RTDdata >> 1;
-      R       = (double)ADCcode * Rref / 32768;
-      temp    = ((double)ADCcode / 32) - 256;
-
+      Rt       = (double)ADCcode * Rref / 32768;
+      temp = (-R0*RTD_A + sqrt(R0*R0*RTD_A*RTD_A - 4*R0*RTD_B*(R0-Rt)))/(2*R0*RTD_B);
+      if(temp < 0){
+          Rt /= R0;
+          Rt *= 100;
+          double rpoly = Rt;
+          temp = -242.02;
+          temp += 2.2228 * rpoly;
+          rpoly *= Rt;  // square
+          temp += 2.5859e-3 * rpoly;
+          rpoly *= Rt;  // ^3
+          temp -= 4.8260e-6 * rpoly;
+          rpoly *= Rt;  // ^4
+          temp -= 2.8183e-8 * rpoly;
+          rpoly *= Rt;  // ^5
+          temp += 1.5243e-10 * rpoly;
+      }
 //        printf(" > RTDdata = %04x\n", RTDdata);
 //        printf(" > ADCcode = %d\n",   ADCcode);
-//        printf(" > R       = %f\n",   R);
+//        printf(" > Rt       = %f\n",   Rt);
 //        printf(" > temp    = %f\n",   temp);
    }
 
