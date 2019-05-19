@@ -86,15 +86,6 @@ void float_to_str(float float_var, char *out_buf){
     memcpy(out_buf, buf, BufSize*sizeof(*out_buf));
 }
 
-//unsigned long get_time() {
-//    struct timeval tv;
-//    gettimeofday(&tv, NULL);
-//    unsigned long ret = tv.tv_usec;
-//    ret /= 1000;
-//    ret += (tv.tv_sec * 1000);
-//    return ret;
-//}
-
 //---WIFI---------------------------------------------------------------------------------------------------------------
 //    event handler for wifi task
 static esp_err_t event_handler(void *ctx, system_event_t *event) {
@@ -300,6 +291,10 @@ static void display_task()
     time_t curtime;
     struct tm *loc_time;
 
+    gpio_set_level(PIN_NUM_LED, 0);
+
+    printf("%s,%s,%s,%s,%s,%s,%s,%s,%s\n", "data.chip_cap.humidity", "data.chip_cap.temperature", "data.max31865.temperature", "data.mpl115a2.pressure", "data.mpl115a2.temperature", "data.scd30.co2_value", "data.scd30.temperature", "data.scd30.humidity", "time_from_startup");
+
     while(1) {
         vTaskDelay(2000 / portTICK_RATE_MS);
 
@@ -326,7 +321,6 @@ static void display_task()
 //        printf("\n");
         curtime = time(NULL);
         loc_time = gmtime(&curtime);
-//        printf ( "%d:%d:%d\n", loc_time->tm_hour, loc_time->tm_min, loc_time->tm_sec );
         printf("%.2f,%.2f,%.2f,%.2f,%.2f,%d,%.2f,%.2f,%d:%d:%d\n", data.chip_cap.humidity, data.chip_cap.temperature, data.max31865.temperature, data.mpl115a2.pressure, data.mpl115a2.temperature, data.scd30.co2_value, data.scd30.temperature, data.scd30.humidity, loc_time->tm_hour, loc_time->tm_min, loc_time->tm_sec);
 
         u8g2_ClearBuffer(&u8g2);
@@ -360,8 +354,14 @@ static void display_task()
         float_to_str(data.scd30.humidity, buf);
         u8g2_DrawStr(&u8g2, 160, 75, buf);
 
-
         u8g2_SendBuffer(&u8g2);
+
+        // indicate bad co2 conditions
+        if(data.scd30.co2_value > 1200){
+            gpio_set_level(PIN_NUM_LED, 1);
+        } else {
+            gpio_set_level(PIN_NUM_LED, 0);
+        }
     }
 
     vTaskDelete(NULL);
@@ -417,7 +417,6 @@ void app_main()
     ESP_ERROR_CHECK(ret);
 
     initialise_wifi();
-
 
     xTaskCreate(display_task /* Pointer to task */,
                 "display_task" /* Name of task */,
