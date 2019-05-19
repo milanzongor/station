@@ -12,6 +12,8 @@
 #include "driver/i2c.h"
 #include "driver/gpio.h"
 #include "driver/ledc.h"
+#include "driver/adc.h"
+#include "esp_adc_cal.h"
 #include "tcpip_adapter.h"
 #include "lwip/err.h"
 #include "lwip/sys.h"
@@ -74,6 +76,23 @@
 #define WIFI_SSID "esp_wifi"
 #define WIFI_PASS "mypassword"
 
+#define DEFAULT_VREF    1100
+#define NO_OF_SAMPLES   64          //Multisampling
+#define MAX_VOLTAGE 3300
+#define R0_CO 500000                //500 kOhm
+#define R_CO 1056000
+
+#define PIN_NUM_MICS6418_POWER 19
+#define PIN_NUM_CO_TURN 32
+#define PIN_NUM_LED 22
+
+static esp_adc_cal_characteristics_t *adc_chars;
+static const adc_channel_t channel = ADC1_CHANNEL_5;     /*!< ADC1 channel 5 is GPIO33 */
+static const adc_atten_t atten = ADC_ATTEN_DB_6;        // 0dB attenuation
+static const adc_unit_t unit = ADC_UNIT_1;
+
+enum{CO, NO2, NH3, C3H8, C4H10, CH4, H2, C2H5OH};
+
 static EventGroupHandle_t wifi_event_group;
 const int CONNECTED_BIT = BIT0;
 
@@ -84,6 +103,79 @@ void float_to_str(float float_var, char *out_buf){
     char buf[BufSize];
     snprintf (buf, BufSize, "%.2f", float_var);
     memcpy(out_buf, buf, BufSize*sizeof(*out_buf));
+}
+
+//---MiCS6814------------------------------------------------------------------------------------------------------------
+
+float count_co_ratio(int output_voltage){
+    float Rs = (MAX_VOLTAGE/output_voltage - 1)*R_CO;
+    return Rs/R0_CO;
+}
+
+double calculate_gas(int gas, int co_sensor_voltage)
+{
+    double ratio0 = 0.00; //NH3
+    double ratio1 = ((MAX_VOLTAGE/co_sensor_voltage- 1)*R_CO) / R0_CO; //CO sensor
+    double ratio2 = 0.00; //NO2
+
+    double c = 0;
+    switch(gas)
+    {
+        case CO:
+        {
+            c = pow(ratio1, -1.179)*4.385;
+            break;
+        }
+        case NO2:
+        {
+            c = pow(ratio2, 1.007)/6.855;
+            break;
+        }
+        case NH3:
+        {
+            c = pow(ratio0, -1.67)/1.47;
+            break;
+        }
+        case C3H8:
+        {
+            c = pow(ratio0, -2.518)*570.164;
+            break;
+        }
+        case C4H10:
+        {
+            c = pow(ratio0, -2.138)*398.107;
+            break;
+        }
+        case CH4:
+        {
+            c = pow(ratio1, -4.363)*630.957;
+            break;
+        }
+        case H2:
+        {
+            c = pow(ratio1, -1.8)*0.73;
+            break;
+        }
+        case C2H5OH:
+        {
+            c = pow(ratio1, -1.552)*1.622;
+            break;
+        }
+        default:
+            break;
+    }
+
+    return c;
+}
+
+uint32_t read_adc(){
+    uint32_t adc_reading = 0;
+    //Multisampling
+    for (int i = 0; i < NO_OF_SAMPLES; i++) {
+        adc_reading += adc1_get_raw((adc1_channel_t)channel);
+    }
+    adc_reading /= NO_OF_SAMPLES;
+    return adc_reading;
 }
 
 //---WIFI---------------------------------------------------------------------------------------------------------------
@@ -255,6 +347,18 @@ static void display_task()
             .spics_io_num=PIN_NUM_CS,               //CS pin
             .queue_size=7,                          //We want to be able to queue 7 transactions at a time
     };
+
+    //---MiCS6814---
+    gpio_set_direction(PIN_NUM_CO_TURN, GPIO_MODE_INPUT); /* Set the GPIO as an input - to reach high impedance */
+    gpio_set_direction(PIN_NUM_MICS6418_POWER, GPIO_MODE_OUTPUT); /* Set the GPIO as a output */
+    gpio_set_level(PIN_NUM_MICS6418_POWER, 1);
+    //Configure ADC
+    adc1_config_width(ADC_WIDTH_BIT_12);
+    adc1_config_channel_atten(channel, atten);
+    adc_chars = calloc(1, sizeof(esp_adc_cal_characteristics_t));
+    esp_adc_cal_value_t val_type = esp_adc_cal_characterize(unit, atten, ADC_WIDTH_BIT_12, DEFAULT_VREF, adc_chars);
+    uint32_t adc_reading = 0;
+
     //---ChipCap---
     size_t chip_cap_data_length = 4;
     uint8_t *chip_cap_data_arr = (uint8_t *)malloc(chip_cap_data_length);
@@ -288,12 +392,13 @@ static void display_task()
     ESP_ERROR_CHECK(SCD30_start_periodic_measurement(I2C_MASTER_NUM)); // start periodic measurements
     vTaskDelay(1000 / portTICK_RATE_MS); // wait 1000ms after init
 
+    //---time---
     time_t curtime;
     struct tm *loc_time;
 
     gpio_set_level(PIN_NUM_LED, 0);
 
-    printf("%s,%s,%s,%s,%s,%s,%s,%s,%s\n", "data.chip_cap.humidity", "data.chip_cap.temperature", "data.max31865.temperature", "data.mpl115a2.pressure", "data.mpl115a2.temperature", "data.scd30.co2_value", "data.scd30.temperature", "data.scd30.humidity", "time_from_startup");
+    printf("%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s\n", "data.chip_cap.humidity", "data.chip_cap.temperature", "data.max31865.temperature", "data.mpl115a2.pressure", "data.mpl115a2.temperature", "data.scd30.co2_value", "data.scd30.temperature", "data.scd30.humidity", "data.mics6814.co", "data.mics6814.h2", "data.mics6814.ch4", "data.mics6814.c2h5oh", "time_from_startup");
 
     while(1) {
         vTaskDelay(2000 / portTICK_RATE_MS);
@@ -319,9 +424,18 @@ static void display_task()
         data.scd30.humidity = count_hum(co2_data_arr);
 //        printf("SCD30 --> CO2: %d PPM, Temperature: %.2f , Humidity: %.2f \n", data.scd30.co2_value, data.scd30.temperature, data.scd30.humidity);
 //        printf("\n");
+
+        adc_reading = read_adc();
+        int co_sensor_voltage = esp_adc_cal_raw_to_voltage(adc_reading, adc_chars);
+//        float ratio_co = count_co_ratio(co_sensor_voltage);
+        data.mics6814.co = calculate_gas(CO, co_sensor_voltage);
+        data.mics6814.h2 = calculate_gas(H2, co_sensor_voltage);
+        data.mics6814.ch4 = calculate_gas(CH4, co_sensor_voltage);
+        data.mics6814.c2h5oh = calculate_gas(C2H5OH, co_sensor_voltage);
+
         curtime = time(NULL);
         loc_time = gmtime(&curtime);
-        printf("%.2f,%.2f,%.2f,%.2f,%.2f,%d,%.2f,%.2f,%d:%d:%d\n", data.chip_cap.humidity, data.chip_cap.temperature, data.max31865.temperature, data.mpl115a2.pressure, data.mpl115a2.temperature, data.scd30.co2_value, data.scd30.temperature, data.scd30.humidity, loc_time->tm_hour, loc_time->tm_min, loc_time->tm_sec);
+        printf("%.2f,%.2f,%.2f,%.2f,%.2f,%d,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%d:%d:%d\n", data.chip_cap.humidity, data.chip_cap.temperature, data.max31865.temperature, data.mpl115a2.pressure, data.mpl115a2.temperature, data.scd30.co2_value, data.scd30.temperature, data.scd30.humidity, data.mics6814.co, data.mics6814.h2, data.mics6814.ch4, data.mics6814.c2h5oh, loc_time->tm_hour, loc_time->tm_min, loc_time->tm_sec);
 
         u8g2_ClearBuffer(&u8g2);
         u8g2_SetFont(&u8g2, u8g2_font_timB10_tr);
@@ -362,6 +476,7 @@ static void display_task()
         } else {
             gpio_set_level(PIN_NUM_LED, 0);
         }
+
     }
 
     vTaskDelete(NULL);
@@ -407,6 +522,7 @@ void app_main()
     strcpy(data.max31865.name, "MAX31865");
     strcpy(data.scd30.name, "SCD30");
     strcpy(data.mpl115a2.name, "MPL115A2");
+    strcpy(data.mics6814.name, "MiCS-6814");
 
     //Initialize NVS
     esp_err_t ret = nvs_flash_init();
@@ -442,3 +558,5 @@ void app_main()
     printf("End of main loop \n");
 
 }
+
+//data-value-box="true"

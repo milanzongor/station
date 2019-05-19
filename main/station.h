@@ -27,10 +27,19 @@ typedef struct {
 } sensor_max31865_struct;
 
 typedef struct {
+	char name[20];
+	double co;
+    double h2;
+    double ch4;
+    double c2h5oh;
+} sensor_mics6814_struct;
+
+typedef struct {
 	sensor_scd30_struct scd30;
 	sensor_mpl115a2_struct mpl115a2;
 	sensor_chip_cap_struct chip_cap;
 	sensor_max31865_struct max31865;
+    sensor_mics6814_struct mics6814;
 } sensor_data_struct;
 
 sensor_data_struct data;
