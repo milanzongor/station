@@ -14,7 +14,8 @@
 enum{CO, NO2, NH3, C3H8, C4H10, CH4, H2, C2H5OH};
 
 float count_co_ratio(int output_voltage){
-   float Rs = (MAX_VOLTAGE/output_voltage - 1)*R_CO;
+//   float Rs = (MAX_VOLTAGE/output_voltage - 1)*R_CO;
+    float Rs = R_CO*output_voltage/(MAX_VOLTAGE - output_voltage);
    return Rs/R0_CO;
 }
 

@@ -5,9 +5,9 @@
 #include "driver/adc.h"
 
 #define NO_OF_SAMPLES   64          //Multisampling
-#define MAX_VOLTAGE 3300
-#define R0_CO 500000                //500 kOhm
-#define R_CO 1056000
+#define MAX_VOLTAGE 3300.0
+#define R0_CO 1200000.0               //1.2 MOhm
+#define R_CO 1056000.0
 
 
 float count_co_ratio(int output_voltage);

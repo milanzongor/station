@@ -190,14 +190,14 @@ static void format_html(char *buffer) {
     add_table_row(f, data.mics6814.name, "CO", (float) data.mics6814.co, "ppm");
     sprintf(buffer,"%s%s",buffer,f);
 
-    add_table_row(f, data.mics6814.name, "H2", (float) data.mics6814.h2, "ppm");
-    sprintf(buffer,"%s%s",buffer,f);
-
-    add_table_row(f, data.mics6814.name, "CH4", (float) data.mics6814.ch4, "ppm");
-    sprintf(buffer,"%s%s",buffer,f);
-
-    add_table_row(f, data.mics6814.name, "C2H5OH", (float) data.mics6814.c2h5oh, "ppm");
-    sprintf(buffer,"%s%s",buffer,f);
+//    add_table_row(f, data.mics6814.name, "H2", (float) data.mics6814.h2, "ppm");
+//    sprintf(buffer,"%s%s",buffer,f);
+//
+//    add_table_row(f, data.mics6814.name, "CH4", (float) data.mics6814.ch4, "ppm");
+//    sprintf(buffer,"%s%s",buffer,f);
+//
+//    add_table_row(f, data.mics6814.name, "C2H5OH", (float) data.mics6814.c2h5oh, "ppm");
+//    sprintf(buffer,"%s%s",buffer,f);
 
     sprintf(buffer,"%s%s",buffer,page_03);
 
@@ -314,6 +314,11 @@ static void display_task()
 
     float A0, B1, B2, C12;
     sensor_pressure_count_coefficients(&A0, &B1, &B2, &C12, pressure_coeffs_arr);
+//    2271.500000, -2.708862, -1.014954, 0.000898
+//    A0 = 2009.75;
+//    B1 = -2.37585;
+//    B2 = -0.92047;
+//    C12 = 0.000790;
 
     size_t pressure_arr_size = 8;
     uint8_t *pressure_arr = (uint8_t *)malloc(pressure_coeffs_arr_size);
@@ -372,6 +377,7 @@ static void display_task()
         loc_time = gmtime(&curtime);
         printf("%.2f,%.2f,%.2f,%.2f,%.2f,%d,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%d:%d:%d\n", data.chip_cap.humidity, data.chip_cap.temperature, data.max31865.temperature, data.mpl115a2.pressure, data.mpl115a2.temperature, data.scd30.co2_value, data.scd30.temperature, data.scd30.humidity, data.mics6814.co, data.mics6814.h2, data.mics6814.ch4, data.mics6814.c2h5oh, loc_time->tm_hour, loc_time->tm_min, loc_time->tm_sec);
 
+
         u8g2_ClearBuffer(&u8g2);
         u8g2_SetFont(&u8g2, u8g2_font_timB10_tr);
 
@@ -406,15 +412,15 @@ static void display_task()
         u8g2_DrawStr(&u8g2, 0,90,"MiCS-6814: CO:");
         float_to_str((float) data.mics6814.co, buf);
         u8g2_DrawStr(&u8g2, 100, 90, buf);
-        u8g2_DrawStr(&u8g2, 140,90,"H2:");
-        float_to_str((float) data.mics6814.h2, buf);
-        u8g2_DrawStr(&u8g2, 170, 90, buf);
-        u8g2_DrawStr(&u8g2, 0,105,"MiCS-6814: CH4:");
-        float_to_str((float) data.mics6814.ch4, buf);
-        u8g2_DrawStr(&u8g2, 110, 105, buf);
-        u8g2_DrawStr(&u8g2, 145,105,"C2H5OH:");
-        float_to_str((float) data.mics6814.c2h5oh, buf);
-        u8g2_DrawStr(&u8g2, 205, 105, buf);
+//        u8g2_DrawStr(&u8g2, 140,90,"H2:");
+//        float_to_str((float) data.mics6814.h2, buf);
+//        u8g2_DrawStr(&u8g2, 170, 90, buf);
+//        u8g2_DrawStr(&u8g2, 0,105,"MiCS-6814: CH4:");
+//        float_to_str((float) data.mics6814.ch4, buf);
+//        u8g2_DrawStr(&u8g2, 110, 105, buf);
+//        u8g2_DrawStr(&u8g2, 145,105,"C2H5OH:");
+//        float_to_str((float) data.mics6814.c2h5oh, buf);
+//        u8g2_DrawStr(&u8g2, 210, 105, buf);
 
         u8g2_SendBuffer(&u8g2);
 

@@ -127,7 +127,7 @@ void sensor_pressure_count_coefficients(float *A0, float *B1, float *B2, float *
       *B2 -= 65536;
    }
    *B2 = (float) (*B2 / 16384.0);
-   *C12 = (float) (((pressure_coeffs_arr[6] * 256 + pressure_coeffs_arr[7]) / 4) / 4194304.0);
+   *C12 = (float) (((float)(pressure_coeffs_arr[6] * 256 + pressure_coeffs_arr[7]) / 4) / 4194304.0);
 }
 
 
