@@ -1,19 +1,15 @@
 #include <stdio.h>
 #include <string.h>
-
 #include "sdkconfig.h"
 #include "esp_log.h"
-
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
-
 #include <math.h>
 #include "driver/gpio.h"
 #include "driver/i2c.h"
-
 #include "chip_cap_2_lib.h"
 
-#define SENSOR_CHIP_CAP_ADDR 0x28   /*!< slave address for chipchap sensor */
+#define SENSOR_CHIP_CAP_ADDR 0x28   /*!< slave address for chipcap sensor */
 
 #define I2C_MASTER_TX_BUF_DISABLE 0                           /*!< I2C master doesn't need buffer */
 #define I2C_MASTER_RX_BUF_DISABLE 0                           /*!< I2C master doesn't need buffer */
@@ -23,14 +19,50 @@
 #define ACK_VAL 0x0                             /*!< I2C ack value */
 #define NACK_VAL 0x1                            /*!< I2C nack value */
 
+
+//---CHIPCAP_2SIP-------------------------------------------------------------------------------------------------------
+/*
+ * Function:  count_temperature
+ * --------------------
+ *  Function to count temperature value.
+ *
+ *  byte_1: MSB of temperature read value
+ *  byte_2: LSB of temperature read value
+ *
+ *  returns: returns float value of temperature.
+ */
 float count_temperature(uint8_t byte_1, uint8_t byte_2) {
    return (float) (((byte_1 * 64 + (byte_2 >> 2)) / pow(2, 14)) * 165 - 40);
 }
 
+
+/*
+ * Function:  count_humidity
+ * --------------------
+ *  Function to count humidity value.
+ *
+ *  byte_1: MSB of humidity read value
+ *  byte_2: LSB of humidity read value
+ *
+ *  returns: returns float value of humidity.
+ */
 float count_humidity(uint8_t byte_1, uint8_t byte_2) {
    return (float) ((((byte_1 & 0x3F) * 256 + byte_2) / pow(2, 14)) * 100);
 }
 
+
+/*
+ * Function:  i2c_master_init
+ * --------------------
+ *  Function to initialise i2c bus in master mode.
+ *
+ *  i2c_master_num: number of i2c mode
+ *  i2c_freq_hz: speed of clock signal in hz
+ *  i2c_master_sda_io: number of gpio pin for data line
+ *  i2c_master_scl_io: number of gpio pin for clock line
+ *
+ *  returns: returns ESP error messages or value ESP_OK if transaction was successful.
+ */
 esp_err_t i2c_master_init(i2c_mode_t i2c_master_num, uint32_t i2c_master_freq_hz, gpio_num_t i2c_master_sda_io, gpio_num_t i2c_master_scl_io)
 {
    int i2c_master_port = i2c_master_num;
@@ -47,6 +79,18 @@ esp_err_t i2c_master_init(i2c_mode_t i2c_master_num, uint32_t i2c_master_freq_hz
                              I2C_MASTER_TX_BUF_DISABLE, 0);
 }
 
+
+/*
+ * Function:  chip_cap_read_hum_temp
+ * --------------------
+ *  Function to read temperature and humidity measured values from sensor.
+ *
+ *  i2c_num: number of i2c port
+ *  data_rd: pointer to array where measurement values are stored
+ *  size: size of array
+ *
+ *  returns: returns ESP error messages or value ESP_OK if transaction was successful.
+ */
 esp_err_t chip_cap_read_hum_temp(i2c_port_t i2c_num, uint8_t *data_rd, size_t size)
 {
    int ret;

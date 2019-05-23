@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <string.h>
-
 #include "sdkconfig.h"
 #include "esp_log.h"
 #include <math.h>
@@ -13,12 +12,33 @@
 
 enum{CO, NO2, NH3, C3H8, C4H10, CH4, H2, C2H5OH};
 
+
+//---MICS6814-----------------------------------------------------------------------------------------------------------
+/*
+ * Function:  count_co_ratio
+ * --------------------
+ *  Function to count CO ratio.
+ *
+ *  output_voltage: int value of output voltage measured in milivolts
+ *
+ *  returns: returns counted float ratio
+ */
 float count_co_ratio(int output_voltage){
-//   float Rs = (MAX_VOLTAGE/output_voltage - 1)*R_CO;
     float Rs = R_CO*output_voltage/(MAX_VOLTAGE - output_voltage);
    return Rs/R0_CO;
 }
 
+
+/*
+ * Function:  calculate_gas
+ * --------------------
+ *  Function to calculate gas concentration for 8 gasses from ratios of 3 sensor heaters.
+ *
+ *  gas: name of desired gas
+ *  co_sensor_voltage: voltage of CO sensor heater
+ *
+ *  returns: returns double value of desired gas concentration
+ */
 double calculate_gas(int gas, int co_sensor_voltage)
 {
    double ratio0 = 0.00; //NH3
@@ -75,6 +95,16 @@ double calculate_gas(int gas, int co_sensor_voltage)
    return c;
 }
 
+
+/*
+ * Function:  read_adc
+ * --------------------
+ *  Function to read adc value of voltage from desired adc channel.
+ *
+ *  channel: channel of adc
+ *
+ *  returns: returns adc value of measured voltage
+ */
 uint32_t read_adc(adc_channel_t channel){
    uint32_t adc_reading = 0;
    //Multisampling

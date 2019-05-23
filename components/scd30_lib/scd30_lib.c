@@ -11,13 +11,25 @@
 #include "esp_log.h"
 #include "scd30_lib.h"
 
-#define SENSOR_CO2_ADDR 0x61
+#define SENSOR_CO2_ADDR 0x61 // i2c address of scd30 sensor
 #define ACK_CHECK_EN 0x1                        /*!< I2C master will check ack from slave*/
 #define ACK_CHECK_DIS 0x0                       /*!< I2C master will not check ack from slave */
 #define ACK_VAL 0x0                             /*!< I2C ack value */
 #define NACK_VAL 0x1                            /*!< I2C nack value */
 
 
+//---SCD30--------------------------------------------------------------------------------------------------------------
+/*
+ * Function:  sensor_pressure_count_pres
+ * --------------------
+ *  Function to read measurement buffer.
+ *
+ *  i2c_num: number of i2c port
+ *  data_rd: pointer to array where measurement values are stored
+ *  size: size of array
+ *
+ *  returns: returns ESP error messages or value ESP_OK if transaction was successful.
+ */
 esp_err_t SCD30_read_measurement_buffer(i2c_port_t i2c_num, uint8_t *data_rd, size_t size)
 {
     int ret;
@@ -34,7 +46,6 @@ esp_err_t SCD30_read_measurement_buffer(i2c_port_t i2c_num, uint8_t *data_rd, si
     i2c_master_stop(cmd);
     ret = i2c_master_cmd_begin(i2c_num, cmd, 1000 / portTICK_RATE_MS);
     i2c_cmd_link_delete(cmd);
-//    printf("INFO:  write sent: %d \n", ret);
 
     if (ret != ESP_OK) {
         return ret;
@@ -51,11 +62,20 @@ esp_err_t SCD30_read_measurement_buffer(i2c_port_t i2c_num, uint8_t *data_rd, si
     i2c_master_stop(cmd);
     ret = i2c_master_cmd_begin(i2c_num, cmd, 1000 / portTICK_RATE_MS);
     i2c_cmd_link_delete(cmd);
-//    printf("INFO:  read sent \n");
 
     return ret;
 }
 
+
+/*
+ * Function:  SCD30_set_measurement_interval
+ * --------------------
+ *  Function to set measurement interval.
+ *
+ *  i2c_num: number of i2c port
+ *
+ *  returns: returns ESP error messages or value ESP_OK if transaction was successful.
+ */
 esp_err_t SCD30_set_measurement_interval(i2c_port_t i2c_num)
 {
     int ret;
@@ -70,11 +90,20 @@ esp_err_t SCD30_set_measurement_interval(i2c_port_t i2c_num)
     i2c_master_stop(cmd);
     ret = i2c_master_cmd_begin(i2c_num, cmd, 1000 / portTICK_RATE_MS);
     i2c_cmd_link_delete(cmd);
-//    printf("INFO:  write sent: %d \n", ret);
 
     return ret;
 }
 
+
+/*
+ * Function:  SCD30_start_periodic_measurement
+ * --------------------
+ *  Function to set periodic measurement.
+ *
+ *  i2c_num: number of i2c port
+ *
+ *  returns: returns ESP error messages or value ESP_OK if transaction was successful.
+ */
 esp_err_t SCD30_start_periodic_measurement(i2c_port_t i2c_num)
 {
     int ret;
@@ -83,17 +112,26 @@ esp_err_t SCD30_start_periodic_measurement(i2c_port_t i2c_num)
     i2c_master_write_byte(cmd, SENSOR_CO2_ADDR << 1 | I2C_MASTER_WRITE, 1 /* expect ack */); // header C2
     i2c_master_write_byte(cmd, 0x00, ACK_CHECK_EN); // CMD MSB
     i2c_master_write_byte(cmd, 0x10, ACK_CHECK_EN); // CMD LSB
-    i2c_master_write_byte(cmd, 0x00, ACK_CHECK_EN); // preasure compensation MSB
-    i2c_master_write_byte(cmd, 0x00, ACK_CHECK_EN); // preasure compensation LSB - deactivation if 0x0000
+    i2c_master_write_byte(cmd, 0x00, ACK_CHECK_EN); // pressure compensation MSB
+    i2c_master_write_byte(cmd, 0x00, ACK_CHECK_EN); // pressure compensation LSB - deactivation if 0x0000
     i2c_master_write_byte(cmd, 0x81, ACK_CHECK_EN); // CRC
     i2c_master_stop(cmd);
     ret = i2c_master_cmd_begin(i2c_num, cmd, 1000 / portTICK_RATE_MS);
     i2c_cmd_link_delete(cmd);
-//    printf("INFO:  write sent: %d \n", ret);
 
     return ret;
 }
 
+
+/*
+ * Function:  count_co2
+ * --------------------
+ *  Function to count co2 concentration value.
+ *
+ *  data_rd: pointer to array where measurement values are stored
+ *
+ *  returns: returns int value of co2 concentration.
+ */
 int count_co2(uint8_t *data_rd) {
     unsigned int co2;
     co2 = (unsigned int)((((unsigned int)data_rd[0]) << 24) |
@@ -103,6 +141,16 @@ int count_co2(uint8_t *data_rd) {
     return (int)(*(float*)&co2);
 }
 
+
+/*
+ * Function:  count_temp
+ * --------------------
+ *  Function to count temperature value.
+ *
+ *  data_rd: pointer to array where measurement values are stored
+ *
+ *  returns: returns float value of temperature.
+ */
 float count_temp(uint8_t *data_rd) {
     unsigned int temp;
     temp = (unsigned int)((((unsigned int)data_rd[6]) << 24) |
@@ -112,6 +160,16 @@ float count_temp(uint8_t *data_rd) {
     return (*(float*)&temp);
 }
 
+
+/*
+ * Function:  count_hum
+ * --------------------
+ *  Function to count humidity value.
+ *
+ *  data_rd: pointer to array where measurement values are stored
+ *
+ *  returns: returns float value of humidity.
+ */
 float count_hum(uint8_t *data_rd) {
     unsigned int hum;
     hum = (unsigned int)((((unsigned int)data_rd[12]) << 24) |

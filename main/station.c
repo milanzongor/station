@@ -25,7 +25,6 @@
 #include <math.h>
 #include <time.h>
 #include <coap/str.h>
-
 #include "sdkconfig.h"
 #include "u8g2_esp32_hal.h"
 #include "/home/milan/esp/esp-idf/components/u8g2/csrc/u8g2.h"
@@ -38,29 +37,30 @@
 #include "mics6814_lib.h"
 
 // for I2C
-#define I2C_MASTER_SCL_IO 26               /*!< gpio number for I2C master clock */
-#define I2C_MASTER_SDA_IO 25               /*!< gpio number for I2C master data  */
-#define I2C_MASTER_NUM 1 /*!< I2C port number for master dev */
-#define I2C_MASTER_FREQ_HZ 10000        /*!< I2C master clock frequency */
-#define I2C_MASTER_TX_BUF_DISABLE 0                           /*!< I2C master doesn't need buffer */
-#define I2C_MASTER_RX_BUF_DISABLE 0                           /*!< I2C master doesn't need buffer */
-#define ACK_CHECK_EN 0x1                        /*!< I2C master will check ack from slave*/
-#define ACK_CHECK_DIS 0x0                       /*!< I2C master will not check ack from slave */
-#define ACK_VAL 0x0                             /*!< I2C ack value */
-#define NACK_VAL 0x1                            /*!< I2C nack value */
-#define SCD30_RDY_PIN_NUM 39
-#define SENSOR_CO2_ADDR 0x61   /*!< slave address for chipchap sensor */
-#define SENSOR_CHIP_CAP_ADDR 0x28   /*!< slave address for chipchap sensor */
-#define SENSOR_PRESSURE_ADDR 0x60   /*!< slave address for chipchap sensor */
+#define I2C_MASTER_SCL_IO 26  // gpio number for I2C master clock
+#define I2C_MASTER_SDA_IO 25  // gpio number for I2C master data
+#define I2C_MASTER_NUM 1 // I2C port number for master dev
+#define I2C_MASTER_FREQ_HZ 10000  // I2C master clock frequency
+#define I2C_MASTER_TX_BUF_DISABLE 0  // I2C master doesn't need buffer
+#define I2C_MASTER_RX_BUF_DISABLE 0  // I2C master doesn't need buffer
+#define ACK_CHECK_EN 0x1  // I2C master will check ack from slave
+#define ACK_CHECK_DIS 0x0  // I2C master will not check ack from slave
+#define ACK_VAL 0x0  // I2C ack value
+#define NACK_VAL 0x1  // I2C nack value
 
-// display VSPI
+// i2c sensors pinout
+#define SENSOR_CO2_ADDR 0x61   // slave address for chipchap sensor
+#define SENSOR_CHIP_CAP_ADDR 0x28   // slave address for chipcap sensor
+#define SENSOR_PRESSURE_ADDR 0x60   // slave address for chipcap sensor
+
+// display VSPI pinout
 #define PIN_CLK 18
 #define PIN_MOSI 23
 #define PIN_RESET -1
 #define PIN_DC 21
 #define PIN_CS 5
 
-// max31865 sensor HSPI
+// max31865 sensor HSPI pinout
 #define PIN_NUM_MISO 12
 #define PIN_NUM_MOSI 13
 #define PIN_NUM_CLK  14
@@ -69,14 +69,18 @@
 #define PIN_NUM_DC   -1
 #define PIN_NUM_RST  -1
 
+// indication led pinout
 #define PIN_NUM_LED 22
+
+// motion sensor pinout
 #define PIN_NUM_MS_IN 34
 #define PIN_NUM_MS_OUT 27
 
+// wifi setup
 #define WIFI_SSID "esp_wifi"
 #define WIFI_PASS "mypassword"
 
-// mics6814
+// mics6814 pinout
 #define DEFAULT_VREF    1100
 #define PIN_NUM_MICS6418_POWER 19
 #define PIN_NUM_CO_TURN 32
@@ -88,11 +92,22 @@ static const adc_unit_t unit = ADC_UNIT_1;
 
 enum{CO, NO2, NH3, C3H8, C4H10, CH4, H2, C2H5OH};
 
+// wifi handler
 static EventGroupHandle_t wifi_event_group;
 const int CONNECTED_BIT = BIT0;
 
 static const char *TAG = "Station_tag";
 
+
+//---PROGRAM_PART-------------------------------------------------------------------------------------------------------
+/*
+ * Function:  float_to_str
+ * --------------------
+ *  Function to convert float value to string variable.
+ *
+ *  float_var: float variable to be converted
+ *  out_buf: pointer to array where string will be stored
+ */
 void float_to_str(float float_var, char *out_buf){
     enum {BufSize=9};
     char buf[BufSize];
@@ -102,7 +117,16 @@ void float_to_str(float float_var, char *out_buf){
 
 
 //---WIFI---------------------------------------------------------------------------------------------------------------
-//    event handler for wifi task
+/*
+ * Function:  event_handler
+ * --------------------
+ *  Event handler for wifi task.
+ *
+ *  ctx: not used
+ *  event: current state of wifi
+ *
+ *  returns: returns ESP error messages or value ESP_OK if transaction was successful.
+ */
 static esp_err_t event_handler(void *ctx, system_event_t *event) {
     switch(event->event_id) {
         case SYSTEM_EVENT_STA_START:
@@ -121,6 +145,12 @@ static esp_err_t event_handler(void *ctx, system_event_t *event) {
     return ESP_OK;
 }
 
+
+/*
+ * Function:  initialise_wifi
+ * --------------------
+ *  Function to initialise wifi in AP mode
+ */
 static void initialise_wifi(void)
 {
     tcpip_adapter_init();
@@ -142,6 +172,18 @@ static void initialise_wifi(void)
     ESP_ERROR_CHECK(esp_wifi_start());
 }
 
+
+/*
+ * Function:  add_table_row
+ * --------------------
+ *  Function to create row of html table.
+ *
+ *  f: generated string is stored to this variable
+ *  name: name of sensor
+ *  measurement: name of measured value e.g. temperature, humidity etc.
+ *  value: float value of measurement
+ *  units: units of measurement
+ */
 void add_table_row(char f[], char name[], char measurement[], float value, char units[]){
     char sensor_value[9];
     snprintf (sensor_value, 9, "%.2f", value);
@@ -154,6 +196,13 @@ void add_table_row(char f[], char name[], char measurement[], float value, char 
 }
 
 
+/*
+ * Function:  format_html
+ * --------------------
+ *  Function to create web page.
+ *
+ *  buffer: variable where final page is stored
+ */
 static void format_html(char *buffer) {
     char f[512];
 
@@ -190,19 +239,18 @@ static void format_html(char *buffer) {
     add_table_row(f, data.mics6814.name, "CO", (float) data.mics6814.co, "ppm");
     sprintf(buffer,"%s%s",buffer,f);
 
-//    add_table_row(f, data.mics6814.name, "H2", (float) data.mics6814.h2, "ppm");
-//    sprintf(buffer,"%s%s",buffer,f);
-//
-//    add_table_row(f, data.mics6814.name, "CH4", (float) data.mics6814.ch4, "ppm");
-//    sprintf(buffer,"%s%s",buffer,f);
-//
-//    add_table_row(f, data.mics6814.name, "C2H5OH", (float) data.mics6814.c2h5oh, "ppm");
-//    sprintf(buffer,"%s%s",buffer,f);
-
     sprintf(buffer,"%s%s",buffer,page_03);
 
 }
 
+
+/*
+ * Function:  http_server_netconn_serve
+ * --------------------
+ *  Function to send web page content.
+ *
+ *  conn: structure of network connection
+ */
 static void http_server_netconn_serve(struct netconn *conn) {
     struct netbuf *inbuf;
     char *buf;
@@ -234,7 +282,13 @@ static void http_server_netconn_serve(struct netconn *conn) {
     netbuf_delete(inbuf);
 }
 
+
 //---HTTP-SERVER-TASK---------------------------------------------------------------------------------------------------
+/*
+ * Task:  http_server_task
+ * --------------------
+ *  Task to handle http server.
+ */
 static void http_server_task() {
     struct netconn *conn, *newconn;
     err_t err;
@@ -255,9 +309,13 @@ static void http_server_task() {
 
 
 //---DISPLAY-TASK-------------------------------------------------------------------------------------------------------
+/*
+ * Task:  display_task
+ * --------------------
+ *  Task to initialise, measure sensor values and show them on display.
+ */
 static void display_task()
 {
-//    enum {BufSize=9};
     char buf[9];
 
     //---DISPLAY---
@@ -314,19 +372,12 @@ static void display_task()
 
     float A0, B1, B2, C12;
     sensor_pressure_count_coefficients(&A0, &B1, &B2, &C12, pressure_coeffs_arr);
-//    2271.500000, -2.708862, -1.014954, 0.000898
-//    A0 = 2009.75;
-//    B1 = -2.37585;
-//    B2 = -0.92047;
-//    C12 = 0.000790;
-
     size_t pressure_arr_size = 8;
     uint8_t *pressure_arr = (uint8_t *)malloc(pressure_coeffs_arr_size);
 
     //---SCD30---
     size_t co2_data_length = 18;
     uint8_t *co2_data_arr = (uint8_t *)malloc(co2_data_length);
-
     ESP_ERROR_CHECK(SCD30_set_measurement_interval(I2C_MASTER_NUM)); // set measurement interval to 2s
     vTaskDelay(1000 / portTICK_RATE_MS); // wait 1000ms after init
     ESP_ERROR_CHECK(SCD30_start_periodic_measurement(I2C_MASTER_NUM)); // start periodic measurements
@@ -343,41 +394,43 @@ static void display_task()
     while(1) {
         vTaskDelay(2000 / portTICK_RATE_MS);
 
+        //---CHIPCAP---
         ESP_ERROR_CHECK(chip_cap_read_hum_temp(I2C_MASTER_NUM, chip_cap_data_arr, chip_cap_data_length));
         data.chip_cap.temperature = count_temperature(chip_cap_data_arr[2], chip_cap_data_arr[3]);
         data.chip_cap.humidity = count_humidity(chip_cap_data_arr[0], chip_cap_data_arr[1]);
-//        printf("CHIP_CAP ---> Humidity: %2.2f, Temperature:  %2.2f \n", data.chip_cap.humidity, data.chip_cap.temperature);
 
+        //---MAX31865---
         uint8_t received_data[9];
         ESP_ERROR_CHECK(max31865_read_output(spi2, received_data));
         data.max31865.temperature = max31865_temperature(received_data);
-//        printf("MAX31865 --> Temperature: %2.2f \n", data.max31865.temperature);
 
+        //---MPL115A2---
         ESP_ERROR_CHECK(sensor_pressure_read_values(I2C_MASTER_NUM, pressure_arr, pressure_arr_size));
         data.mpl115a2.pressure = sensor_pressure_count_pres(pressure_arr, A0, B1, B2, C12);
         data.mpl115a2.temperature = sensor_pressure_count_temp(pressure_arr);
-//        printf("MPL115A2 --> Pressure: %.2f kPa, Temperature: %.2f C \n", data.mpl115a2.pressure, data.mpl115a2.temperature);
 
+        //---SCD30---
         ESP_ERROR_CHECK(SCD30_read_measurement_buffer(I2C_MASTER_NUM, co2_data_arr, co2_data_length));
         data.scd30.co2_value = count_co2(co2_data_arr);
         data.scd30.temperature = count_temp(co2_data_arr);
         data.scd30.humidity = count_hum(co2_data_arr);
-//        printf("SCD30 --> CO2: %d PPM, Temperature: %.2f , Humidity: %.2f \n", data.scd30.co2_value, data.scd30.temperature, data.scd30.humidity);
-//        printf("\n");
 
+        //---MICS6814---
         adc_reading = read_adc(channel);
         int co_sensor_voltage = esp_adc_cal_raw_to_voltage(adc_reading, adc_chars);
-//        float ratio_co = count_co_ratio(co_sensor_voltage);
         data.mics6814.co = calculate_gas(CO, co_sensor_voltage);
         data.mics6814.h2 = calculate_gas(H2, co_sensor_voltage);
         data.mics6814.ch4 = calculate_gas(CH4, co_sensor_voltage);
         data.mics6814.c2h5oh = calculate_gas(C2H5OH, co_sensor_voltage);
 
+        //---TIME---
         curtime = time(NULL);
         loc_time = gmtime(&curtime);
+
+        // print all measured values to termil in csv format
         printf("%.2f,%.2f,%.2f,%.2f,%.2f,%d,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%d:%d:%d\n", data.chip_cap.humidity, data.chip_cap.temperature, data.max31865.temperature, data.mpl115a2.pressure, data.mpl115a2.temperature, data.scd30.co2_value, data.scd30.temperature, data.scd30.humidity, data.mics6814.co, data.mics6814.h2, data.mics6814.ch4, data.mics6814.c2h5oh, loc_time->tm_hour, loc_time->tm_min, loc_time->tm_sec);
 
-
+        //---DISPLAY---
         u8g2_ClearBuffer(&u8g2);
         u8g2_SetFont(&u8g2, u8g2_font_timB10_tr);
 
@@ -412,15 +465,6 @@ static void display_task()
         u8g2_DrawStr(&u8g2, 0,90,"MiCS-6814: CO:");
         float_to_str((float) data.mics6814.co, buf);
         u8g2_DrawStr(&u8g2, 100, 90, buf);
-//        u8g2_DrawStr(&u8g2, 140,90,"H2:");
-//        float_to_str((float) data.mics6814.h2, buf);
-//        u8g2_DrawStr(&u8g2, 170, 90, buf);
-//        u8g2_DrawStr(&u8g2, 0,105,"MiCS-6814: CH4:");
-//        float_to_str((float) data.mics6814.ch4, buf);
-//        u8g2_DrawStr(&u8g2, 110, 105, buf);
-//        u8g2_DrawStr(&u8g2, 145,105,"C2H5OH:");
-//        float_to_str((float) data.mics6814.c2h5oh, buf);
-//        u8g2_DrawStr(&u8g2, 210, 105, buf);
 
         u8g2_SendBuffer(&u8g2);
 
@@ -430,13 +474,16 @@ static void display_task()
         } else {
             gpio_set_level(PIN_NUM_LED, 0);
         }
-
     }
-
     vTaskDelete(NULL);
 }
 
 //---BACKLIGHT-TASK-----------------------------------------------------------------------------------------------------
+/*
+ * Task:  backlight_task
+ * --------------------
+ *  Task to initialise motion sensor, read motion sensor values and turns on backlight on display if motion is detected.
+ */
 static void backlight_task()
 {
     //---motion_sensor---
@@ -448,7 +495,6 @@ static void backlight_task()
         vTaskDelay(200 / portTICK_RATE_MS);
         backlight_level = gpio_get_level(PIN_NUM_MS_IN);
         gpio_set_level(PIN_NUM_MS_OUT, (uint32_t) backlight_level);
-//        printf("Backlight level %d \n", backlight_level);
     }
 
     vTaskDelete(NULL);
@@ -457,13 +503,17 @@ static void backlight_task()
 
 void app_main()
 {
-    printf("ESP32 project @zongomil \n");
+    // initial greeting
+    printf("ESP32 environment monitoring unit @zongomil \n");
 
-    gpio_set_direction(PIN_NUM_LED, GPIO_MODE_OUTPUT); // turn on led
+    // turn on led
+    gpio_set_direction(PIN_NUM_LED, GPIO_MODE_OUTPUT);
     gpio_set_level(PIN_NUM_LED, 1);
 
+    // initialise i2c in master mode
     ESP_ERROR_CHECK(i2c_master_init(I2C_MASTER_NUM, I2C_MASTER_FREQ_HZ, I2C_MASTER_SDA_IO, I2C_MASTER_SCL_IO));
 
+    // initialise spi for display
     u8g2_esp32_hal_t u8g2_esp32_hal = U8G2_ESP32_HAL_DEFAULT;
     u8g2_esp32_hal.clk   = PIN_CLK;
     u8g2_esp32_hal.mosi  = PIN_MOSI;
@@ -472,13 +522,14 @@ void app_main()
     u8g2_esp32_hal.reset = PIN_RESET;
     u8g2_esp32_hal_init(u8g2_esp32_hal);
 
+    // fill names of sensors to data structure
     strcpy(data.chip_cap.name, "ChipCap");
     strcpy(data.max31865.name, "MAX31865");
     strcpy(data.scd30.name, "SCD30");
     strcpy(data.mpl115a2.name, "MPL115A2");
     strcpy(data.mics6814.name, "MiCS-6814");
 
-    //Initialize NVS
+    // initialize NVS
     esp_err_t ret = nvs_flash_init();
     if (ret == ESP_ERR_NVS_NO_FREE_PAGES) {
         ESP_ERROR_CHECK(nvs_flash_erase());
@@ -486,8 +537,10 @@ void app_main()
     }
     ESP_ERROR_CHECK(ret);
 
+    // initialise wifi to AP mode
     initialise_wifi();
 
+    // create main 3 tasks
     xTaskCreate(display_task /* Pointer to task */,
                 "display_task" /* Name of task */,
                 1024 * 20 /* Stack depth in bytes */,
@@ -508,8 +561,5 @@ void app_main()
                 NULL,
                 5,
                 NULL);
-
-    printf("End of main loop \n");
-
 }
 
