@@ -82,11 +82,21 @@ esp_err_t SCD30_set_measurement_interval(i2c_port_t i2c_num)
     i2c_cmd_handle_t cmd = i2c_cmd_link_create();
     i2c_master_start(cmd);
     i2c_master_write_byte(cmd, SENSOR_CO2_ADDR << 1 | I2C_MASTER_WRITE, 1 /* expect ack */); // header C2
+    //    Measure every 2 seconds
     i2c_master_write_byte(cmd, 0x46, ACK_CHECK_EN); // CMD MSB
     i2c_master_write_byte(cmd, 0x00, ACK_CHECK_EN); // CMD LSB
     i2c_master_write_byte(cmd, 0x00, ACK_CHECK_EN); // interval MSB
-    i2c_master_write_byte(cmd, 0x02, ACK_CHECK_EN); // interval LSB
-    i2c_master_write_byte(cmd, 0xe3, ACK_CHECK_EN); // CRC
+    i2c_master_write_byte(cmd, 0x0A, ACK_CHECK_EN); // interval LSB
+    i2c_master_write_byte(cmd, 0x5a, ACK_CHECK_EN); // CRC
+
+//    Measure every 2 seconds
+//    i2c_master_write_byte(cmd, 0x46, ACK_CHECK_EN); // CMD MSB
+//    i2c_master_write_byte(cmd, 0x00, ACK_CHECK_EN); // CMD LSB
+//    i2c_master_write_byte(cmd, 0x00, ACK_CHECK_EN); // interval MSB
+//    i2c_master_write_byte(cmd, 0x02, ACK_CHECK_EN); // interval LSB
+//    i2c_master_write_byte(cmd, 0xe3, ACK_CHECK_EN); // CRC
+
+
     i2c_master_stop(cmd);
     ret = i2c_master_cmd_begin(i2c_num, cmd, 1000 / portTICK_RATE_MS);
     i2c_cmd_link_delete(cmd);

@@ -392,7 +392,7 @@ static void display_task()
     printf("%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s\n", "data.chip_cap.humidity", "data.chip_cap.temperature", "data.max31865.temperature", "data.mpl115a2.pressure", "data.mpl115a2.temperature", "data.scd30.co2_value", "data.scd30.temperature", "data.scd30.humidity", "data.mics6814.co", "data.mics6814.h2", "data.mics6814.ch4", "data.mics6814.c2h5oh", "time_from_startup");
 
     while(1) {
-        vTaskDelay(2000 / portTICK_RATE_MS);
+        vTaskDelay(10000 / portTICK_RATE_MS);
 
         //---CHIPCAP---
         ESP_ERROR_CHECK(chip_cap_read_hum_temp(I2C_MASTER_NUM, chip_cap_data_arr, chip_cap_data_length));
@@ -437,34 +437,46 @@ static void display_task()
         u8g2_DrawStr(&u8g2, 0,15,"ChipCap: H:");
         float_to_str(data.chip_cap.humidity, buf);
         u8g2_DrawStr(&u8g2, 80, 15, buf);
-        u8g2_DrawStr(&u8g2, 120,15,"T:");
+        u8g2_DrawStr(&u8g2, 110,15,"%");
+        u8g2_DrawStr(&u8g2, 130,15,"T:");
         float_to_str(data.chip_cap.temperature, buf);
-        u8g2_DrawStr(&u8g2, 140, 15, buf);
+        u8g2_DrawStr(&u8g2, 145, 15, buf);
+        u8g2_DrawStr(&u8g2, 175, 15, "*C");
 
         u8g2_DrawStr(&u8g2, 0,30,"MAX31865: T:");
         float_to_str(data.max31865.temperature, buf);
         u8g2_DrawStr(&u8g2, 90, 30, buf);
+        u8g2_DrawStr(&u8g2, 130, 30, "*C");
 
         u8g2_DrawStr(&u8g2, 0,45,"MPL115A2: P:");
         float_to_str(data.mpl115a2.pressure, buf);
         u8g2_DrawStr(&u8g2, 90, 45, buf);
-        u8g2_DrawStr(&u8g2, 140,45,"T:");
+        u8g2_DrawStr(&u8g2, 125, 45, "kPa");
+        u8g2_DrawStr(&u8g2, 155,45,"T:");
         float_to_str(data.mpl115a2.temperature, buf);
-        u8g2_DrawStr(&u8g2, 160, 45, buf);
+        u8g2_DrawStr(&u8g2, 170, 45, buf);
+        u8g2_DrawStr(&u8g2, 200, 45, "*C");
+
 
         u8g2_DrawStr(&u8g2, 0,60,"SCD30: C02:");
         float_to_str(data.scd30.co2_value, buf);
         u8g2_DrawStr(&u8g2, 80, 60, buf);
+        u8g2_DrawStr(&u8g2, 130, 60, "ppm");
         u8g2_DrawStr(&u8g2, 0,75,"SCD30: T:");
         float_to_str(data.scd30.temperature, buf);
-        u8g2_DrawStr(&u8g2, 80, 75, buf);
+        u8g2_DrawStr(&u8g2, 65, 75, buf);
+        u8g2_DrawStr(&u8g2, 95, 75, "*C");
         u8g2_DrawStr(&u8g2, 120,75,"H:");
         float_to_str(data.scd30.humidity, buf);
-        u8g2_DrawStr(&u8g2, 140, 75, buf);
+        u8g2_DrawStr(&u8g2, 135, 75, buf);
+        u8g2_DrawStr(&u8g2, 175, 75, "%");
+
 
         u8g2_DrawStr(&u8g2, 0,90,"MiCS-6814: CO:");
         float_to_str((float) data.mics6814.co, buf);
         u8g2_DrawStr(&u8g2, 100, 90, buf);
+        u8g2_DrawStr(&u8g2, 130, 90, "ppm");
+
 
         u8g2_SendBuffer(&u8g2);
 
